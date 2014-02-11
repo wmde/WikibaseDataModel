@@ -1,5 +1,10 @@
 # Wikibase DataModel release notes
 
+## Version 0.7 (2014-02-11)
+
+* DataValues Time now requires version 0.2~
+* Removed use of deprecated class aliases
+
 ## Version 0.6 (2013-12-23)
 
 #### Improvements
