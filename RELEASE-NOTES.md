@@ -1,5 +1,9 @@
 # Wikibase DataModel release notes
 
+## Version 0.7.1 (2014-03-12)
+
+* Require version 0.3 of data-values/number
+
 ## Version 0.7 (2014-03-07)
 
 #### Additions
