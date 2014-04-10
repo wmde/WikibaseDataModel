@@ -19,7 +19,7 @@ use Wikibase\DataModel\Reference;
 use Wikibase\DataModel\Snak\PropertyNoValueSnak;
 use Wikibase\DataModel\Snak\PropertySomeValueSnak;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
-use Wikibase\DataModel\Term\AliasGroup;
+use Wikibase\DataModel\Term\OrderedTermSet;
 use Wikibase\DataModel\Term\AliasGroupList;
 use Wikibase\DataModel\Term\Fingerprint;
 use Wikibase\DataModel\Term\Term;
@@ -942,7 +942,7 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 					new Term( 'en', 'foo bar' )
 				) ),
 				new AliasGroupList( array(
-					new AliasGroup( 'en', array( 'foo', 'bar' ) )
+					new OrderedTermSet( 'en', array( 'foo', 'bar' ) )
 				) )
 			),
 			$entity->getFingerprint()
@@ -984,7 +984,7 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 				new Term( 'en', 'foo bar' )
 			) ),
 			new AliasGroupList( array(
-				new AliasGroup( 'en', array( 'foo', 'bar' ) )
+				new OrderedTermSet( 'en', array( 'foo', 'bar' ) )
 			) )
 		);
 

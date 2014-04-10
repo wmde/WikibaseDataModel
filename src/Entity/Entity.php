@@ -15,7 +15,7 @@ use Wikibase\DataModel\Claim\Claims;
 use Wikibase\DataModel\Internal\LegacyIdInterpreter;
 use Wikibase\DataModel\Internal\ObjectComparer;
 use Wikibase\DataModel\Snak\Snak;
-use Wikibase\DataModel\Term\AliasGroup;
+use Wikibase\DataModel\Term\OrderedTermSet;
 use Wikibase\DataModel\Term\AliasGroupList;
 use Wikibase\DataModel\Term\Fingerprint;
 use Wikibase\DataModel\Term\FingerprintProvider;
@@ -952,7 +952,7 @@ abstract class Entity implements \Comparable, ClaimAggregate, \Serializable, Fin
 		$groups = array();
 
 		foreach ( $this->getAllAliases() as $languageCode => $aliases ) {
-			$groups[] = new AliasGroup( $languageCode, $aliases );
+			$groups[] = new OrderedTermSet( $languageCode, $aliases );
 		}
 
 		return new AliasGroupList( $groups );
@@ -974,10 +974,10 @@ abstract class Entity implements \Comparable, ClaimAggregate, \Serializable, Fin
 		$allAliases = array();
 
 		/**
-		 * @var AliasGroup $aliasGroup
+		 * @var OrderedTermSet $aliasGroup
 		 */
 		foreach ( $list as $aliasGroup ) {
-			$allAliases[$aliasGroup->getLanguageCode()] = $aliasGroup->getAliases();
+			$allAliases[$aliasGroup->getLanguageCode()] = $aliasGroup->getTermTexts();
 		}
 
 		$this->setAllAliases( $allAliases );

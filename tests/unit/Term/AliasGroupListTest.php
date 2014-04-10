@@ -2,7 +2,7 @@
 
 namespace Wikibase\DataModel\Term\Test;
 
-use Wikibase\DataModel\Term\AliasGroup;
+use Wikibase\DataModel\Term\OrderedTermSet;
 use Wikibase\DataModel\Term\AliasGroupList;
 
 /**
@@ -26,8 +26,8 @@ class AliasGroupListTest extends \PHPUnit_Framework_TestCase {
 
 	private function getTwoGroups() {
 		return array(
-			'en' => new AliasGroup( 'en', array( 'foo' ) ),
-			'de' => new AliasGroup( 'de', array( 'bar', 'baz' ) ),
+			'en' => new OrderedTermSet( 'en', array( 'foo' ) ),
+			'de' => new OrderedTermSet( 'de', array( 'bar', 'baz' ) ),
 		);
 	}
 
@@ -41,35 +41,35 @@ class AliasGroupListTest extends \PHPUnit_Framework_TestCase {
 
 	public function testGivenGroupsWithTheSameLanguage_onlyTheLastOnesAreRetained() {
 		$array = array(
-			new AliasGroup( 'en', array( 'foo' ) ),
-			new AliasGroup( 'en', array( 'bar' ) ),
+			new OrderedTermSet( 'en', array( 'foo' ) ),
+			new OrderedTermSet( 'en', array( 'bar' ) ),
 
-			new AliasGroup( 'de', array( 'baz' ) ),
+			new OrderedTermSet( 'de', array( 'baz' ) ),
 
-			new AliasGroup( 'nl', array( 'bah' ) ),
-			new AliasGroup( 'nl', array( 'blah' ) ),
-			new AliasGroup( 'nl', array( 'spam' ) ),
+			new OrderedTermSet( 'nl', array( 'bah' ) ),
+			new OrderedTermSet( 'nl', array( 'blah' ) ),
+			new OrderedTermSet( 'nl', array( 'spam' ) ),
 		);
 
 		$list = new AliasGroupList( $array );
 
 		$this->assertEquals(
 			array(
-				'en' => new AliasGroup( 'en', array( 'bar' ) ),
-				'de' => new AliasGroup( 'de', array( 'baz' ) ),
-				'nl' => new AliasGroup( 'nl', array( 'spam' ) ),
+				'en' => new OrderedTermSet( 'en', array( 'bar' ) ),
+				'de' => new OrderedTermSet( 'de', array( 'baz' ) ),
+				'nl' => new OrderedTermSet( 'nl', array( 'spam' ) ),
 			),
 			iterator_to_array( $list )
 		);
 	}
 
 	public function testCanIterateOverList() {
-		$group = new AliasGroup( 'en', array( 'foo' ) );
+		$group = new OrderedTermSet( 'en', array( 'foo' ) );
 
 		$list = new AliasGroupList( array( $group ) );
 
 		/**
-		 * @var AliasGroup $aliasGroup
+		 * @var OrderedTermSet $aliasGroup
 		 */
 		foreach ( $list as $key => $aliasGroup ) {
 			$this->assertEquals( $group, $aliasGroup );
@@ -83,12 +83,12 @@ class AliasGroupListTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testGivenSetLanguageCode_getByLanguageReturnsGroup() {
-		$enGroup = new AliasGroup( 'en', array( 'foo' ) );
+		$enGroup = new OrderedTermSet( 'en', array( 'foo' ) );
 
 		$list = new AliasGroupList( array(
-			new AliasGroup( 'de', array() ),
+			new OrderedTermSet( 'de', array() ),
 			$enGroup,
-			new AliasGroup( 'nl', array() ),
+			new OrderedTermSet( 'nl', array() ),
 		) );
 
 		$this->assertEquals( $enGroup, $list->getByLanguage( 'en' ) );
@@ -109,8 +109,8 @@ class AliasGroupListTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testGivenGroupForNewLanguage_setGroupAddsGroup() {
-		$enGroup = new AliasGroup( 'en', array( 'foo', 'bar' ) );
-		$deGroup = new AliasGroup( 'de', array( 'baz', 'bah' ) );
+		$enGroup = new OrderedTermSet( 'en', array( 'foo', 'bar' ) );
+		$deGroup = new OrderedTermSet( 'de', array( 'baz', 'bah' ) );
 
 		$list = new AliasGroupList( array( $enGroup ) );
 		$expectedList = new AliasGroupList( array( $enGroup, $deGroup ) );
@@ -121,8 +121,8 @@ class AliasGroupListTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testGivenLabelForExistingLanguage_setLabelReplacesLabel() {
-		$enGroup = new AliasGroup( 'en', array( 'foo', 'bar' ) );
-		$newEnGroup = new AliasGroup( 'en', array( 'foo', 'bar', 'bah' ) );
+		$enGroup = new OrderedTermSet( 'en', array( 'foo', 'bar' ) );
+		$newEnGroup = new OrderedTermSet( 'en', array( 'foo', 'bar', 'bah' ) );
 
 		$list = new AliasGroupList( array( $enGroup ) );
 		$expectedList = new AliasGroupList( array( $newEnGroup ) );
@@ -132,7 +132,7 @@ class AliasGroupListTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testGivenNotSetLanguage_removeByLanguageIsNoOp() {
-		$list = new AliasGroupList( array( new AliasGroup( 'en', array( 'foo', 'bar' ) ) ) );
+		$list = new AliasGroupList( array( new OrderedTermSet( 'en', array( 'foo', 'bar' ) ) ) );
 		$originalList = clone $list;
 
 		$list->removeByLanguage( 'de' );
@@ -141,7 +141,7 @@ class AliasGroupListTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testGivenSetLanguage_removeByLanguageRemovesIt() {
-		$list = new AliasGroupList( array( new AliasGroup( 'en', array( 'foo', 'bar' ) ) ) );
+		$list = new AliasGroupList( array( new OrderedTermSet( 'en', array( 'foo', 'bar' ) ) ) );
 
 		$list->removeByLanguage( 'en' );
 
@@ -149,17 +149,17 @@ class AliasGroupListTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testGivenEmptyGroups_constructorRemovesThem() {
-		$enGroup = new AliasGroup( 'en', array( 'foo' ) );
+		$enGroup = new OrderedTermSet( 'en', array( 'foo' ) );
 
 		$list = new AliasGroupList( array(
-			new AliasGroup( 'de', array() ),
+			new OrderedTermSet( 'de', array() ),
 			$enGroup,
-			new AliasGroup( 'en', array() ),
-			new AliasGroup( 'nl', array() ),
+			new OrderedTermSet( 'en', array() ),
+			new OrderedTermSet( 'nl', array() ),
 		) );
 
 		$expectedList = new AliasGroupList( array(
-			new AliasGroup( 'en', array() ),
+			new OrderedTermSet( 'en', array() ),
 		) );
 
 		$this->assertEquals( $expectedList, $list );
@@ -167,13 +167,13 @@ class AliasGroupListTest extends \PHPUnit_Framework_TestCase {
 
 	public function testGivenEmptyGroup_setGroupRemovesGroup() {
 		$list = new AliasGroupList( array(
-			new AliasGroup( 'en', array( 'foo' ) ),
+			new OrderedTermSet( 'en', array( 'foo' ) ),
 		) );
 
 		$expectedList = new AliasGroupList( array() );
 
-		$list->setGroup( new AliasGroup( 'en', array() ) );
-		$list->setGroup( new AliasGroup( 'de', array() ) );
+		$list->setGroup( new OrderedTermSet( 'en', array() ) );
+		$list->setGroup( new OrderedTermSet( 'de', array() ) );
 
 		$this->assertEquals( $expectedList, $list );
 	}

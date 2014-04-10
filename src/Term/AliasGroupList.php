@@ -24,12 +24,13 @@ class AliasGroupList implements Countable, IteratorAggregate {
 	private $groups = array();
 
 	/**
-	 * @param AliasGroup[] $aliasGroups
-	 * @throws InvalidArgumentException
+	 * @param OrderedTermSet[] $aliasGroups
+	 *
+*@throws InvalidArgumentException
 	 */
 	public function __construct( array $aliasGroups ) {
 		foreach ( $aliasGroups as $aliasGroup ) {
-			if ( !( $aliasGroup instanceof AliasGroup ) ) {
+			if ( !( $aliasGroup instanceof OrderedTermSet ) ) {
 				throw new InvalidArgumentException( 'AliasGroupList can only contain AliasGroup instances' );
 			}
 
@@ -56,7 +57,7 @@ class AliasGroupList implements Countable, IteratorAggregate {
 	/**
 	 * @param string $languageCode
 	 *
-	 * @return AliasGroup
+	 * @return OrderedTermSet
 	 * @throws InvalidArgumentException
 	 * @throws OutOfBoundsException
 	 */
@@ -91,9 +92,9 @@ class AliasGroupList implements Countable, IteratorAggregate {
 	 * If the group is empty, it will not be stored.
 	 * In case the language of that group had an associated group, that group will be removed.
 	 *
-	 * @param AliasGroup $group
+	 * @param OrderedTermSet $group
 	 */
-	public function setGroup( AliasGroup $group ) {
+	public function setGroup( OrderedTermSet $group ) {
 		if ( $group->isEmpty() ) {
 			unset( $this->groups[$group->getLanguageCode()] );
 		}
