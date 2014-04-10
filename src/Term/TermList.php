@@ -16,12 +16,7 @@ use Traversable;
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
-class TermList implements Countable, IteratorAggregate {
-
-	/**
-	 * @var Term[]
-	 */
-	private $terms = array();
+class TermList extends ByLanguageCollection {
 
 	/**
 	 * @param Term[] $terms
@@ -33,16 +28,17 @@ class TermList implements Countable, IteratorAggregate {
 				throw new InvalidArgumentException( 'TermList can only contain instances of Term' );
 			}
 
-			$this->terms[$term->getLanguageCode()] = $term;
+			$this->byLanguageIdentifiables[$term->getLanguageCode()] = $term;
 		}
 	}
 
-	/**
-	 * @see Countable::count
-	 * @return int
-	 */
-	public function count() {
-		return count( $this->terms );
+	public function hasTermForLanguage( $languageCode ) {
+		$this->assertIsLanguageCode( $languageCode );
+		return array_key_exists( $languageCode, $this->byLanguageIdentifiables );
+	}
+
+	public function setTerm( Term $term ) {
+		$this->byLanguageIdentifiables[$term->getLanguageCode()] = $term;
 	}
 
 	/**
@@ -53,58 +49,14 @@ class TermList implements Countable, IteratorAggregate {
 	public function toTextArray() {
 		$array = array();
 
-		foreach ( $this->terms as $term ) {
+		/**
+		 * @var Term $term
+		 */
+		foreach ( $this->byLanguageIdentifiables as $term ) {
 			$array[$term->getLanguageCode()] = $term->getText();
 		}
 
 		return $array;
-	}
-
-	/**
-	 * @see IteratorAggregate::getIterator
-	 * @return Traversable
-	 */
-	public function getIterator() {
-		return new \ArrayIterator( $this->terms );
-	}
-
-	/**
-	 * @param $languageCode
-	 *
-	 * @return OrderedTermSet
-	 * @throws InvalidArgumentException
-	 * @throws OutOfBoundsException
-	 */
-	public function getByLanguage( $languageCode ) {
-		$this->assertIsLanguageCode( $languageCode );
-
-		if ( !array_key_exists( $languageCode, $this->terms ) ) {
-			throw new OutOfBoundsException(
-				'There is no Term with language code "' . $languageCode . '" in the list'
-			);
-		}
-
-		return $this->terms[$languageCode];
-	}
-
-	public function removeByLanguage( $languageCode ) {
-		$this->assertIsLanguageCode( $languageCode );
-		unset( $this->terms[$languageCode] );
-	}
-
-	public function hasTermForLanguage( $languageCode ) {
-		$this->assertIsLanguageCode( $languageCode );
-		return array_key_exists( $languageCode, $this->terms );
-	}
-
-	protected function assertIsLanguageCode( $languageCode ) {
-		if ( !is_string( $languageCode ) ) {
-			throw new InvalidArgumentException( '$languageCode should be a string' );
-		}
-	}
-
-	public function setTerm( Term $term ) {
-		$this->terms[$term->getLanguageCode()] = $term;
 	}
 
 }

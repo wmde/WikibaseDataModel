@@ -13,7 +13,7 @@ use InvalidArgumentException;
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
-class Term implements Comparable {
+class Term implements Comparable, HasLanguage {
 
 	private $languageCode;
 	private $text;

@@ -19,8 +19,8 @@ use Wikibase\DataModel\Reference;
 use Wikibase\DataModel\Snak\PropertyNoValueSnak;
 use Wikibase\DataModel\Snak\PropertySomeValueSnak;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
-use Wikibase\DataModel\Term\OrderedTermSet;
-use Wikibase\DataModel\Term\AliasGroupList;
+use Wikibase\DataModel\Term\OrderedLanguageTextsSet;
+use Wikibase\DataModel\Term\LanguageTextsList;
 use Wikibase\DataModel\Term\Fingerprint;
 use Wikibase\DataModel\Term\Term;
 use Wikibase\DataModel\Term\TermList;
@@ -920,7 +920,7 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 					new Term( 'de', 'bar' ),
 				) ),
 				new TermList( array() ),
-				new AliasGroupList( array() )
+				new LanguageTextsList( array() )
 			),
 			$entity->getFingerprint()
 		);
@@ -941,8 +941,8 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 				new TermList( array(
 					new Term( 'en', 'foo bar' )
 				) ),
-				new AliasGroupList( array(
-					new OrderedTermSet( 'en', array( 'foo', 'bar' ) )
+				new LanguageTextsList( array(
+					new OrderedLanguageTextsSet( 'en', array( 'foo', 'bar' ) )
 				) )
 			),
 			$entity->getFingerprint()
@@ -983,8 +983,8 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 			new TermList( array(
 				new Term( 'en', 'foo bar' )
 			) ),
-			new AliasGroupList( array(
-				new OrderedTermSet( 'en', array( 'foo', 'bar' ) )
+			new LanguageTextsList( array(
+				new OrderedLanguageTextsSet( 'en', array( 'foo', 'bar' ) )
 			) )
 		);
 

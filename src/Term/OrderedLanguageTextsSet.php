@@ -13,7 +13,7 @@ use Countable;
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
-class OrderedTermSet implements Comparable, Countable {
+class OrderedLanguageTextsSet implements LanguageTexts, Comparable, Countable {
 
 	private $languageCode;
 	private $termTexts;
@@ -50,7 +50,7 @@ class OrderedTermSet implements Comparable, Countable {
 	/**
 	 * @return string[]
 	 */
-	public function getTermTexts() {
+	public function getTexts() {
 		return $this->termTexts;
 	}
 
@@ -69,9 +69,9 @@ class OrderedTermSet implements Comparable, Countable {
 	 * @return boolean
 	 */
 	public function equals( $target ) {
-		return $target instanceof OrderedTermSet
+		return $target instanceof OrderedLanguageTextsSet
 			&& $this->languageCode === $target->getLanguageCode()
-			&& $this->arraysAreEqual( $this->termTexts, $target->getTermTexts() );
+			&& $this->arraysAreEqual( $this->termTexts, $target->getTexts() );
 	}
 
 	private function arraysAreEqual( array $a, array $b ) {
