@@ -15,8 +15,8 @@ use Wikibase\DataModel\Claim\Claims;
 use Wikibase\DataModel\Internal\LegacyIdInterpreter;
 use Wikibase\DataModel\Internal\ObjectComparer;
 use Wikibase\DataModel\Snak\Snak;
-use Wikibase\DataModel\Term\AliasGroup;
-use Wikibase\DataModel\Term\AliasGroupList;
+use Wikibase\DataModel\Term\OrderedLanguageTextsSet;
+use Wikibase\DataModel\Term\LanguageTextsList;
 use Wikibase\DataModel\Term\Fingerprint;
 use Wikibase\DataModel\Term\FingerprintProvider;
 use Wikibase\DataModel\Term\Term;
@@ -952,10 +952,10 @@ abstract class Entity implements \Comparable, ClaimAggregate, \Serializable, Fin
 		$groups = array();
 
 		foreach ( $this->getAllAliases() as $languageCode => $aliases ) {
-			$groups[] = new AliasGroup( $languageCode, $aliases );
+			$groups[] = new OrderedLanguageTextsSet( $languageCode, $aliases );
 		}
 
-		return new AliasGroupList( $groups );
+		return new LanguageTextsList( $groups );
 	}
 
 	/**
@@ -970,14 +970,14 @@ abstract class Entity implements \Comparable, ClaimAggregate, \Serializable, Fin
 
 	}
 
-	private function setAliasGroupList( AliasGroupList $list ) {
+	private function setAliasGroupList( LanguageTextsList $list ) {
 		$allAliases = array();
 
 		/**
-		 * @var AliasGroup $aliasGroup
+		 * @var OrderedLanguageTextsSet $aliasGroup
 		 */
 		foreach ( $list as $aliasGroup ) {
-			$allAliases[$aliasGroup->getLanguageCode()] = $aliasGroup->getAliases();
+			$allAliases[$aliasGroup->getLanguageCode()] = $aliasGroup->getTexts();
 		}
 
 		$this->setAllAliases( $allAliases );

@@ -17,7 +17,7 @@ class Fingerprint {
 		return new self(
 			new TermList( array() ),
 			new TermList( array() ),
-			new AliasGroupList( array() )
+			new LanguageTextsList( array() )
 		);
 	}
 
@@ -25,7 +25,7 @@ class Fingerprint {
 	private $descriptions;
 	private $aliases;
 
-	public function __construct( TermList $labels, TermList $descriptions, AliasGroupList $aliases ) {
+	public function __construct( TermList $labels, TermList $descriptions, LanguageTextsList $aliases ) {
 		$this->labels = $labels;
 		$this->descriptions = $descriptions;
 		$this->aliases = $aliases;
@@ -46,7 +46,7 @@ class Fingerprint {
 	}
 
 	/**
-	 * @return AliasGroupList
+	 * @return LanguageTextsList
 	 */
 	public function getAliases() {
 		return $this->aliases;

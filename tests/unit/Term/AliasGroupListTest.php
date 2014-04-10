@@ -2,8 +2,8 @@
 
 namespace Wikibase\DataModel\Term\Test;
 
-use Wikibase\DataModel\Term\AliasGroup;
-use Wikibase\DataModel\Term\AliasGroupList;
+use Wikibase\DataModel\Term\OrderedLanguageTextsSet;
+use Wikibase\DataModel\Term\LanguageTextsList;
 
 /**
  * @covers Wikibase\DataModel\Term\AliasGroupList
@@ -14,62 +14,62 @@ use Wikibase\DataModel\Term\AliasGroupList;
 class AliasGroupListTest extends \PHPUnit_Framework_TestCase {
 
 	public function testGivenNoTerms_sizeIsZero() {
-		$list = new AliasGroupList( array() );
+		$list = new LanguageTextsList( array() );
 		$this->assertCount( 0, $list );
 	}
 
 	public function testGivenTwoTerms_countReturnsTwo() {
-		$list = new AliasGroupList( $this->getTwoGroups() );
+		$list = new LanguageTextsList( $this->getTwoGroups() );
 
 		$this->assertCount( 2, $list );
 	}
 
 	private function getTwoGroups() {
 		return array(
-			'en' => new AliasGroup( 'en', array( 'foo' ) ),
-			'de' => new AliasGroup( 'de', array( 'bar', 'baz' ) ),
+			'en' => new OrderedLanguageTextsSet( 'en', array( 'foo' ) ),
+			'de' => new OrderedLanguageTextsSet( 'de', array( 'bar', 'baz' ) ),
 		);
 	}
 
 	public function testGivenTwoGroups_listContainsThem() {
 		$array = $this->getTwoGroups();
 
-		$list = new AliasGroupList( $array );
+		$list = new LanguageTextsList( $array );
 
 		$this->assertEquals( $array, iterator_to_array( $list ) );
 	}
 
 	public function testGivenGroupsWithTheSameLanguage_onlyTheLastOnesAreRetained() {
 		$array = array(
-			new AliasGroup( 'en', array( 'foo' ) ),
-			new AliasGroup( 'en', array( 'bar' ) ),
+			new OrderedLanguageTextsSet( 'en', array( 'foo' ) ),
+			new OrderedLanguageTextsSet( 'en', array( 'bar' ) ),
 
-			new AliasGroup( 'de', array( 'baz' ) ),
+			new OrderedLanguageTextsSet( 'de', array( 'baz' ) ),
 
-			new AliasGroup( 'nl', array( 'bah' ) ),
-			new AliasGroup( 'nl', array( 'blah' ) ),
-			new AliasGroup( 'nl', array( 'spam' ) ),
+			new OrderedLanguageTextsSet( 'nl', array( 'bah' ) ),
+			new OrderedLanguageTextsSet( 'nl', array( 'blah' ) ),
+			new OrderedLanguageTextsSet( 'nl', array( 'spam' ) ),
 		);
 
-		$list = new AliasGroupList( $array );
+		$list = new LanguageTextsList( $array );
 
 		$this->assertEquals(
 			array(
-				'en' => new AliasGroup( 'en', array( 'bar' ) ),
-				'de' => new AliasGroup( 'de', array( 'baz' ) ),
-				'nl' => new AliasGroup( 'nl', array( 'spam' ) ),
+				'en' => new OrderedLanguageTextsSet( 'en', array( 'bar' ) ),
+				'de' => new OrderedLanguageTextsSet( 'de', array( 'baz' ) ),
+				'nl' => new OrderedLanguageTextsSet( 'nl', array( 'spam' ) ),
 			),
 			iterator_to_array( $list )
 		);
 	}
 
 	public function testCanIterateOverList() {
-		$group = new AliasGroup( 'en', array( 'foo' ) );
+		$group = new OrderedLanguageTextsSet( 'en', array( 'foo' ) );
 
-		$list = new AliasGroupList( array( $group ) );
+		$list = new LanguageTextsList( array( $group ) );
 
 		/**
-		 * @var AliasGroup $aliasGroup
+		 * @var OrderedLanguageTextsSet $aliasGroup
 		 */
 		foreach ( $list as $key => $aliasGroup ) {
 			$this->assertEquals( $group, $aliasGroup );
@@ -79,60 +79,60 @@ class AliasGroupListTest extends \PHPUnit_Framework_TestCase {
 
 	public function testGivenNonAliasGroups_constructorThrowsException() {
 		$this->setExpectedException( 'InvalidArgumentException' );
-		new AliasGroupList( array( $this->getMock( 'Wikibase\DataModel\Term\Term' ) ) );
+		new LanguageTextsList( array( $this->getMock( 'Wikibase\DataModel\Term\Term' ) ) );
 	}
 
 	public function testGivenSetLanguageCode_getByLanguageReturnsGroup() {
-		$enGroup = new AliasGroup( 'en', array( 'foo' ) );
+		$enGroup = new OrderedLanguageTextsSet( 'en', array( 'foo' ) );
 
-		$list = new AliasGroupList( array(
-			new AliasGroup( 'de', array() ),
+		$list = new LanguageTextsList( array(
+			new OrderedLanguageTextsSet( 'de', array() ),
 			$enGroup,
-			new AliasGroup( 'nl', array() ),
+			new OrderedLanguageTextsSet( 'nl', array() ),
 		) );
 
 		$this->assertEquals( $enGroup, $list->getByLanguage( 'en' ) );
 	}
 
 	public function testGivenNonString_getByLanguageThrowsException() {
-		$list = new AliasGroupList( array() );
+		$list = new LanguageTextsList( array() );
 
 		$this->setExpectedException( 'InvalidArgumentException' );
 		$list->getByLanguage( null );
 	}
 
 	public function testGivenNonSetLanguageCode_getByLanguageThrowsException() {
-		$list = new AliasGroupList( array() );
+		$list = new LanguageTextsList( array() );
 
 		$this->setExpectedException( 'OutOfBoundsException' );
 		$list->getByLanguage( 'en' );
 	}
 
 	public function testGivenGroupForNewLanguage_setGroupAddsGroup() {
-		$enGroup = new AliasGroup( 'en', array( 'foo', 'bar' ) );
-		$deGroup = new AliasGroup( 'de', array( 'baz', 'bah' ) );
+		$enGroup = new OrderedLanguageTextsSet( 'en', array( 'foo', 'bar' ) );
+		$deGroup = new OrderedLanguageTextsSet( 'de', array( 'baz', 'bah' ) );
 
-		$list = new AliasGroupList( array( $enGroup ) );
-		$expectedList = new AliasGroupList( array( $enGroup, $deGroup ) );
+		$list = new LanguageTextsList( array( $enGroup ) );
+		$expectedList = new LanguageTextsList( array( $enGroup, $deGroup ) );
 
-		$list->setGroup( $deGroup );
+		$list->setTexts( $deGroup );
 
 		$this->assertEquals( $expectedList, $list );
 	}
 
 	public function testGivenLabelForExistingLanguage_setLabelReplacesLabel() {
-		$enGroup = new AliasGroup( 'en', array( 'foo', 'bar' ) );
-		$newEnGroup = new AliasGroup( 'en', array( 'foo', 'bar', 'bah' ) );
+		$enGroup = new OrderedLanguageTextsSet( 'en', array( 'foo', 'bar' ) );
+		$newEnGroup = new OrderedLanguageTextsSet( 'en', array( 'foo', 'bar', 'bah' ) );
 
-		$list = new AliasGroupList( array( $enGroup ) );
-		$expectedList = new AliasGroupList( array( $newEnGroup ) );
+		$list = new LanguageTextsList( array( $enGroup ) );
+		$expectedList = new LanguageTextsList( array( $newEnGroup ) );
 
-		$list->setGroup( $newEnGroup );
+		$list->setTexts( $newEnGroup );
 		$this->assertEquals( $expectedList, $list );
 	}
 
 	public function testGivenNotSetLanguage_removeByLanguageIsNoOp() {
-		$list = new AliasGroupList( array( new AliasGroup( 'en', array( 'foo', 'bar' ) ) ) );
+		$list = new LanguageTextsList( array( new OrderedLanguageTextsSet( 'en', array( 'foo', 'bar' ) ) ) );
 		$originalList = clone $list;
 
 		$list->removeByLanguage( 'de' );
@@ -141,39 +141,39 @@ class AliasGroupListTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testGivenSetLanguage_removeByLanguageRemovesIt() {
-		$list = new AliasGroupList( array( new AliasGroup( 'en', array( 'foo', 'bar' ) ) ) );
+		$list = new LanguageTextsList( array( new OrderedLanguageTextsSet( 'en', array( 'foo', 'bar' ) ) ) );
 
 		$list->removeByLanguage( 'en' );
 
-		$this->assertEquals( new AliasGroupList( array() ), $list );
+		$this->assertEquals( new LanguageTextsList( array() ), $list );
 	}
 
 	public function testGivenEmptyGroups_constructorRemovesThem() {
-		$enGroup = new AliasGroup( 'en', array( 'foo' ) );
+		$enGroup = new OrderedLanguageTextsSet( 'en', array( 'foo' ) );
 
-		$list = new AliasGroupList( array(
-			new AliasGroup( 'de', array() ),
+		$list = new LanguageTextsList( array(
+			new OrderedLanguageTextsSet( 'de', array() ),
 			$enGroup,
-			new AliasGroup( 'en', array() ),
-			new AliasGroup( 'nl', array() ),
+			new OrderedLanguageTextsSet( 'en', array() ),
+			new OrderedLanguageTextsSet( 'nl', array() ),
 		) );
 
-		$expectedList = new AliasGroupList( array(
-			new AliasGroup( 'en', array() ),
+		$expectedList = new LanguageTextsList( array(
+			new OrderedLanguageTextsSet( 'en', array() ),
 		) );
 
 		$this->assertEquals( $expectedList, $list );
 	}
 
 	public function testGivenEmptyGroup_setGroupRemovesGroup() {
-		$list = new AliasGroupList( array(
-			new AliasGroup( 'en', array( 'foo' ) ),
+		$list = new LanguageTextsList( array(
+			new OrderedLanguageTextsSet( 'en', array( 'foo' ) ),
 		) );
 
-		$expectedList = new AliasGroupList( array() );
+		$expectedList = new LanguageTextsList( array() );
 
-		$list->setGroup( new AliasGroup( 'en', array() ) );
-		$list->setGroup( new AliasGroup( 'de', array() ) );
+		$list->setTexts( new OrderedLanguageTextsSet( 'en', array() ) );
+		$list->setTexts( new OrderedLanguageTextsSet( 'de', array() ) );
 
 		$this->assertEquals( $expectedList, $list );
 	}

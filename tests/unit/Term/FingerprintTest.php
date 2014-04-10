@@ -23,7 +23,7 @@ class FingerprintTest extends \PHPUnit_Framework_TestCase {
 		$this->descriptions = $this->getMockBuilder( 'Wikibase\DataModel\Term\TermList' )
 			->disableOriginalConstructor()->getMock();
 
-		$this->aliases = $this->getMockBuilder( 'Wikibase\DataModel\Term\AliasGroupList' )
+		$this->aliases = $this->getMockBuilder( 'Wikibase\DataModel\Term\LanguageTextsList' )
 			->disableOriginalConstructor()->getMock();
 	}
 

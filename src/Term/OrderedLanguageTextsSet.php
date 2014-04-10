@@ -13,24 +13,24 @@ use Countable;
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
-class AliasGroup implements Comparable, Countable {
+class OrderedLanguageTextsSet implements LanguageTexts, Comparable, Countable {
 
 	private $languageCode;
-	private $aliases;
+	private $termTexts;
 
 	/**
 	 * @param string $languageCode
-	 * @param string[] $aliases
+	 * @param string[] $termTexts
 	 */
-	public function __construct( $languageCode, array $aliases ) {
+	public function __construct( $languageCode, array $termTexts ) {
 		$this->languageCode = $languageCode;
 
-		$this->aliases = array_values(
+		$this->termTexts = array_values(
 			array_filter(
 				array_unique(
 					array_map(
 						'trim',
-						$aliases
+						$termTexts
 					)
 				),
 				function( $string ) {
@@ -50,15 +50,15 @@ class AliasGroup implements Comparable, Countable {
 	/**
 	 * @return string[]
 	 */
-	public function getAliases() {
-		return $this->aliases;
+	public function getTexts() {
+		return $this->termTexts;
 	}
 
 	/**
 	 * @return boolean
 	 */
 	public function isEmpty() {
-		return empty( $this->aliases );
+		return empty( $this->termTexts );
 	}
 
 	/**
@@ -69,9 +69,9 @@ class AliasGroup implements Comparable, Countable {
 	 * @return boolean
 	 */
 	public function equals( $target ) {
-		return $target instanceof AliasGroup
+		return $target instanceof OrderedLanguageTextsSet
 			&& $this->languageCode === $target->getLanguageCode()
-			&& $this->arraysAreEqual( $this->aliases, $target->getAliases() );
+			&& $this->arraysAreEqual( $this->termTexts, $target->getTexts() );
 	}
 
 	private function arraysAreEqual( array $a, array $b ) {
@@ -83,7 +83,7 @@ class AliasGroup implements Comparable, Countable {
 	 * @return int
 	 */
 	public function count() {
-		return count( $this->aliases );
+		return count( $this->termTexts );
 	}
 
 }
