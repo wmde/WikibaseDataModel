@@ -25,7 +25,7 @@ abstract class EntityDiffOldTest extends \PHPUnit_Framework_TestCase {
 				$entity = Item::newEmpty();
 				break;
 			case Property::ENTITY_TYPE:
-				$entity = Property::newEmpty();
+				$entity = Property::newFromType( 'string' );
 				break;
 			default:
 				throw new \RuntimeException( "unknown entity type: $entityType" );
@@ -219,7 +219,5 @@ abstract class EntityDiffOldTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals( $expectedConflicts, $conflicts, "check number of conflicts detected" );
 	}
-
-
 
 }

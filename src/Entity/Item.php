@@ -2,12 +2,20 @@
 
 namespace Wikibase\DataModel\Entity;
 
+use DataValues\Deserializers\DataValueDeserializer;
+use Diff\Comparer\CallbackComparer;
+use Diff\Patcher\MapPatcher;
 use Diff\Patcher\Patcher;
 use InvalidArgumentException;
 use OutOfBoundsException;
+use Wikibase\DataModel\Claim\Claim;
+use Wikibase\DataModel\Claim\Claims;
 use Wikibase\DataModel\Claim\Statement;
 use Wikibase\DataModel\SiteLink;
+use Wikibase\DataModel\SiteLinkList;
 use Wikibase\DataModel\Snak\Snak;
+use Wikibase\DataModel\Term\Fingerprint;
+use Wikibase\InternalSerialization\DeserializerFactory;
 
 /**
  * Represents a single Wikibase item.
@@ -17,18 +25,35 @@ use Wikibase\DataModel\Snak\Snak;
  *
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
- * @author Michał Łazowik
  */
 class Item extends Entity {
 
 	const ENTITY_TYPE = 'item';
 
 	/**
-	 * @since 0.5
-	 *
-	 * @var SiteLink[]|null
+	 * @var SiteLink[]
 	 */
-	protected $siteLinks = null;
+	private $siteLinks;
+
+	/**
+	 * @var Statement[]
+	 */
+	private $statements;
+
+	/**
+	 * @since 0.8
+	 *
+	 * @param ItemId|null $id
+	 * @param Fingerprint $fingerprint
+	 * @param SiteLinkList $links
+	 * @param Statement[] $statements
+	 */
+	public function __construct( ItemId $id = null, Fingerprint $fingerprint, SiteLinkList $links, array $statements ) {
+		$this->id = $id;
+		$this->fingerprint = $fingerprint;
+		$this->siteLinks = iterator_to_array( $links );
+		$this->statements = $statements;
+	}
 
 	/**
 	 * Adds a site link to the list of site links.
@@ -40,16 +65,7 @@ class Item extends Entity {
 	 * @param SiteLink $siteLink
 	 */
 	public function addSiteLink( SiteLink $siteLink ) {
-		$this->unstubSiteLinks();
-		$this->siteLinks[ $siteLink->getSiteId() ] = $siteLink;
-	}
-
-	/**
-	 * @since 0.4
-	 * @deprecated since 0.6, use addSiteLink instead
-	 */
-	public function addSimpleSiteLink( SiteLink $siteLink ) {
-		$this->addSiteLink( $siteLink );
+		$this->siteLinks[$siteLink->getSiteId()] = $siteLink;
 	}
 
 	/**
@@ -65,8 +81,6 @@ class Item extends Entity {
 	 * @return bool Success indicator
 	 */
 	public function removeSiteLink( $siteId, $pageName = false ) {
-		$this->unstubSiteLinks();
-
 		if ( $pageName !== false ) {
 			$success = array_key_exists( $siteId, $this->siteLinks ) && $this->siteLinks[ $siteId ]->getPageName() === $pageName;
 		}
@@ -87,38 +101,7 @@ class Item extends Entity {
 	 * @return SiteLink[]
 	 */
 	public function getSiteLinks() {
-		$this->unstubSiteLinks();
-
-		$links = array();
-
-		foreach ( $this->siteLinks as $link ) {
-			$links[] = $link;
-		}
-
-		return $links;
-	}
-
-	/**
-	 * @since 0.4
-	 * @deprecated since 0.6, use getSiteLinks instead
-	 *
-	 * @return SiteLink[]
-	 */
-	public function getSimpleSiteLinks() {
-		return $this->getSiteLinks();
-	}
-
-	/**
-	 * @since 0.4
-	 * @deprecated since 0.6, use getSiteLink instead
-	 *
-	 * @param string $siteId
-	 *
-	 * @return SiteLink
-	 * @throws OutOfBoundsException
-	 */
-	public function getSimpleSiteLink( $siteId ) {
-		return $this->getSiteLink( $siteId );
+		return $this->siteLinks;
 	}
 
 	/**
@@ -130,8 +113,6 @@ class Item extends Entity {
 	 * @throws OutOfBoundsException
 	 */
 	public function getSiteLink( $siteId ) {
-		$this->unstubSiteLinks();
-
 		if ( !array_key_exists( $siteId, $this->siteLinks ) ) {
 			throw new OutOfBoundsException( "There is no site link with site id $siteId" );
 		}
@@ -147,49 +128,7 @@ class Item extends Entity {
 	 * @return bool
 	 */
 	public function hasLinkToSite( $siteId ) {
-		$this->unstubSiteLinks();
 		return array_key_exists( $siteId, $this->siteLinks );
-	}
-
-	/**
-	 * Unstubs sitelinks from the unserialized data.
-	 *
-	 * @since 0.5
-	 */
-	protected function unstubSiteLinks() {
-		if ( $this->siteLinks === null ) {
-			$this->siteLinks = array();
-
-			foreach ( $this->data['links'] as $siteId => $linkSerialization ) {
-				$this->siteLinks[$siteId] = SiteLink::newFromArray( $siteId, $linkSerialization );
-			}
-		}
-	}
-
-	/**
-	 * Returns the SiteLinks as stubs.
-	 *
-	 * @since 0.5
-	 *
-	 * @return array
-	 */
-	protected function getStubbedSiteLinks() {
-		if ( is_string( reset( $this->data['links'] ) ) ) {
-			// legacy serialization
-			$this->unstubSiteLinks();
-		}
-
-		if ( $this->siteLinks !== null ) {
-			$siteLinks = array();
-
-			foreach ( $this->siteLinks as $siteId => $siteLink ) {
-				$siteLinks[$siteId] = $siteLink->toArray();
-			}
-		} else {
-			$siteLinks = $this->data['links'];
-		}
-
-		return $siteLinks;
 	}
 
 	/**
@@ -198,53 +137,8 @@ class Item extends Entity {
 	 * @return bool
 	 */
 	 public function hasSiteLinks() {
-		if ( $this->siteLinks === null ) {
-			return $this->data['links'] !== array();
-		} else {
-			return !empty( $this->siteLinks );
-		}
+		 return !empty( $this->siteLinks );
 	 }
-
-	/**
-	 * @see Entity::isEmpty
-	 *
-	 * @since 0.1
-	 *
-	 * @return boolean
-	 */
-	public function isEmpty() {
-		return parent::isEmpty()
-			&& !$this->hasSiteLinks();
-	}
-
-	/**
-	 * @see Entity::stub
-	 *
-	 * @since 0.5
-	 */
-	public function stub() {
-		parent::stub();
-		$this->data['links'] = $this->getStubbedSiteLinks();
-	}
-
-	/**
-	 * @see Entity::cleanStructure
-	 *
-	 * @since 0.1
-	 *
-	 * @param boolean $wipeExisting
-	 */
-	protected function cleanStructure( $wipeExisting = false ) {
-		parent::cleanStructure( $wipeExisting );
-
-		foreach ( array( 'links' ) as $field ) {
-			if (  $wipeExisting || !array_key_exists( $field, $this->data ) ) {
-				$this->data[$field] = array();
-			}
-		}
-
-		$this->siteLinks = null;
-	}
 
 	/**
 	 * @see Entity::newFromArray
@@ -256,7 +150,16 @@ class Item extends Entity {
 	 * @return Item
 	 */
 	public static function newFromArray( array $data ) {
-		return new static( $data );
+		return self::getDeserializer()->deserialize( $data );
+	}
+
+	private static function getDeserializer() {
+		$deserializerFactory = new DeserializerFactory(
+			new DataValueDeserializer( $GLOBALS['evilDataValueMap'] ),
+			new BasicEntityIdParser()
+		);
+
+		return $deserializerFactory->newEntityDeserializer();
 	}
 
 	/**
@@ -265,7 +168,12 @@ class Item extends Entity {
 	 * @return Item
 	 */
 	public static function newEmpty() {
-		return self::newFromArray( array() );
+		return new self(
+			null,
+			Fingerprint::newEmpty(),
+			new SiteLinkList( array() ),
+			array()
+		);
 	}
 
 	/**
@@ -309,7 +217,8 @@ class Item extends Entity {
 
 		$array = parent::entityToDiffArray( $entity );
 
-		$array['links'] = $entity->getStubbedSiteLinks();
+		// FIXME 8
+		$array['links'] = array();
 
 		return $array;
 	}
@@ -320,24 +229,49 @@ class Item extends Entity {
 	 * @since 0.4
 	 *
 	 * @param EntityDiff $patch
-	 * @param Patcher $patcher
+	 * @param MapPatcher $patcher
 	 */
-	protected function patchSpecificFields( EntityDiff $patch, Patcher $patcher ) {
+	protected function patchSpecificFields( EntityDiff $patch, MapPatcher $patcher ) {
 		if ( $patch instanceof ItemDiff ) {
-			$siteLinksDiff = $patch->getSiteLinkDiff();
+			$this->patchSiteLinks( $patch, $patcher );
+			$this->patchClaims( $patch, $patcher );
+		}
+	}
 
-			if ( !$siteLinksDiff->isEmpty() ) {
-				$links = $this->getStubbedSiteLinks();
-				$links = $patcher->patch( $links, $siteLinksDiff );
+	private function patchSiteLinks( EntityDiff $patch, MapPatcher $patcher ) {
+		$siteLinksDiff = $patch->getSiteLinkDiff();
 
-				$this->siteLinks = array();
-				foreach ( $links as $siteId => $linkSerialization ) {
-					if ( array_key_exists( 'name', $linkSerialization ) ) {
-						$this->siteLinks[$siteId] = SiteLink::newFromArray( $siteId, $linkSerialization );
-					}
+		if ( !$siteLinksDiff->isEmpty() ) {
+			// FIXME 8
+			$links = array();
+			$links = $patcher->patch( $links, $siteLinksDiff );
+
+			$this->siteLinks = array();
+			foreach ( $links as $siteId => $linkSerialization ) {
+				if ( array_key_exists( 'name', $linkSerialization ) ) {
+					// FIXME 8
+					//$this->siteLinks[$siteId] = SiteLink::newFromArray( $siteId, $linkSerialization );
 				}
 			}
 		}
+	}
+
+	private function patchClaims( EntityDiff $patch, MapPatcher $patcher ) {
+		$patcher->setValueComparer( new CallbackComparer(
+			function( Claim $firstClaim, Claim $secondClaim ) {
+				return $firstClaim->getHash() === $secondClaim->getHash();
+			}
+		) );
+
+		$claims = array();
+
+		foreach ( $this->getClaims() as $claim ) {
+			$claims[$claim->getGuid()] = $claim;
+		}
+
+		$claims = $patcher->patch( $claims, $patch->getClaimsDiff() );
+
+		$this->setClaims( new Claims( $claims ) );
 	}
 
 	/**
@@ -349,6 +283,61 @@ class Item extends Entity {
 	 */
 	protected function idFromSerialization( $idSerialization ) {
 		return new ItemId( $idSerialization );
+	}
+
+	/**
+	 * @see ClaimListAccess::addClaim
+	 *
+	 * @since 0.3
+	 *
+	 * @param Claim $claim
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function addClaim( Claim $claim ) {
+		if ( $claim->getGuid() === null ) {
+			throw new InvalidArgumentException( 'Can\'t add a Claim without a GUID.' );
+		}
+
+		// TODO: ensure guid is valid for entity
+
+		$this->statements[] = $claim;
+	}
+
+	/**
+	 * @see ClaimAggregate::getClaims
+	 *
+	 * @since 0.3
+	 *
+	 * @return Claim[]
+	 */
+	public function getClaims() {
+		return $this->statements;
+	}
+
+	/**
+	 * TODO: change to take Claim[]
+	 *
+	 * @since 0.4
+	 *
+	 * @param Claims $claims
+	 */
+	public function setClaims( Claims $claims ) {
+		$this->statements = iterator_to_array( $claims );
+	}
+
+	/**
+	 * Convenience function to check if the entity contains any claims.
+	 *
+	 * On top of being a convenience function, this implementation allows for doing
+	 * the check without forcing an unstub in contrast to count( $this->getClaims() ).
+	 *
+	 * @since 0.2
+	 *
+	 * @return bool
+	 */
+	public function hasClaims() {
+		return !empty( $this->statements );
 	}
 
 }

@@ -370,42 +370,6 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 		}
 	}
 
-	public function testIsEmpty() {
-		$entity = $this->getNewEmpty();
-
-		$this->assertTrue( $entity->isEmpty() );
-
-		$entity->addAliases( 'en', array( 'ohi' ) );
-
-		$this->assertFalse( $entity->isEmpty() );
-
-		$entity = $this->getNewEmpty();
-		$entity->setDescription( 'en', 'o_O' );
-
-		$this->assertFalse( $entity->isEmpty() );
-
-		$entity = $this->getNewEmpty();
-		$entity->setLabel( 'en', 'o_O' );
-
-		$this->assertFalse( $entity->isEmpty() );
-	}
-
-	public function testClear() {
-		$entity = $this->getNewEmpty();
-
-		$entity->addAliases( 'en', array( 'ohi' ) );
-		$entity->setDescription( 'en', 'o_O' );
-		$entity->setLabel( 'en', 'o_O' );
-
-		$entity->clear();
-
-		$this->assertEmpty( $entity->getLabels(), "labels" );
-		$this->assertEmpty( $entity->getDescriptions(), "descriptions" );
-		$this->assertEmpty( $entity->getAllAliases(), "aliases" );
-
-		$this->assertTrue( $entity->isEmpty() );
-	}
-
 	public static function provideEquals() {
 		return array(
 			array( #0
@@ -502,13 +466,6 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 
 		$entities[] = $entity;
 
-		// With claims
-		$entity = $this->getNewEmpty();
-		$entity->setClaims( new Claims( $this->makeClaims() ) );
-		$entity->setId( 55 );
-
-		$entities[] = $entity;
-
 		$argLists = array();
 
 		foreach ( $entities as $entity ) {
@@ -516,18 +473,6 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 		}
 
 		return $argLists;
-	}
-
-	/**
-	 * @dataProvider instanceProvider
-	 *
-	 * @param Entity $entity
-	 */
-	public function testStub( Entity $entity ) {
-		$copy = $entity->copy();
-		$entity->stub();
-
-		$this->assertTrue( $entity->equals( $copy ) );
 	}
 
 	/**
@@ -879,23 +824,6 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 				}
 			}
 		}
-	}
-
-	/**
-	 * @dataProvider instanceProvider
-	 */
-	public function testArraySerlialzationRoundtrip( Entity $entity ) {
-		$class = get_class( $entity );
-
-		/**
-		 * @var Entity $newEntity
-		 */
-		$newEntity = new $class( $entity->toArray() );
-
-		$entity->stub();
-		$newEntity->stub();
-
-		$this->assertEquals( $entity, $newEntity );
 	}
 
 	public function testWhenNoStuffIsSet_getFingerprintReturnsEmptyFingerprint() {

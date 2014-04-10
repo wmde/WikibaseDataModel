@@ -37,7 +37,7 @@ class PropertyTest extends EntityTest {
 	 * @return Property
 	 */
 	protected function getNewEmpty() {
-		return Property::newEmpty();
+		return Property::newFromType( 'string' );
 	}
 
 	/**

@@ -2,8 +2,10 @@
 
 namespace Wikibase\DataModel\Entity;
 
+use DataValues\Deserializers\DataValueDeserializer;
 use InvalidArgumentException;
-use RuntimeException;
+use Wikibase\DataModel\Term\Fingerprint;
+use Wikibase\InternalSerialization\DeserializerFactory;
 
 /**
  * Represents a single Wikibase property.
@@ -19,6 +21,24 @@ class Property extends Entity {
 	const ENTITY_TYPE = 'property';
 
 	/**
+	 * @var string
+	 */
+	private $dataTypeId;
+
+	/**
+	 * @since 0.8
+	 *
+	 * @param PropertyId|null $id
+	 * @param Fingerprint $fingerprint
+	 * @param string $dataTypeId
+	 */
+	public function __construct( PropertyId $id = null, Fingerprint $fingerprint, $dataTypeId ) {
+		$this->id = $id;
+		$this->fingerprint = $fingerprint;
+		$this->setDataTypeId( $dataTypeId );
+	}
+
+	/**
 	 * @since 0.4
 	 *
 	 * @param string $dataTypeId
@@ -30,22 +50,16 @@ class Property extends Entity {
 			throw new InvalidArgumentException( '$dataTypeId needs to be a string' );
 		}
 
-		$this->data['datatype'] = $dataTypeId;
+		$this->dataTypeId = $dataTypeId;
 	}
 
 	/**
 	 * @since 0.4
 	 *
 	 * @return string
-	 * @throws RuntimeException
 	 */
 	public function getDataTypeId() {
-		if ( array_key_exists( 'datatype', $this->data ) ) {
-			assert( is_string( $this->data['datatype'] ) );
-			return $this->data['datatype'];
-		}
-
-		throw new RuntimeException( 'Cannot obtain the properties DataType as it has not been set' );
+		return $this->dataTypeId;
 	}
 
 	/**
@@ -56,7 +70,7 @@ class Property extends Entity {
 	 * @return string
 	 */
 	public function getType() {
-		return Property::ENTITY_TYPE;
+		return self::ENTITY_TYPE;
 	}
 
 	/**
@@ -69,16 +83,16 @@ class Property extends Entity {
 	 * @return Property
 	 */
 	public static function newFromArray( array $data ) {
-		return new static( $data );
+		return self::getDeserializer()->deserialize( $data );
 	}
 
-	/**
-	 * @deprecated since 0.7.3. Use Property::newFromType
-	 *
-	 * @return Property
-	 */
-	public static function newEmpty() {
-		return self::newFromArray( array() );
+	private static function getDeserializer() {
+		$deserializerFactory = new DeserializerFactory(
+			new DataValueDeserializer( $GLOBALS['evilDataValueMap'] ),
+			new BasicEntityIdParser()
+		);
+
+		return $deserializerFactory->newEntityDeserializer();
 	}
 
 	/**
@@ -89,7 +103,11 @@ class Property extends Entity {
 	 * @return Property
 	 */
 	public static function newFromType( $dataTypeId ) {
-		return self::newFromArray( array( 'datatype' => $dataTypeId ) );
+		return new self(
+			null,
+			Fingerprint::newEmpty(),
+			$dataTypeId
+		);
 	}
 
 	/**

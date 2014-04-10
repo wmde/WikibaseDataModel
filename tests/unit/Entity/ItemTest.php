@@ -93,6 +93,9 @@ class ItemTest extends EntityTest {
 			) )
 		);
 
+		/**
+		 * @var Claim $claim
+		 */
 		foreach ( $claims as $i => $claim ) {
 			$claim->setGuid( "ItemTest\$claim-$i" );
 		}
@@ -124,12 +127,6 @@ class ItemTest extends EntityTest {
 		return Item::newFromArray( $data );
 	}
 
-	public function testConstructor() {
-		$instance = new Item( array() );
-
-		$this->assertInstanceOf( 'Wikibase\Item', $instance );
-	}
-
 	public function testToArray() {
 		/**
 		 * @var Item $item
@@ -153,28 +150,6 @@ class ItemTest extends EntityTest {
 			$item->setId( 42 );
 			$this->assertEquals( new ItemId( 'Q42' ), $item->getId() );
 		}
-	}
-
-	public function testIsEmpty() {
-		parent::testIsEmpty();
-
-		$item = Item::newEmpty();
-		$item->addSiteLink( new SiteLink( 'enwiki', 'Foobar' ) );
-
-		$this->assertFalse( $item->isEmpty() );
-	}
-
-	public function testClear() {
-		parent::testClear(); //NOTE: we must test the Item implementation of the functionality already tested for Entity.
-
-		$item = $this->getNewEmpty();
-
-		$item->addSiteLink( new SiteLink( "enwiki", "Foozzle" ) );
-
-		$item->clear();
-
-		$this->assertEmpty( $item->getSiteLinks(), "sitelinks" );
-		$this->assertTrue( $item->isEmpty() );
 	}
 
 	public function itemProvider() {

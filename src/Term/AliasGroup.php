@@ -4,6 +4,7 @@ namespace Wikibase\DataModel\Term;
 
 use Comparable;
 use Countable;
+use SebastianBergmann\Exporter\Exception;
 
 /**
  * Ordered set of aliases. Immutable value object.
