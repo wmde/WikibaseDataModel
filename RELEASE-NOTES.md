@@ -1,5 +1,43 @@
 # Wikibase DataModel release notes
 
+## Version 1.0 (dev)
+
+#### Breaking changes
+
+Removal of toArray and newFromArray:
+
+* Removed Claim::toArray and Statement::toArray
+* Removed Claim::newFromArray and Statement::newFromArray
+* Removed ReferenceList::toArray and ReferenceList::newFromArray
+* Removed toArray from the References interface
+* Removed SiteLink::toArray and SiteLink::newFromArray
+* Removed toArray from the Snak and Snaks interfaces
+* Removed PropertyValueSnak::toArray
+* Removed SnakList::toArray and SnakList::newFromArray
+* Removed SnakObject::toArray and SnakObject::newFromArray
+* Removed SnakObject::newFromType
+
+Changes in the Entity hierarchy:
+
+* Changed the constructor signature of Item
+* Changed the constructor signature of Property
+* Removed Entity::setClaims
+* Removed Entity::clear
+* Removed Entity::isEmpty
+* Removed Entity::stub
+* Removed Entity::isEmpty
+* Removed Property::newEmpty
+* Entity::removeLabel no longer accepts an array of language codes
+* Entity::removeDescription no longer accepts an array of language codes
+
+Other changes:
+
+* Claim and Statement no longer implement Serializable
+
+#### Additions
+
+* Added AliasGroupList::hasGroupForLanguage
+
 ## Version 0.7.4 (dev)
 
 #### Additions
