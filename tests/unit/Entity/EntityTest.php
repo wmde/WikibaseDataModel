@@ -390,6 +390,32 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 		$this->assertFalse( $entity->isEmpty() );
 	}
 
+	public function testIsEntitled() {
+		$entity = $this->getNewEmpty();
+
+		$this->assertFalse( $entity->isEntitled() );
+
+		$claim = new Claim( new PropertyNoValueSnak( 42 ) );
+		$claim->setGuid( 'claim' );
+		$entity->addClaim( $claim );
+
+		$this->assertFalse( $entity->isEntitled() );
+
+		$entity->addAliases( 'en', array( 'ohi' ) );
+
+		$this->assertTrue( $entity->isEntitled() );
+
+		$entity = $this->getNewEmpty();
+		$entity->setDescription( 'en', 'o_O' );
+
+		$this->assertTrue( $entity->isEntitled() );
+
+		$entity = $this->getNewEmpty();
+		$entity->setLabel( 'en', 'o_O' );
+
+		$this->assertTrue( $entity->isEntitled() );
+	}
+
 	public function testClear() {
 		$entity = $this->getNewEmpty();
 

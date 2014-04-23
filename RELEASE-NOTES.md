@@ -4,6 +4,7 @@
 
 #### Additions
 
+* Added `Entity::isEntitled`
 * Added methods to `Fingerprint`:
 	* `getLabel`
 	* `setLabel`
