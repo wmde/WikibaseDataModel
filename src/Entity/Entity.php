@@ -361,7 +361,7 @@ abstract class Entity implements \Comparable, ClaimAggregate, \Serializable, Fin
 	public function setAliases( $languageCode, array $aliases ) {
 		$aliases = array_diff( $aliases, array( '' ) );
 		$aliases = array_values( array_unique( $aliases ) );
-		if( count( $aliases ) > 0 ) {
+		if( !empty( $aliases ) ) {
 			$this->data['aliases'][$languageCode] = $aliases;
 		} else {
 			unset( $this->data['aliases'][$languageCode] );
@@ -574,19 +574,23 @@ abstract class Entity implements \Comparable, ClaimAggregate, \Serializable, Fin
 	 * @return boolean
 	 */
 	public function isEmpty() {
-		$fields = array( 'label', 'description', 'aliases' );
+		return !$this->isEntitled() && !$this->hasClaims();
+	}
 
-		foreach ( $fields as $field ) {
-			if ( $this->data[$field] !== array() ) {
-				return false;
+	/**
+	 * Returns if the entity contains any label, description or alias.
+	 *
+	 * @since 0.7.4
+	 *
+	 * @return boolean
+	 */
+	public function isEntitled() {
+		foreach ( array( 'label', 'description', 'aliases' ) as $field ) {
+			if ( !empty( $this->data[$field] ) ) {
+				return true;
 			}
 		}
-
-		if ( $this->hasClaims() ) {
-			return false;
-		}
-
-		return true;
+		return false;
 	}
 
 	/**
@@ -760,10 +764,10 @@ abstract class Entity implements \Comparable, ClaimAggregate, \Serializable, Fin
 	 */
 	public function hasClaims() {
 		if ( $this->claims === null ) {
-			return $this->data['claims'] !== array();
+			return !empty( $this->data['claims'] );
 		}
 		else {
-			return count( $this->claims ) > 0;
+			return !empty( $this->claims );
 		}
 	}
 
