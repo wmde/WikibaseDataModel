@@ -3,6 +3,7 @@
 namespace Wikibase\DataModel\Claim;
 
 use InvalidArgumentException;
+use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\Reference;
 use Wikibase\DataModel\ReferenceList;
 use Wikibase\DataModel\References;
@@ -18,32 +19,36 @@ use Wikibase\DataModel\Snak\Snaks;
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
-class Statement extends Claim {
+class Statement {
 
 	/**
-	 * @since 0.1
-	 *
+	 * @var Claim
+	 */
+	private $claim;
+
+	/**
 	 * @var References
 	 */
-	protected $references;
+	private $references;
 
 	/**
-	 * @since 0.1
-	 *
 	 * @var integer, element of the Claim::RANK_ enum
 	 */
-	protected $rank = self::RANK_NORMAL;
+	private $rank;
 
 	/**
-	 * @since 0.1
+	 * @since 1.0
 	 *
-	 * @param Snak $mainSnak
-	 * @param Snaks|null $qualifiers
-	 * @param References|null $references
+	 * @param Claim $claim
+	 * @param References $references
+	 * @param integer $rank Element of the Claim::RANK_ enum
+	 *
+	 * @throws InvalidArgumentException
 	 */
-	public function __construct( Snak $mainSnak, Snaks $qualifiers = null, References $references = null ) {
-		parent::__construct( $mainSnak, $qualifiers );
+	public function __construct( Claim $claim, References $references = null, $rank = Claim::RANK_NORMAL ) {
+		$this->claim = $claim;
 		$this->references = $references === null ? new ReferenceList() : $references;
+		$this->setRank( $rank );
 	}
 
 	/**
@@ -69,6 +74,24 @@ class Statement extends Claim {
 	}
 
 	/**
+	 * @since 1.0
+	 *
+	 * @return Claim
+	 */
+	public function getClaim() {
+		return $this->claim;
+	}
+
+	/**
+	 * @since 1.0
+	 *
+	 * @param Claim $claim
+	 */
+	public function setClaim( Claim $claim ) {
+		$this->claim = $claim;
+	}
+
+	/**
 	 * Sets the rank of the statement.
 	 * The rank is an element of the Claim::RANK_ enum, excluding RANK_TRUTH.
 	 *
@@ -78,7 +101,7 @@ class Statement extends Claim {
 	 * @throws InvalidArgumentException
 	 */
 	public function setRank( $rank ) {
-		$ranks = array( self::RANK_DEPRECATED, self::RANK_NORMAL, self::RANK_PREFERRED );
+		$ranks = array( Claim::RANK_DEPRECATED, Claim::RANK_NORMAL, Claim::RANK_PREFERRED );
 
 		if ( !in_array( $rank, $ranks, true ) ) {
 			throw new InvalidArgumentException( 'Invalid rank specified for statement: ' . var_export( $rank, true ) );
@@ -109,7 +132,7 @@ class Statement extends Claim {
 		return sha1( implode(
 			'|',
 			array(
-				parent::getHash(),
+				$this->claim->getHash(),
 				$this->rank,
 				$this->references->getValueHash(),
 			)
@@ -125,7 +148,7 @@ class Statement extends Claim {
 	 * @return Snak[]
 	 */
 	public function getAllSnaks() {
-		$snaks = parent::getAllSnaks();
+		$snaks = $this->claim->getAllSnaks();
 
 		/* @var Reference $reference */
 		foreach( $this->getReferences() as $reference ) {
@@ -149,8 +172,15 @@ class Statement extends Claim {
 			return false;
 		}
 
-		return $this->claimFieldsEqual( $target )
+		return $this->claim->equals( $target->claim )
 			&& $this->references->equals( $target->getReferences() );
+	}
+
+	/**
+	 * @return PropertyId
+	 */
+	public function getPropertyId() {
+		return $this->claim->getPropertyId();
 	}
 
 }

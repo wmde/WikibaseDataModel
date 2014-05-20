@@ -56,10 +56,10 @@ class ClaimsTest extends \PHPUnit_Framework_TestCase {
 			$guid = 'TEST$statement-' . $this->guidCounter;
 		}
 
-		$claim = new Statement( $mainSnak );
-		$claim->setGuid( $guid );
+		$statement = new Statement( new Claim( $mainSnak ) );
+		$statement->getClaim()->setGuid( $guid );
 
-		return $claim;
+		return $statement;
 	}
 
 	public function testArrayObjectNotConstructedFromObject() {
@@ -516,7 +516,7 @@ class ClaimsTest extends \PHPUnit_Framework_TestCase {
 		$claim4 = $this->makeClaim( new PropertyNoValueSnak( 2 ) );
 
 		$statement0 = $this->makeStatement( new PropertyNoValueSnak( 5 ) );
-		$statement0->setRank( Statement::RANK_PREFERRED );
+		$statement0->setRank( Claim::RANK_PREFERRED );
 
 		$statement1 = $this->makeStatement( new PropertyNoValueSnak( 5 ) );
 		$statement1->setReferences( new ReferenceList( array( new Reference(

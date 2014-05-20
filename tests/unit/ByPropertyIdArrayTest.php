@@ -5,9 +5,9 @@ namespace Wikibase\Test;
 use DataValues\StringValue;
 use ReflectionClass;
 use ReflectionMethod;
-use Wikibase\Claims;
 use Wikibase\DataModel\ByPropertyIdArray;
 use Wikibase\DataModel\Claim\Claim;
+use Wikibase\DataModel\Claim\Claims;
 use Wikibase\DataModel\Claim\Statement;
 use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\Snak\PropertyNoValueSnak;
@@ -80,7 +80,7 @@ class ByPropertyIdArrayTest extends \PHPUnit_Framework_TestCase {
 
 		$lists[] = array_map(
 			function( Snak $snak ) {
-				return new Statement( $snak );
+				return new Statement( new Claim( $snak ) );
 			},
 			$snaks
 		);
