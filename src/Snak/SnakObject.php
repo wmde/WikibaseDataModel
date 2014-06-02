@@ -19,11 +19,9 @@ use Wikibase\DataModel\Entity\PropertyId;
 abstract class SnakObject implements Snak {
 
 	/**
-	 * @since 0.1
-	 *
 	 * @var PropertyId
 	 */
-	protected $propertyId;
+	private $propertyId;
 
 	/**
 	 * Support for passing in an EntityId instance that is not a PropertyId instance has

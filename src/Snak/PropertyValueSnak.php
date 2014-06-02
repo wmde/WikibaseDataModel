@@ -3,6 +3,7 @@
 namespace Wikibase\DataModel\Snak;
 
 use DataValues\DataValue;
+use InvalidArgumentException;
 use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\PropertyId;
 
@@ -16,8 +17,16 @@ use Wikibase\DataModel\Entity\PropertyId;
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author Daniel Kinzler
  */
-class PropertyValueSnak extends SnakObject {
+class PropertyValueSnak implements Snak {
 
+	/**
+	 * @var PropertyId
+	 */
+	private $propertyId;
+
+	/**
+	 * @var DataValue
+	 */
 	private $dataValue;
 
 	/**
@@ -28,10 +37,69 @@ class PropertyValueSnak extends SnakObject {
 	 *
 	 * @param PropertyId|EntityId|integer $propertyId
 	 * @param DataValue $dataValue
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	public function __construct( $propertyId, DataValue $dataValue ) {
-		parent::__construct( $propertyId );
+		if ( is_integer( $propertyId ) ) {
+			$propertyId = PropertyId::newFromNumber( $propertyId );
+		}
+
+		if ( !( $propertyId instanceof EntityId ) ) {
+			throw new InvalidArgumentException( '$propertyId should be a PropertyId' );
+		}
+
+		if ( $propertyId->getEntityType() !== 'property' ) {
+			throw new InvalidArgumentException(
+				'The $propertyId of a property snak can only be an ID of a Property object'
+			);
+		}
+
+		if ( !( $propertyId instanceof PropertyId ) ) {
+			$propertyId = new PropertyId( $propertyId->getSerialization() );
+		}
+
+		$this->propertyId = $propertyId;
 		$this->dataValue = $dataValue;
+	}
+
+	/**
+	 * @see Snak::getPropertyId
+	 *
+	 * @since 0.1
+	 *
+	 * @return PropertyId
+	 */
+	public function getPropertyId() {
+		return $this->propertyId;
+	}
+
+	/**
+	 * @see Snak::getHash
+	 *
+	 * @since 0.1
+	 *
+	 * @return string
+	 */
+	public function getHash() {
+		return sha1( serialize( $this ) );
+	}
+
+	/**
+	 * @see Comparable::equals
+	 *
+	 * @since 0.3
+	 *
+	 * @param mixed $target
+	 *
+	 * @return boolean
+	 */
+	public function equals( $target ) {
+		if ( is_object( $target ) && ( $target instanceof Snak ) ) {
+			return $this->getHash() === $target->getHash();
+		}
+
+		return false;
 	}
 
 	/**
