@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use OutOfBoundsException;
 use Wikibase\DataModel\Claim\Statement;
 use Wikibase\DataModel\SiteLink;
+use Wikibase\DataModel\SiteLinkList;
 use Wikibase\DataModel\Snak\Snak;
 
 /**
@@ -26,22 +27,46 @@ class Item extends Entity {
 	/**
 	 * @since 0.5
 	 *
-	 * @var SiteLink[]|null
+	 * @var SiteLinkList|null
 	 */
 	protected $siteLinks = null;
+
+	/**
+	 * @since 0.8
+	 *
+	 * @return SiteLinkList
+	 */
+	public function getSiteLinkList() {
+		return $this->siteLinks;
+	}
+
+	/**
+	 * @since 0.8
+	 *
+	 * @param SiteLinkList $siteLinks
+	 */
+	public function setSiteLinkList( SiteLinkList $siteLinks ) {
+		$this->siteLinks = $siteLinks;
+	}
 
 	/**
 	 * Adds a site link to the list of site links.
 	 * If there already is a site link with the site id of the provided site link,
 	 * then that one will be overridden by the provided one.
 	 *
+	 * @deprecated since 0.8, use getSiteLinkList and setSiteLinkList instead
 	 * @since 0.6
 	 *
 	 * @param SiteLink $siteLink
 	 */
 	public function addSiteLink( SiteLink $siteLink ) {
 		$this->unstubSiteLinks();
-		$this->siteLinks[ $siteLink->getSiteId() ] = $siteLink;
+
+		if ( $this->siteLinks->hasLinkWithSiteId( $siteLink->getSiteId() ) ) {
+			$this->siteLinks->removeLinkWithSiteId( $siteLink->getSiteId() );
+		}
+
+		$this->siteLinks->addObject( $siteLink );
 	}
 
 	/**
@@ -57,31 +82,18 @@ class Item extends Entity {
 	 * A page name can be provided to have removal only happen when it matches what is set.
 	 * A boolean is returned indicating if a link got removed or not.
 	 *
+	 * @deprecated since 0.8, use getSiteLinkList and setSiteLinkList instead
 	 * @since 0.1
 	 *
 	 * @param string $siteId the target site's id
-	 * @param bool|string $pageName he target page's name (in normalized form)
-	 *
-	 * @return bool Success indicator
 	 */
-	public function removeSiteLink( $siteId, $pageName = false ) {
+	public function removeSiteLink( $siteId ) {
 		$this->unstubSiteLinks();
-
-		if ( $pageName !== false ) {
-			$success = array_key_exists( $siteId, $this->siteLinks ) && $this->siteLinks[ $siteId ]->getPageName() === $pageName;
-		}
-		else {
-			$success = array_key_exists( $siteId, $this->siteLinks );
-		}
-
-		if ( $success ) {
-			unset( $this->siteLinks[ $siteId ] );
-		}
-
-		return $success;
+		$this->siteLinks->removeLinkWithSiteId( $siteId );
 	}
 
 	/**
+	 * @deprecated since 0.8, use getSiteLinkList and setSiteLinkList instead
 	 * @since 0.6
 	 *
 	 * @return SiteLink[]
@@ -123,6 +135,7 @@ class Item extends Entity {
 
 	/**
 	 * @since 0.6
+	 * @deprecated since 0.8, use getSiteLinkList and setSiteLinkList instead
 	 *
 	 * @param string $siteId
 	 *
@@ -131,16 +144,12 @@ class Item extends Entity {
 	 */
 	public function getSiteLink( $siteId ) {
 		$this->unstubSiteLinks();
-
-		if ( !array_key_exists( $siteId, $this->siteLinks ) ) {
-			throw new OutOfBoundsException( "There is no site link with site id $siteId" );
-		}
-
-		return $this->siteLinks[ $siteId ];
+		return $this->siteLinks->getBySiteId( $siteId );
 	}
 
 	/**
 	 * @since 0.4
+	 * @deprecated since 0.8, use getSiteLinkList and setSiteLinkList instead
 	 *
 	 * @param string $siteId
 	 *
@@ -148,7 +157,7 @@ class Item extends Entity {
 	 */
 	public function hasLinkToSite( $siteId ) {
 		$this->unstubSiteLinks();
-		return array_key_exists( $siteId, $this->siteLinks );
+		return $this->siteLinks->hasLinkWithSiteId( $siteId );
 	}
 
 	/**
@@ -158,10 +167,10 @@ class Item extends Entity {
 	 */
 	protected function unstubSiteLinks() {
 		if ( $this->siteLinks === null ) {
-			$this->siteLinks = array();
+			$this->siteLinks = new SiteLinkList();
 
 			foreach ( $this->data['links'] as $siteId => $linkSerialization ) {
-				$this->siteLinks[$siteId] = SiteLink::newFromArray( $siteId, $linkSerialization );
+				$this->siteLinks->addObject( SiteLink::newFromArray( $siteId, $linkSerialization ) );
 			}
 		}
 	}
@@ -182,8 +191,11 @@ class Item extends Entity {
 		if ( $this->siteLinks !== null ) {
 			$siteLinks = array();
 
-			foreach ( $this->siteLinks as $siteId => $siteLink ) {
-				$siteLinks[$siteId] = $siteLink->toArray();
+			/**
+			 * @var SiteLink $siteLink
+			 */
+			foreach ( $this->siteLinks as $siteLink ) {
+				$siteLinks[$siteLink->getSiteId()] = $siteLink->toArray();
 			}
 		} else {
 			$siteLinks = $this->data['links'];
@@ -201,7 +213,7 @@ class Item extends Entity {
 		if ( $this->siteLinks === null ) {
 			return $this->data['links'] !== array();
 		} else {
-			return !empty( $this->siteLinks );
+			return !$this->siteLinks->isEmpty();
 		}
 	 }
 
@@ -330,10 +342,10 @@ class Item extends Entity {
 				$links = $this->getStubbedSiteLinks();
 				$links = $patcher->patch( $links, $siteLinksDiff );
 
-				$this->siteLinks = array();
+				$this->siteLinks = new SiteLinkList();
 				foreach ( $links as $siteId => $linkSerialization ) {
 					if ( array_key_exists( 'name', $linkSerialization ) ) {
-						$this->siteLinks[$siteId] = SiteLink::newFromArray( $siteId, $linkSerialization );
+						$this->addSiteLink( SiteLink::newFromArray( $siteId, $linkSerialization ) );
 					}
 				}
 			}

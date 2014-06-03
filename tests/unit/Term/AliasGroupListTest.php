@@ -7,6 +7,7 @@ use Wikibase\DataModel\Term\AliasGroupList;
 
 /**
  * @covers Wikibase\DataModel\Term\AliasGroupList
+ * @uses Wikibase\DataModel\Term\AliasGroup
  *
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
@@ -79,11 +80,7 @@ class AliasGroupListTest extends \PHPUnit_Framework_TestCase {
 
 	public function testGivenNonAliasGroups_constructorThrowsException() {
 		$this->setExpectedException( 'InvalidArgumentException' );
-
-		$term = $this->getMockBuilder( 'Wikibase\DataModel\Term\Term' )
-			->disableOriginalConstructor()->getMock();
-
-		new AliasGroupList( array( $term ) );
+		new AliasGroupList( array( null ) );
 	}
 
 	public function testGivenSetLanguageCode_getByLanguageReturnsGroup() {
@@ -247,6 +244,31 @@ class AliasGroupListTest extends \PHPUnit_Framework_TestCase {
 	public function testGivenMatchingGroup_hasAliasGroupReturnsTrue() {
 		$list = new AliasGroupList( array( new AliasGroup( 'en', array( 'kittens' ) ) ) );
 		$this->assertTrue( $list->hasAliasGroup( new AliasGroup( 'en', array( 'kittens' ) ) ) );
+	}
+
+	public function testGivenAliasGroupArgs_setGroupTextsSetsAliasGroup() {
+		$list = new AliasGroupList();
+
+		$list->setAliasesForLanguage( 'en', array( 'foo', 'bar' ) );
+
+		$this->assertEquals(
+			new AliasGroup( 'en', array( 'foo', 'bar' ) ),
+			$list->getByLanguage( 'en' )
+		);
+	}
+
+	public function testGivenInvalidLanguageCode_setGroupTextsThrowsException() {
+		$list = new AliasGroupList();
+
+		$this->setExpectedException( 'InvalidArgumentException' );
+		$list->setAliasesForLanguage( null, array( 'foo', 'bar' ) );
+	}
+
+	public function testGivenInvalidAliases_setGroupTextsThrowsException() {
+		$list = new AliasGroupList();
+
+		$this->setExpectedException( 'InvalidArgumentException' );
+		$list->setAliasesForLanguage( 'en', array( 'foo', null ) );
 	}
 
 }

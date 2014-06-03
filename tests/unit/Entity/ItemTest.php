@@ -700,4 +700,15 @@ class ItemTest extends EntityTest {
 		$this->assertEquals( $snak, $statement->getMainSnak() );
 	}
 
+	public function testAddSiteLinkOverridesOldLinks() {
+		$item = Item::newEmpty();
+
+		$item->addSiteLink( new SiteLink( 'kittens', 'foo' ) );
+
+		$newLink = new SiteLink( 'kittens', 'bar' );
+		$item->addSiteLink( $newLink );
+
+		$this->assertTrue( $item->getSiteLinkList()->getBySiteId( 'kittens' )->equals( $newLink ) );
+	}
+
 }

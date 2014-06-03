@@ -76,7 +76,7 @@ class ItemDiffTest extends EntityDiffOldTest {
 			)
 		);
 
-		$b = $a->copy();
+		$b = Item::newEmpty();
 		$b->addSiteLink(
 			new SiteLink(
 				'enwiki',
@@ -103,7 +103,7 @@ class ItemDiffTest extends EntityDiffOldTest {
 			)
 		);
 
-		$b = $a->copy();
+		$b = Item::newEmpty();
 		$b->addSiteLink(
 			new SiteLink(
 				'enwiki',
@@ -127,7 +127,7 @@ class ItemDiffTest extends EntityDiffOldTest {
 			)
 		);
 
-		$b = $a->copy();
+		$b = Item::newEmpty();
 		$b->addSiteLink(
 			new SiteLink(
 				'enwiki',
@@ -180,7 +180,7 @@ class ItemDiffTest extends EntityDiffOldTest {
 			)
 		);
 
-		$b = $a->copy();
+		$b = Item::newEmpty();
 		$b->addSiteLink(
 			new SiteLink(
 				'enwiki',
