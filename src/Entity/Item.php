@@ -66,7 +66,7 @@ class Item extends Entity {
 			$this->siteLinks->removeLinkWithSiteId( $siteLink->getSiteId() );
 		}
 
-		$this->siteLinks->addObject( $siteLink );
+		$this->siteLinks->addSiteLink( $siteLink );
 	}
 
 	/**
@@ -254,8 +254,6 @@ class Item extends Entity {
 				$this->data[$field] = array();
 			}
 		}
-
-		$this->siteLinks = null;
 	}
 
 	/**

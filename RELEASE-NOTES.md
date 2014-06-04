@@ -10,8 +10,8 @@
 #### Additions
 
 * `AliasGroupList::hasGroupForLanguage`
-* `SiteLinkList::add`
-* `SiteLinkList::addObject`
+* `SiteLinkList::addSiteLink`
+* `SiteLinkList::addNewSiteLink`
 * `SiteLinkList::removeLinkWithSiteId`
 * `SiteLinkList::isEmpty`
 * `SiteLinkList::removeLinkWithSiteId`
