@@ -170,7 +170,7 @@ class Item extends Entity {
 			$this->siteLinks = new SiteLinkList();
 
 			foreach ( $this->data['links'] as $siteId => $linkSerialization ) {
-				$this->siteLinks->addObject( SiteLink::newFromArray( $siteId, $linkSerialization ) );
+				$this->siteLinks->addSiteLink( SiteLink::newFromArray( $siteId, $linkSerialization ) );
 			}
 		}
 	}
@@ -254,6 +254,8 @@ class Item extends Entity {
 				$this->data[$field] = array();
 			}
 		}
+
+		$this->siteLinks = null;
 	}
 
 	/**
