@@ -711,4 +711,8 @@ class ItemTest extends EntityTest {
 		$this->assertTrue( $item->getSiteLinkList()->getBySiteId( 'kittens' )->equals( $newLink ) );
 	}
 
+	public function testEmptyItemReturnsEmptySiteLinkList() {
+		$this->assertTrue( Item::newEmpty()->getSiteLinkList()->isEmpty() );
+	}
+
 }
