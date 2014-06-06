@@ -37,6 +37,7 @@ class Item extends Entity {
 	 * @return SiteLinkList
 	 */
 	public function getSiteLinkList() {
+		$this->unstubSiteLinks();
 		return $this->siteLinks;
 	}
 
