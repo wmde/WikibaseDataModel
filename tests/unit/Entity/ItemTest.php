@@ -713,4 +713,15 @@ class ItemTest extends EntityTest {
 		$this->assertCount( 0, $entity->getClaims(), "should be empty again" );
 	}
 
+	public function testAddSiteLinkOverridesOldLinks() {
+		$item = Item::newEmpty();
+
+		$item->addSiteLink( new SiteLink( 'kittens', 'foo' ) );
+
+		$newLink = new SiteLink( 'kittens', 'bar' );
+		$item->addSiteLink( $newLink );
+
+		$this->assertTrue( $item->getSiteLinkList()->getBySiteId( 'kittens' )->equals( $newLink ) );
+	}
+
 }
