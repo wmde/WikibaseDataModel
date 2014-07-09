@@ -498,6 +498,7 @@ abstract class Entity implements \Comparable, ClaimAggregate, \Serializable, Fin
 				$this->data[$field] = array();
 			}
 		}
+		$this->claims = null;
 	}
 
 	/**

@@ -14,6 +14,7 @@ use Wikibase\DataModel\Entity\Entity;
 use Wikibase\DataModel\Entity\EntityDiff;
 use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\Item;
+use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\Internal\ObjectComparer;
 use Wikibase\DataModel\Reference;
 use Wikibase\DataModel\Snak\PropertyNoValueSnak;
@@ -397,11 +398,16 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 		$entity->setDescription( 'en', 'o_O' );
 		$entity->setLabel( 'en', 'o_O' );
 
+		$claim = new Claim( new PropertyNoValueSnak( new PropertyId( 'P42' ) ) );
+		$claim->setGuid( 'foo-bar-foz' );
+		$entity->addClaim( $claim );
+
 		$entity->clear();
 
 		$this->assertEmpty( $entity->getLabels(), "labels" );
 		$this->assertEmpty( $entity->getDescriptions(), "descriptions" );
 		$this->assertEmpty( $entity->getAllAliases(), "aliases" );
+		$this->assertEmpty( $entity->getClaims(), "claims" );
 
 		$this->assertTrue( $entity->isEmpty() );
 	}
