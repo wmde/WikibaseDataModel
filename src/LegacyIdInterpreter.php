@@ -1,6 +1,6 @@
 <?php
 
-namespace Wikibase\DataModel\Internal;
+namespace Wikibase\DataModel;
 
 use InvalidArgumentException;
 use Wikibase\DataModel\Entity\BasicEntityIdParser;

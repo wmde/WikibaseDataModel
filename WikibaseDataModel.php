@@ -12,7 +12,7 @@ if ( defined( 'WIKIBASE_DATAMODEL_VERSION' ) ) {
 	return 1;
 }
 
-define( 'WIKIBASE_DATAMODEL_VERSION', '0.8.1' );
+define( 'WIKIBASE_DATAMODEL_VERSION', '0.8.2' );
 
 // Temporary global to migrate away from DataValueFactory::singleton.
 // It should not be used outside this component and should not be used
@@ -66,3 +66,6 @@ class_alias( 'Wikibase\DataModel\Snak\Snaks', 'Wikibase\Snaks' );
 class_alias( 'Wikibase\DataModel\Entity\ItemDiff', 'Wikibase\ItemDiff' );
 class_alias( 'Wikibase\DataModel\Entity\EntityDiff', 'Wikibase\EntityDiff' );
 class_alias( 'Wikibase\DataModel\SiteLink', 'Wikibase\DataModel\SimpleSiteLink' );
+
+// Aliases introduced in 0.8.2
+class_alias( 'Wikibase\DataModel\LegacyIdInterpreter', 'Wikibase\DataModel\Internal\LegacyIdInterpreter' );

@@ -1,5 +1,12 @@
 # Wikibase DataModel release notes
 
+## Version 0.8.2 (2014-07-25)
+
+* Added `EntityDocument` interface, which is implemented by `Entity`
+* Added `LegacyIdInterpreter`
+* Undeprecated `Entity::isEmpty`
+* Undeprecated `Entity::clear`
+
 ## Version 0.8.1 (2014-06-06)
 
 * Fixed fatal error when calling `Item::getSiteLinkList` on an `Item` right after constructing it

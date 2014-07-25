@@ -12,7 +12,7 @@ use RuntimeException;
 use Wikibase\DataModel\Claim\Claim;
 use Wikibase\DataModel\Claim\ClaimAggregate;
 use Wikibase\DataModel\Claim\Claims;
-use Wikibase\DataModel\Internal\LegacyIdInterpreter;
+use Wikibase\DataModel\LegacyIdInterpreter;
 use Wikibase\DataModel\Internal\ObjectComparer;
 use Wikibase\DataModel\Snak\Snak;
 use Wikibase\DataModel\Term\AliasGroup;
@@ -31,7 +31,7 @@ use Wikibase\DataModel\Term\TermList;
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
-abstract class Entity implements \Comparable, ClaimAggregate, \Serializable, FingerprintProvider {
+abstract class Entity implements \Comparable, ClaimAggregate, \Serializable, FingerprintProvider, EntityDocument {
 
 	/**
 	 * @since 0.1
@@ -560,7 +560,6 @@ abstract class Entity implements \Comparable, ClaimAggregate, \Serializable, Fin
 	/**
 	 * Clears the structure.
 	 *
-	 * @deprecated since 0.7.4
 	 * @since 0.1
 	 */
 	public function clear() {
@@ -570,7 +569,6 @@ abstract class Entity implements \Comparable, ClaimAggregate, \Serializable, Fin
 	/**
 	 * Returns if the entity is empty.
 	 *
-	 * @deprecated since 0.7.4
 	 * @since 0.1
 	 *
 	 * @return boolean
