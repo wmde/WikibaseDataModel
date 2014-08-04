@@ -4,6 +4,7 @@ namespace Wikibase\Test\Snak;
 
 use Exception;
 use ReflectionClass;
+use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\Snak\Snak;
 
 /**
@@ -13,6 +14,7 @@ use Wikibase\DataModel\Snak\Snak;
  *
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
+ * @author Thiemo Mättig
  */
 abstract class SnakObjectTest extends \PHPUnit_Framework_TestCase {
 
@@ -33,7 +35,12 @@ abstract class SnakObjectTest extends \PHPUnit_Framework_TestCase {
 	 *
 	 * @return array
 	 */
-	public abstract function constructorProvider();
+	public function constructorProvider() {
+		return array(
+			array( true, new PropertyId( 'P1' ) ),
+			array( true, new PropertyId( 'P9001' ) ),
+		);
+	}
 
 	/**
 	 * Creates and returns a new instance of the concrete class.
@@ -106,9 +113,27 @@ abstract class SnakObjectTest extends \PHPUnit_Framework_TestCase {
 	 * @dataProvider instanceProvider
 	 */
 	public function testGetHash( Snak $snak ) {
+		$propertiesSerialization = $this->getPropertiesSerialization( $snak );
+		$serialization = sprintf(
+			'C:%d:"%s":%d:{%s}',
+			strlen( $this->getClass() ),
+			$this->getClass(),
+			strlen( $propertiesSerialization ),
+			$propertiesSerialization
+		);
+
+		// XXX: This makes sure the new implementation mimics the old serialize() based one.
+		// This check must be removed when the Snak object serializes differently.
+		$this->assertEquals( serialize( $snak ), $serialization );
+
 		$hash = $snak->getHash();
 		$this->assertInternalType( 'string', $hash );
 		$this->assertEquals( 40, strlen( $hash ) );
+		$this->assertSame( sha1( $serialization ), $hash );
+	}
+
+	protected function getPropertiesSerialization( Snak $snak ) {
+		return sprintf( 'i:%s;', $snak->getPropertyId()->getNumericId() );
 	}
 
 	/**
