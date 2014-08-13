@@ -5,7 +5,7 @@ namespace Wikibase\DataModel\Claim;
 use Comparable;
 use Hashable;
 use InvalidArgumentException;
-use Wikibase\DataModel\Entity\EntityId;
+use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\Snak\Snak;
 use Wikibase\DataModel\Snak\SnakList;
 use Wikibase\DataModel\Snak\Snaks;
@@ -36,7 +36,7 @@ class Claim implements Hashable, Comparable {
 	 *
 	 * @var Snak
 	 */
-	protected $mainSnak;
+	private $mainSnak;
 
 	/**
 	 * The property snaks that are qualifiers for this claim.
@@ -45,14 +45,14 @@ class Claim implements Hashable, Comparable {
 	 *
 	 * @var Snaks
 	 */
-	protected $qualifiers;
+	private $qualifiers;
 
 	/**
 	 * @since 0.2
 	 *
 	 * @var string|null
 	 */
-	protected $guid = null;
+	private $guid = null;
 
 	/**
 	 * Constructor.
@@ -131,7 +131,7 @@ class Claim implements Hashable, Comparable {
 	 *
 	 * @since 0.2
 	 *
-	 * @return EntityId
+	 * @return PropertyId
 	 */
 	public function getPropertyId() {
 		return $this->getMainSnak()->getPropertyId();
@@ -212,7 +212,7 @@ class Claim implements Hashable, Comparable {
 		return $this->claimFieldsEqual( $target );
 	}
 
-	protected function claimFieldsEqual( Claim $target ) {
+	private function claimFieldsEqual( Claim $target ) {
 		return $this->guid === $target->guid
 			&& $this->mainSnak->equals( $target->mainSnak )
 			&& $this->qualifiers->equals( $target->qualifiers );
