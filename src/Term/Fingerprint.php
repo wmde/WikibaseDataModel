@@ -3,6 +3,7 @@
 namespace Wikibase\DataModel\Term;
 
 use Comparable;
+use InvalidArgumentException;
 
 /**
  * @since 0.7.3
