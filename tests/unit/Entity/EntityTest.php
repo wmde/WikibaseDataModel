@@ -564,53 +564,6 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals( $entity->getId(), $instance->getId() );
 	}
 
-	public function oldSerializationProvider() {
-		$serializations = array();
-
-		// Empty item
-		$serializations[] = array(
-			'O:19:"Wikibase\ItemObject":3:{s:13:" * statements";N;s:7:" * data";a:5:{s:5:"label";a:0:{}s:11:"description";a:0:{}s:7:"aliases";a:0:{}s:5:"links";a:0:{}s:10:"statements";a:0:{}}s:5:" * id";b:0;}',
-			null
-		);
-
-		// Id 42, set both in the internal array and the id field
-		$serializations[] = array(
-			'O:19:"Wikibase\ItemObject":3:{s:13:" * statements";N;s:7:" * data";a:6:{s:6:"entity";s:3:"q42";s:5:"label";a:0:{}s:11:"description";a:0:{}s:7:"aliases";a:0:{}s:5:"links";a:0:{}s:10:"statements";a:0:{}}s:5:" * id";i:42;}',
-			42
-		);
-
-		// Id 42, only set as id field
-		$serializations[] = array(
-			'O:19:"Wikibase\ItemObject":3:{s:13:" * statements";N;s:7:" * data";a:5:{s:5:"label";a:0:{}s:11:"description";a:0:{}s:7:"aliases";a:0:{}s:5:"links";a:0:{}s:10:"statements";a:0:{}}s:5:" * id";i:42;}',
-			42
-		);
-
-		return $serializations;
-	}
-
-	/**
-	 * @dataProvider oldSerializationProvider
-	 */
-	public function testUnserializeCompat( $oldSerialization, $expectedId ) {
-		/**
-		 * @var Entity $instance
-		 */
-		$instance = unserialize( $oldSerialization );
-
-		if ( $expectedId === null ) {
-			$thisData = $instance->toArray();
-			$thatData = Item::newEmpty()->toArray();
-
-			$comparer = new ObjectComparer();
-			$equals = $comparer->dataEquals( $thisData, $thatData, array( 'entity' ) );
-
-			$this->assertTrue( $equals );
-		}
-		else {
-			$this->assertEquals( $expectedId, $instance->getId()->getNumericId() );
-		}
-	}
-
 	/**
 	 * @dataProvider instanceProvider
 	 *
