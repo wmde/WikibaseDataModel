@@ -1,6 +1,6 @@
 # Wikibase DataModel release notes
 
-## Version 0.9.1 (in development)
+## Version 0.9.1 (2014-08-25)
 
 * Fixed fatal error: Can't inherit abstract function EntityDocument::getType() (previously declared abstract in Entity)
 
