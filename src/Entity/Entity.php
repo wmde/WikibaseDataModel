@@ -61,15 +61,6 @@ abstract class Entity implements \Comparable, ClaimAggregate, \Serializable, Fin
 	protected $claims;
 
 	/**
-	 * Returns a type identifier for the entity.
-	 *
-	 * @since 0.1
-	 *
-	 * @return string
-	 */
-	public abstract function getType();
-
-	/**
 	 * Constructor.
 	 * Do not use to construct new stuff from outside of this class, use the static newFoobar methods.
 	 * In other words: treat as protected (which it was, but now cannot be since we derive from Content).
