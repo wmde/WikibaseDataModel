@@ -1,5 +1,9 @@
 # Wikibase DataModel release notes
 
+## Version 0.9.1 (2014-08-26)
+
+* Fixed error caused by redeclaration of getType in `Entity`, after it already got defined in `EntityDocument`
+
 ## Version 0.9 (2014-08-15)
 
 * Changed the signatures of `setLabel`, `setDescription` and `setAliasGroup` in `Fingerprint`
