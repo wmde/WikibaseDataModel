@@ -4,11 +4,9 @@ namespace Wikibase\DataModel\Statement;
 
 use InvalidArgumentException;
 use Wikibase\DataModel\Claim\Claim;
-use Wikibase\DataModel\Reference;
 use Wikibase\DataModel\ReferenceList;
 use Wikibase\DataModel\References;
 use Wikibase\DataModel\Snak\Snak;
-use Wikibase\DataModel\Snak\Snaks;
 
 /**
  * Class representing a Wikibase statement.
@@ -18,6 +16,7 @@ use Wikibase\DataModel\Snak\Snaks;
  *
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
+ * @author Bene* < benestar.wikimedia@gmail.com >
  */
 class Statement extends Claim {
 
@@ -31,15 +30,9 @@ class Statement extends Claim {
 	 */
 	private $rank = self::RANK_NORMAL;
 
-	/**
-	 * @since 0.1
-	 *
-	 * @param Snak $mainSnak
-	 * @param Snaks|null $qualifiers
-	 * @param References|null $references
-	 */
-	public function __construct( Snak $mainSnak, Snaks $qualifiers = null, References $references = null ) {
-		parent::__construct( $mainSnak, $qualifiers );
+	public function __construct( Claim $claim, References $references = null ) {
+		parent::__construct( $claim->getMainSnak(), $claim->getQualifiers() );
+		$this->setGuid( $claim->getGuid() );
 		$this->references = $references === null ? new ReferenceList() : $references;
 	}
 

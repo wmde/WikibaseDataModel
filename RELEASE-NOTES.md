@@ -2,6 +2,10 @@
 
 ## Version 1.1 (dev)
 
+#### Breaking changes
+
+* Changed the constructor signature of `Statement`
+
 #### Additions
 
 * The `Property` constructor now accepts an optional `StatementList` parameter
