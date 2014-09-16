@@ -31,8 +31,7 @@ class Statement extends Claim {
 	private $rank = self::RANK_NORMAL;
 
 	public function __construct( Claim $claim, References $references = null ) {
-		parent::__construct( $claim->getMainSnak(), $claim->getQualifiers() );
-		$this->setGuid( $claim->getGuid() );
+		$this->setClaim( $claim );
 		$this->references = $references === null ? new ReferenceList() : $references;
 	}
 
@@ -141,6 +140,17 @@ class Statement extends Claim {
 
 		return $this->claimFieldsEqual( $target )
 			&& $this->references->equals( $target->references );
+	}
+
+	/**
+	 * @since 1.1
+	 *
+	 * @param Claim $claim
+	 */
+	public function setClaim( Claim $claim ) {
+		$this->mainSnak = $claim->getMainSnak();
+		$this->qualifiers = $claim->getQualifiers();
+		$this->guid = $claim->getGuid();
 	}
 
 	/**
