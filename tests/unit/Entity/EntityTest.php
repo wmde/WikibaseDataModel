@@ -6,12 +6,12 @@ use Diff\DiffOp\Diff\Diff;
 use Diff\DiffOp\DiffOpAdd;
 use Diff\DiffOp\DiffOpChange;
 use Diff\DiffOp\DiffOpRemove;
-use Wikibase\DataModel\Statement\Statement;
+use Wikibase\DataModel\Claim\Claim;
 use Wikibase\DataModel\Entity\Diff\EntityDiff;
 use Wikibase\DataModel\Entity\Entity;
 use Wikibase\DataModel\Entity\Item;
-use Wikibase\DataModel\Reference;
 use Wikibase\DataModel\Snak\PropertyNoValueSnak;
+use Wikibase\DataModel\Statement\Statement;
 use Wikibase\DataModel\Term\AliasGroup;
 use Wikibase\DataModel\Term\AliasGroupList;
 use Wikibase\DataModel\Term\Fingerprint;
@@ -441,7 +441,7 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 		}
 
 		$snak = new PropertyNoValueSnak( 42 );
-		$claim = new Statement( $snak );
+		$claim = new Statement( new Claim( $snak ) );
 		$claim->setGuid( 'q42$foobarbaz' );
 
 		$this->assertInstanceOf( 'Wikibase\DataModel\Claim\Claim', $claim );

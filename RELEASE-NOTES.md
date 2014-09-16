@@ -2,11 +2,16 @@
 
 ## Version 1.1 (dev)
 
+#### Breaking changes
+
+* Changed the constructor signature of `Statement`
+
 #### Additions
 
 * The `Property` constructor now accepts an optional `StatementList` parameter
 * Added `Property::getStatements` and `Property::setStatements`
 * Added `StatementList::getAllSnaks` to use instead of `Entity::getAllSnaks`
+* Added `Statement::setClaim`
 
 ## Version 1.0 (2014-09-02)
 

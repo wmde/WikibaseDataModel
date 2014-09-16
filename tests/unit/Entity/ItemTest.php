@@ -63,8 +63,7 @@ class ItemTest extends EntityTest {
 		$claims[] = new Claim( new PropertyNoValueSnak( 42 ) );
 
 		$claims[] = new Statement(
-			new PropertyNoValueSnak( 42 ),
-			null,
+			new Claim( new PropertyNoValueSnak( 42 ), null ),
 			new ReferenceList( array(
 				new Reference( new SnakList( array(
 					new PropertyNoValueSnak( 24 ),
@@ -154,9 +153,9 @@ class ItemTest extends EntityTest {
 		 * @var Item $item;
 		 */
 		$item = $item->copy();
-		$item->addClaim( new Statement(
+		$item->addClaim( new Statement( new Claim(
 			new PropertyNoValueSnak( new PropertyId( 'P42' ) )
-		) );
+		) ) );
 		$items[] = $item;
 
 		$argLists = array();
@@ -448,10 +447,10 @@ class ItemTest extends EntityTest {
 	public function patchProvider() {
 		$argLists = parent::patchProvider();
 
-		$statement0 = new Statement( new PropertyNoValueSnak( 42 ) );
-		$statement1 = new Statement( new PropertySomeValueSnak( 42 ) );
-		$statement2 = new Statement( new PropertyValueSnak( 42, new StringValue( 'ohi' ) ) );
-		$statement3 = new Statement( new PropertyNoValueSnak( 1 ) );
+		$statement0 = new Statement( new Claim( new PropertyNoValueSnak( 42 ) ) );
+		$statement1 = new Statement( new Claim( new PropertySomeValueSnak( 42 ) ) );
+		$statement2 = new Statement( new Claim( new PropertyValueSnak( 42, new StringValue( 'ohi' ) ) ) );
+		$statement3 = new Statement( new Claim( new PropertyNoValueSnak( 1 ) ) );
 
 		$statement0->setGuid( 'claim0' );
 		$statement1->setGuid( 'claim1' );
@@ -698,10 +697,10 @@ class ItemTest extends EntityTest {
 	public function testSetClaims() {
 		$item = Item::newEmpty();
 
-		$statement0 = new Statement( new PropertyNoValueSnak( 42 ) );
+		$statement0 = new Statement( new Claim( new PropertyNoValueSnak( 42 ) ) );
 		$statement0->setGuid( 'TEST$NVS42' );
 
-		$statement1 = new Statement( new PropertySomeValueSnak( 42 ) );
+		$statement1 = new Statement( new Claim( new PropertySomeValueSnak( 42 ) ) );
 		$statement1->setGuid( 'TEST$SVS42' );
 
 		$statements = array( $statement0, $statement1 );
@@ -765,7 +764,7 @@ class ItemTest extends EntityTest {
 	}
 
 	private function newStatement() {
-		$statement = new Statement( new PropertyNoValueSnak( 42 ) );
+		$statement = new Statement( new Claim( new PropertyNoValueSnak( 42 ) ) );
 		$statement->setGuid( 'kittens' );
 		return $statement;
 	}
@@ -787,7 +786,7 @@ class ItemTest extends EntityTest {
 	}
 
 	public function testCanConstructWithStatementList() {
-		$statement = new Statement( new PropertyNoValueSnak( 42 ) );
+		$statement = new Statement( new Claim( new PropertyNoValueSnak( 42 ) ) );
 		$statement->setGuid( 'meh' );
 
 		$statements = new StatementList( array( $statement ) );

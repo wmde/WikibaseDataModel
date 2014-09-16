@@ -6,10 +6,11 @@ use Diff\DiffOp\Diff\Diff;
 use Diff\DiffOp\DiffOpAdd;
 use Diff\DiffOp\DiffOpChange;
 use Diff\DiffOp\DiffOpRemove;
-use Wikibase\DataModel\Statement\Statement;
+use Wikibase\DataModel\Claim\Claim;
 use Wikibase\DataModel\Entity\Diff\ItemDiffer;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Snak\PropertySomeValueSnak;
+use Wikibase\DataModel\Statement\Statement;
 
 /**
  * @covers Wikibase\DataModel\Entity\Diff\ItemDiffer
@@ -61,7 +62,7 @@ class ItemDifferTest extends \PHPUnit_Framework_TestCase {
 		$firstItem = Item::newEmpty();
 
 		$secondItem = Item::newEmpty();
-		$statement = new Statement( new PropertySomeValueSnak( 42 ) );
+		$statement = new Statement( new Claim( new PropertySomeValueSnak( 42 ) ) );
 		$statement->setGuid( 'kittens' );
 		$secondItem->addClaim( $statement );
 
