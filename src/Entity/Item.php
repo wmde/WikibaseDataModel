@@ -258,7 +258,7 @@ class Item extends Entity {
 				$this->patchSiteLinks( $patch->getSiteLinkDiff() );
 			}
 
-			$this->patchClaims( $patch );
+			$this->patchStatements( $patch );
 		}
 	}
 
@@ -307,24 +307,24 @@ class Item extends Entity {
 		return $links;
 	}
 
-	private function patchClaims( ItemDiff $patch ) {
+	private function patchStatements( ItemDiff $patch ) {
 		$patcher = new MapPatcher();
 
 		$patcher->setValueComparer( new CallbackComparer(
-			function( Claim $firstClaim, Claim $secondClaim ) {
-				return $firstClaim->equals( $secondClaim );
+			function( Statement $firstStatement, Statement $secondStatement ) {
+				return $firstStatement->equals( $secondStatement );
 			}
 		) );
 
-		$claims = array();
+		$statements = array();
 
-		foreach ( $this->getClaims() as $claim ) {
-			$claims[$claim->getGuid()] = $claim;
+		foreach ( $this->getStatements() as $statement ) {
+			$statements[$statement->getGuid()] = $statement;
 		}
 
-		$claims = $patcher->patch( $claims, $patch->getClaimsDiff() );
+		$statements = $patcher->patch( $statements, $patch->getClaimsDiff() );
 
-		$this->setClaims( new Claims( $claims ) );
+		$this->setStatements( new StatementList( $statements ) );
 	}
 
 	/**
