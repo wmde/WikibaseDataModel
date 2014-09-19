@@ -271,18 +271,26 @@ class Item extends Entity {
 		$this->siteLinks = new SiteLinkList();
 
 		foreach ( $links as $siteId => $linkData ) {
-			if ( array_key_exists( 'name', $linkData ) ) {
-				$this->siteLinks->addSiteLink( new SiteLink(
-					$siteId,
-					$linkData['name'],
-					array_map(
-						function( $idSerialization ) {
-							return new ItemId( $idSerialization );
-						},
-						$linkData['badges']
-					)
-				) );
+			if ( !isset( $linkData['name'] ) ) {
+				continue;
 			}
+
+			$badges = array();
+
+			if ( is_array( $linkData['badges'] ) ) {
+				$badges = array_map(
+					function( $idSerialization ) {
+						return new ItemId( $idSerialization );
+					},
+					$linkData['badges']
+				);
+			}
+
+			$this->siteLinks->addSiteLink( new SiteLink(
+				$siteId,
+				$linkData['name'],
+				$badges
+			) );
 		}
 	}
 
