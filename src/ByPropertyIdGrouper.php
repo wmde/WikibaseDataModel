@@ -20,7 +20,7 @@ class ByPropertyIdGrouper {
 	/**
 	 * @var PropertyIdProvider[][]
 	 */
-	private $byPropertyId = array();
+	private $byPropertyId;
 
 	/**
 	 * @param PropertyIdProvider[] $propertyIdProviders
@@ -44,6 +44,8 @@ class ByPropertyIdGrouper {
 	}
 
 	private function indexPropertyIdProviders( $propertyIdProviders ) {
+		$this->byPropertyId = array();
+
 		foreach ( $propertyIdProviders as $propertyIdProvider ) {
 			$this->addPropertyIdProvider( $propertyIdProvider );
 		}
@@ -60,7 +62,7 @@ class ByPropertyIdGrouper {
 	}
 
 	/**
-	 * Returns all property ids which were found.
+	 * Returns all PropertyId instances which were found.
 	 *
 	 * @since 1.1
 	 *
@@ -85,11 +87,11 @@ class ByPropertyIdGrouper {
 	 * @return PropertyIdProvider[]
 	 * @throws OutOfBoundsException
 	 */
-	public function getByPropertyId( PropertyId $propertyId ) {
+	public function getForPropertyId( PropertyId $propertyId ) {
 		$idSerialization = $propertyId->getSerialization();
 
 		if ( !isset( $this->byPropertyId[$idSerialization] ) ) {
-			throw new OutOfBoundsException( 'Property id does not exist.' );
+			throw new OutOfBoundsException( 'Could not find the given PropertyId.' );
 		}
 
 		return $this->byPropertyId[$idSerialization];
@@ -103,7 +105,7 @@ class ByPropertyIdGrouper {
 	 * @param PropertyId $propertyId
 	 * @return boolean
 	 */
-	public function hasPropertyId( PropertyId $propertyId ) {
+	public function hasForPropertyId( PropertyId $propertyId ) {
 		return isset( $this->byPropertyId[$propertyId->getSerialization()] );
 	}
 
