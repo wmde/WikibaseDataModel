@@ -14,6 +14,19 @@ use Wikibase\DataModel\Snak\Snak;
  */
 class ByPropertyIdArrayNewTest extends \PHPUnit_Framework_TestCase {
 
+	public function testGetFlatArray() {
+		$byPropertyIdArray = $this->getByPropertyIdArray();
+		$expectedTypes = array( 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' );
+		$this->assertEquals( $expectedTypes, $this->getTypes( $byPropertyIdArray->getFlatArray() ) );
+	}
+
+	public function testGetIndex() {
+		$byPropertyIdArray = $this->getByPropertyIdArray();
+		$propertyIdProvider = $this->getSnakMock( 'P42', 'foo bar' );
+		$byPropertyIdArray->addAtIndex( $propertyIdProvider, 1 );
+		$this->assertEquals( 1, $byPropertyIdArray->getIndex( $propertyIdProvider ) );
+	}
+
 	public function provideAddAtIndex() {
 		$cases = array();
 
@@ -56,10 +69,7 @@ class ByPropertyIdArrayNewTest extends \PHPUnit_Framework_TestCase {
 	public function testAddAtIndex( PropertyIdProvider $propertyIdProvider, $index, $expectedTypes ) {
 		$byPropertyIdArray = $this->getByPropertyIdArray();
 		$byPropertyIdArray->addAtIndex( $propertyIdProvider, $index );
-		$types = array_map( function( Snak $snak ) {
-			return $snak->getType();
-		}, $byPropertyIdArray->getFlatArray() );
-		$this->assertEquals( $expectedTypes, $types );
+		$this->assertEquals( $expectedTypes, $this->getTypes( $byPropertyIdArray->getFlatArray() ) );
 	}
 
 	private function getByPropertyIdArray() {
@@ -73,6 +83,12 @@ class ByPropertyIdArrayNewTest extends \PHPUnit_Framework_TestCase {
 			$this->getSnakMock( 'P4', 'g' ),
 			$this->getSnakMock( 'P4', 'h' )
 		) );
+	}
+
+	private function getTypes( array $snaks ) {
+		return array_map( function( Snak $snak ) {
+			return $snak->getType();
+		}, $snaks );
 	}
 
 	/**
