@@ -52,6 +52,26 @@ class ByPropertyIdArrayNew {
 	}
 
 	/**
+	 * Returns the index of the given PropertyIdPovider in the flat array.
+	 *
+	 * @since 1.1
+	 *
+	 * @param PropertyIdProvider $propertyIdProvider
+	 * @return int
+	 *
+	 * @throws OutOfBoundsException
+	 */
+	public function getIndex( PropertyIdProvider $propertyIdProvider ) {
+		$index = array_search( $propertyIdProvider, $this->flatArray, true );
+
+		if ( $index === false ) {
+			throw new OutOfBoundsException( 'The given PropertyIdProvider was not found.' );
+		}
+
+		return $index;
+	}
+
+	/**
 	 * Adds the given PropertyIdProvider to the array at the given index.
 	 *
 	 * @since 1.1
@@ -109,7 +129,22 @@ class ByPropertyIdArrayNew {
 	}
 
 	/**
-	 * Moves the PropertyIdProvider from the old to the new index and returns it.
+	 * Removes the given PropertyIdProvider and returns it.
+	 *
+	 * @since 1.1
+	 * 
+	 * @param PropertyIdProvider $propertyIdProvider
+	 * @return PropertyIdProvider
+	 *
+	 * @throws InvalidArgumentException
+	 * @throws OutOfBoundsException
+	 */
+	public function removeObject( PropertyIdProvider $propertyIdProvider ) {
+		return $this->removeAtIndex( $this->getIndex( $propertyIdProvider ) );
+	}
+
+	/**
+	 * Moves a PropertyIdProvider from the old to the new index and returns it.
 	 *
 	 * @since 1.1
 	 *
@@ -128,6 +163,22 @@ class ByPropertyIdArrayNew {
 		$this->addAtIndex( $object, $newIndex );
 
 		return $object;
+	}
+
+	/**
+	 * Moves the given PropertyIdProvider to the new index and returns it.
+	 *
+	 * @since 1.1
+	 *
+	 * @param PropertyIdProvider $propertyIdProvider
+	 * @param int $index
+	 * @return PropertyIdProvider
+	 *
+	 * @throws InvalidArgumentException
+	 * @throws OutOfBoundsException
+	 */
+	public function moveObject( PropertyIdProvider $propertyIdProvider, $index ) {
+		return $this->moveToIndex( $this->getIndex( $propertyIdProvider ), $index );
 	}
 
 	/**
