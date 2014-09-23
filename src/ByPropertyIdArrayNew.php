@@ -6,7 +6,7 @@ use InvalidArgumentException;
 use OutOfBoundsException;
 
 /**
- * Description of ByPropertyIdArrayNew
+ * Helper for managing objects grouped by property id.
  *
  * @since 1.1
  *
@@ -27,6 +27,7 @@ class ByPropertyIdArrayNew {
 
 	/**
 	 * @param PropertyIdProvider[] $propertyIdProviders
+	 *
 	 * @throws InvalidArgumentException
 	 */
 	public function __construct( array $propertyIdProviders ) {
@@ -37,10 +38,6 @@ class ByPropertyIdArrayNew {
 			$propertyIdProviders = $this->byPropertyIdGrouper->getForPropertyId( $propertyId );
 			$this->flatArray = array_merge( $this->flatArray, $propertyIdProviders );
 		}
-	}
-
-	private function updatePropertySuggester() {
-		$this->byPropertyIdGrouper = new ByPropertyIdGrouper( $this->flatArray );
 	}
 
 	/**
@@ -55,9 +52,15 @@ class ByPropertyIdArrayNew {
 	}
 
 	/**
-	 * 
+	 * Adds the given PropertyIdProvider to the array at the given index.
+	 *
+	 * @since 1.1
+	 *
 	 * @param PropertyIdProvider $propertyIdProvider
-	 * @param integer $index
+	 * @param int $index
+	 *
+	 * @throws InvalidArgumentException
+	 * @throws OutOfBoundsException
 	 */
 	public function addAtIndex( PropertyIdProvider $propertyIdProvider, $index ) {
 		$this->assertValidIndex( $index );
@@ -82,27 +85,40 @@ class ByPropertyIdArrayNew {
 		}
 
 		$this->addtoFlatArray( $propertyIdProvider, $index ); 
-
-		$this->updatePropertySuggester();
+		$this->byPropertyIdGrouper = new ByPropertyIdGrouper( $this->flatArray );
 	}
 
 	/**
-	 * 
-	 * @param integer $index
+	 * Removes the PropertyIdProvider at the given index and returns it.
+	 *
+	 * @since 1.1
+	 *
+	 * @param int $index
+	 * @return PropertyIdProvider
+	 *
+	 * @throws InvalidArgumentException
+	 * @throws OutOfBoundsException
 	 */
 	public function removeAtIndex( $index ) {
 		$this->assertValidIndex( $index );
 
 		$object = $this->removeFromFlatArray( $index );
-		$this->updatePropertySuggester();
+		$this->byPropertyIdGrouper = new ByPropertyIdGrouper( $this->flatArray );
 
 		return $object;
 	}
 
 	/**
-	 * 
-	 * @param integer $oldIndex
-	 * @param integer $newIndex
+	 * Moves the PropertyIdProvider from the old to the new index and returns it.
+	 *
+	 * @since 1.1
+	 *
+	 * @param int $oldIndex
+	 * @param int $newIndex
+	 * @return PropertyIdProvider
+	 *
+	 * @throws InvalidArgumentException
+	 * @throws OutOfBoundsException
 	 */
 	public function moveToIndex( $oldIndex, $newIndex ) {
 		$this->assertValidIndex( $oldIndex );
@@ -110,25 +126,56 @@ class ByPropertyIdArrayNew {
 
 		$object = $this->removeAtIndex( $oldIndex );
 		$this->addAtIndex( $object, $newIndex );
+
+		return $object;
 	}
 
+	/**
+	 * Adds the object at the given index.
+	 * @see array_splice
+	 *
+	 * @param PropertyIdProvider $propertyIdProvider
+	 * @param int $index
+	 */
 	private function addtoFlatArray( PropertyIdProvider $propertyIdProvider, $index ) {
 		array_splice( $this->flatArray, $index, 0, array( $propertyIdProvider ) );
 	}
 
+	/**
+	 * Removes the object at the given index and returns it.
+	 * @see array_splice
+	 *
+	 * @param int $index
+	 * @return PropertyIdProvider
+	 */
 	private function removeFromFlatArray( $index ) {
 		return array_splice( $this->flatArray, $index, 1 )[0];
 	}
 
-	private function moveGroupInFlatArray( $start, $length, $to ) {
-		if ( $start < $to ) {
-			$to = $to - $length;
+	/**
+	 * Moves a list of objects with the given length from the start to the target index.
+	 * @see array_splice
+	 *
+	 * @param int $start
+	 * @param int $length
+	 * @param int $target
+	 */
+	private function moveGroupInFlatArray( $start, $length, $target ) {
+		// make sure we do not exceed the limits
+		if ( $start < $target ) {
+			$target = $target - $length;
 		}
 
 		$objects = array_splice( $this->flatArray, $start, $length );
-		array_splice( $this->flatArray, $to, 0, $objects );
+		array_splice( $this->flatArray, $target, 0, $objects );
 	}
 
+	/**
+	 * Finds the next index in the flat array which starts a new PropertyId group.
+	 *
+	 * @param int $index
+	 * @return int
+	 */
 	private function findNextIndex( $index ) {
 		$groupIndices = $this->getFlatArrayGroupIndices();
 
@@ -141,6 +188,11 @@ class ByPropertyIdArrayNew {
 		return count( $this->flatArray );
 	}
 
+	/**
+	 * Finds all indeces where a new PropertyId group starts.
+	 *
+	 * @return int[]
+	 */
 	private function getFlatArrayGroupIndices() {
 		$indices = array();
 		$index = 0;
@@ -153,12 +205,20 @@ class ByPropertyIdArrayNew {
 		return $indices;
 	}
 
+	/**
+	 * Asserts that the given paramter is a valid index.
+	 *
+	 * @param int $index
+	 *
+	 * @throws InvalidArgumentException
+	 * @throws OutOfBoundsException
+	 */
 	private function assertValidIndex( $index ) {
 		if ( !is_int( $index ) ) {
 			throw new InvalidArgumentException( 'Only integer indices are supported.' );
 		}
 
-		if ( $index < 0 || $index >= count( $this->flatArray ) ) {
+		if ( $index < 0 || $index > count( $this->flatArray ) ) {
 			throw new OutOfBoundsException( 'The index exceeds the array dimensions.' );
 		}
 	}
