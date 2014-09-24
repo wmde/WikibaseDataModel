@@ -16,6 +16,10 @@
 * The `Reference` constructor now accepts a `Snak` array
 * Added `ReferenceList::addNewReference`
 
+#### Deprecations
+
+* Deprecated `ByPropertyIdArray::buildIndex`, `ByPropertyIdArray::getByPropertyId` and `ByPropertyIdArray::getPropertyIds`
+
 ## Version 1.0 (2014-09-02)
 
 #### Breaking changes

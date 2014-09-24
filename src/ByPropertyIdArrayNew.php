@@ -4,6 +4,7 @@ namespace Wikibase\DataModel;
 
 use InvalidArgumentException;
 use OutOfBoundsException;
+use Wikibase\DataModel\Entity\PropertyId;
 
 /**
  * Helper for managing objects grouped by property id.
@@ -41,13 +42,42 @@ class ByPropertyIdArrayNew {
 	}
 
 	/**
+	 * @since 0.2
+	 * @deprecated since 1.1
+	 */
+	public function buildIndex() {}
+
+	/**
+	 * @since 0.2
+	 * @deprecated since 1.1
+	 *
+	 * @param PropertyId $propertyId
+	 * @return PropertyIdProvider[]
+	 *
+	 * @throws OutOfBoundsException
+	 */
+	public function getByPropertyId( PropertyId $propertyId ) {
+		return $this->byPropertyIdGrouper->getForPropertyId( $propertyId );
+	}
+
+	/**
+	 * @since 0.2
+	 * @deprecated since 1.1
+	 *
+	 * @return PropertyId[]
+	 */
+	public function getPropertyIds() {
+		return $this->byPropertyIdGrouper->getPropertyIds();
+	}
+
+	/**
 	 * Returns a list of all PropertyIdProvider instances grouped by their PropertyId.
 	 *
-	 * @since 1.1
+	 * @since 0.2
 	 *
 	 * @return PropertyIdProvider[]
 	 */
-	public function getFlatArray() {
+	public function toFlatArray() {
 		return $this->flatArray;
 	}
 
@@ -74,7 +104,7 @@ class ByPropertyIdArrayNew {
 	/**
 	 * Adds the given PropertyIdProvider to the array at the given index.
 	 *
-	 * @since 1.1
+	 * @since 0.2
 	 *
 	 * @param PropertyIdProvider $propertyIdProvider
 	 * @param int $index
@@ -82,7 +112,7 @@ class ByPropertyIdArrayNew {
 	 * @throws InvalidArgumentException
 	 * @throws OutOfBoundsException
 	 */
-	public function addAtIndex( PropertyIdProvider $propertyIdProvider, $index ) {
+	public function addObjectAtIndex( PropertyIdProvider $propertyIdProvider, $index ) {
 		$this->assertValidIndex( $index );
 
 		$groupIndices = $this->getFlatArrayGroupIndices();
@@ -168,7 +198,7 @@ class ByPropertyIdArrayNew {
 	/**
 	 * Moves the given PropertyIdProvider to the new index and returns it.
 	 *
-	 * @since 1.1
+	 * @since 0.2
 	 *
 	 * @param PropertyIdProvider $propertyIdProvider
 	 * @param int $index
@@ -177,7 +207,7 @@ class ByPropertyIdArrayNew {
 	 * @throws InvalidArgumentException
 	 * @throws OutOfBoundsException
 	 */
-	public function moveObject( PropertyIdProvider $propertyIdProvider, $index ) {
+	public function moveObjectToIndex( PropertyIdProvider $propertyIdProvider, $index ) {
 		return $this->moveToIndex( $this->getIndex( $propertyIdProvider ), $index );
 	}
 

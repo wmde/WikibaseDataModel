@@ -17,17 +17,17 @@ class ByPropertyIdArrayNewTest extends \PHPUnit_Framework_TestCase {
 	public function testGetFlatArray() {
 		$byPropertyIdArray = $this->getByPropertyIdArray();
 		$expectedTypes = array( 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' );
-		$this->assertEquals( $expectedTypes, $this->getTypes( $byPropertyIdArray->getFlatArray() ) );
+		$this->assertEquals( $expectedTypes, $this->getTypes( $byPropertyIdArray->toFlatArray() ) );
 	}
 
 	public function testGetIndex() {
 		$byPropertyIdArray = $this->getByPropertyIdArray();
 		$propertyIdProvider = $this->getSnakMock( 'P42', 'foo bar' );
-		$byPropertyIdArray->addAtIndex( $propertyIdProvider, 2 );
+		$byPropertyIdArray->addObjectAtIndex( $propertyIdProvider, 2 );
 		$this->assertEquals( 2, $byPropertyIdArray->getIndex( $propertyIdProvider ) );
 	}
 
-	public function provideAddAtIndex() {
+	public function provideAddObjectAtIndex() {
 		$cases = array();
 
 		$cases[] = array(
@@ -64,12 +64,12 @@ class ByPropertyIdArrayNewTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @dataProvider provideAddAtIndex
+	 * @dataProvider provideAddObjectAtIndex
 	 */
-	public function testAddAtIndex( PropertyIdProvider $propertyIdProvider, $index, $expectedTypes ) {
+	public function testAddObjectAtIndex( PropertyIdProvider $propertyIdProvider, $index, $expectedTypes ) {
 		$byPropertyIdArray = $this->getByPropertyIdArray();
-		$byPropertyIdArray->addAtIndex( $propertyIdProvider, $index );
-		$this->assertEquals( $expectedTypes, $this->getTypes( $byPropertyIdArray->getFlatArray() ) );
+		$byPropertyIdArray->addObjectAtIndex( $propertyIdProvider, $index );
+		$this->assertEquals( $expectedTypes, $this->getTypes( $byPropertyIdArray->toFlatArray() ) );
 	}
 
 	private function getByPropertyIdArray() {
