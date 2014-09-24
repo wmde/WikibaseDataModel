@@ -231,7 +231,7 @@ class ByPropertyIdArrayNew {
 		$groupIndices = $this->getFlatArrayGroupIndices();
 
 		foreach ( $groupIndices as $groupIndex ) {
-			if ( $groupIndex > $index ) {
+			if ( $groupIndex >= $index ) {
 				return $groupIndex;
 			}
 		}

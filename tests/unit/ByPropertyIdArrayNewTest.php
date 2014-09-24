@@ -23,8 +23,8 @@ class ByPropertyIdArrayNewTest extends \PHPUnit_Framework_TestCase {
 	public function testGetIndex() {
 		$byPropertyIdArray = $this->getByPropertyIdArray();
 		$propertyIdProvider = $this->getSnakMock( 'P42', 'foo bar' );
-		$byPropertyIdArray->addAtIndex( $propertyIdProvider, 1 );
-		$this->assertEquals( 1, $byPropertyIdArray->getIndex( $propertyIdProvider ) );
+		$byPropertyIdArray->addAtIndex( $propertyIdProvider, 2 );
+		$this->assertEquals( 2, $byPropertyIdArray->getIndex( $propertyIdProvider ) );
 	}
 
 	public function provideAddAtIndex() {
@@ -39,7 +39,7 @@ class ByPropertyIdArrayNewTest extends \PHPUnit_Framework_TestCase {
 		$cases[] = array(
 			$this->getSnakMock( 'P1', 'x' ),
 			5,
-			array( 'c', 'd', 'e', 'f', 'a', 'b', 'x', 'g', 'h' )
+			array( 'c', 'd', 'e', 'a', 'b', 'x', 'f', 'g', 'h' )
 		);
 
 		$cases[] = array(
