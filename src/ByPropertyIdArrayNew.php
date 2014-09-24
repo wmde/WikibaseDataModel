@@ -200,7 +200,8 @@ class ByPropertyIdArrayNew {
 	 * @return PropertyIdProvider
 	 */
 	private function removeFromFlatArray( $index ) {
-		return array_splice( $this->flatArray, $index, 1 )[0];
+		$objects = array_splice( $this->flatArray, $index, 1 );
+		return $objects[0];
 	}
 
 	/**
