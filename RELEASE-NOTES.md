@@ -1,5 +1,8 @@
 # Wikibase DataModel release notes
 
+### Version 1.0.1 (2014-10-01)
+* More informative exception message for invalid type in HashArray::setElement.
+
 ## Version 1.0 (2014-09-02)
 
 #### Breaking changes
@@ -142,7 +145,7 @@ Other breaking changes:
 #### Additions
 
 * Made these classes implement `Comparable`:
-	* `TermList` 
+	* `TermList`
 	* `AliasGroupList`
 	* `Fingerprint`
 	* `SiteLink`
