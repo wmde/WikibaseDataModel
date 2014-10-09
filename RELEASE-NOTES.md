@@ -1,5 +1,21 @@
 # Wikibase DataModel release notes
 
+## Version 1.2 (dev)
+
+#### Additions
+
+* Added `ByPropertyIdArray::getIndex`
+* Added `ByPropertyIdArray::removeAtIndex`
+* Added `ByPropertyIdArray::removeObject`
+* Added `ByPropertyIdArray::moveToIndex`
+
+#### Deprecations
+
+* `ByPropertyIdArray::buildIndex`
+* `ByPropertyIdArray::getByPropertyId`
+* `ByPropertyIdArray::getFlatArrayIndexOfObject`
+* `ByPropertyIdArray::getPropertyIds`
+
 ## Version 1.1 (2014-09-29)
 
 #### Additions
