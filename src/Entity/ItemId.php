@@ -21,11 +21,7 @@ class ItemId extends EntityId {
 	 */
 	public function __construct( $idSerialization ) {
 		$this->assertValidIdFormat( $idSerialization );
-
-		parent::__construct(
-			Item::ENTITY_TYPE,
-			 $idSerialization
-		);
+		$this->serialization = strtoupper( $idSerialization );
 	}
 
 	protected function assertValidIdFormat( $idSerialization ) {
@@ -43,6 +39,48 @@ class ItemId extends EntityId {
 	 */
 	public function getNumericId() {
 		return (int)substr( $this->serialization, 1 );
+	}
+
+	/**
+	 * @see Comparable::equals
+	 *
+	 * @since 0.5
+	 *
+	 * @param mixed $target
+	 *
+	 * @return boolean
+	 */
+	public function equals( $target ) {
+		return $target instanceof self
+			&& $target->serialization === $this->serialization;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getEntityType() {
+		return 'item';
+	}
+
+	/**
+	 * @see Serializable::serialize
+	 *
+	 * @return string
+	 */
+	public function serialize() {
+		return json_encode( array( 'item', $this->serialization ) );
+	}
+
+	/**
+	 * @see Serializable::unserialize
+	 *
+	 * @param string $value
+	 *
+	 * @return EntityId
+	 */
+	public function unserialize( $value ) {
+		list( , $serialization ) = json_decode( $value );
+		self::__construct( $serialization );
 	}
 
 	/**
