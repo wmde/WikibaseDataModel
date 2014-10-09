@@ -88,7 +88,7 @@ class ByPropertyIdGrouperTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testGetByPropertyId( array $propertyIdProviders, $propertyId, array $expectedValues ) {
 		$byPropertyIdGrouper = new ByPropertyIdGrouper( $propertyIdProviders );
-		$values = $byPropertyIdGrouper->getForPropertyId( new PropertyId( $propertyId ) );
+		$values = $byPropertyIdGrouper->getByPropertyId( new PropertyId( $propertyId ) );
 		array_walk( $values, function( &$value ) {
 			$value = $value->getType();
 		} );
@@ -100,7 +100,7 @@ class ByPropertyIdGrouperTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testGetByPropertyIdThrowsException() {
 		$byPropertyIdGrouper = new ByPropertyIdGrouper( $this->getPropertyIdProviders() );
-		$byPropertyIdGrouper->getForPropertyId( new PropertyId( 'P11' ) );
+		$byPropertyIdGrouper->getByPropertyId( new PropertyId( 'P11' ) );
 	}
 
 	public function provideHasPropertyId() {
@@ -127,7 +127,7 @@ class ByPropertyIdGrouperTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testHasPropertyId( array $propertyIdProviders, $propertyId, $expectedValue ) {
 		$byPropertyIdGrouper = new ByPropertyIdGrouper( $propertyIdProviders );
-		$this->assertEquals( $expectedValue, $byPropertyIdGrouper->hasForPropertyId( new PropertyId( $propertyId ) ) );
+		$this->assertEquals( $expectedValue, $byPropertyIdGrouper->hasPropertyId( new PropertyId( $propertyId ) ) );
 	}
 
 	/**

@@ -36,7 +36,7 @@ class ByPropertyIdArrayNew {
 		$this->flatArray = array();
 
 		foreach ( $this->byPropertyIdGrouper->getPropertyIds() as $propertyId ) {
-			$propertyIdProviders = $this->byPropertyIdGrouper->getForPropertyId( $propertyId );
+			$propertyIdProviders = $this->byPropertyIdGrouper->getByPropertyId( $propertyId );
 			$this->flatArray = array_merge( $this->flatArray, $propertyIdProviders );
 		}
 	}
@@ -57,7 +57,7 @@ class ByPropertyIdArrayNew {
 	 * @throws OutOfBoundsException
 	 */
 	public function getByPropertyId( PropertyId $propertyId ) {
-		return $this->byPropertyIdGrouper->getForPropertyId( $propertyId );
+		return $this->byPropertyIdGrouper->getByPropertyId( $propertyId );
 	}
 
 	/**
@@ -136,7 +136,7 @@ class ByPropertyIdArrayNew {
 
 		if ( isset( $groupIndices[$idSerialization] ) ) {
 			$groupIndex = $groupIndices[$idSerialization];
-			$count = count( $this->byPropertyIdGrouper->getForPropertyId( $propertyId ) );
+			$count = count( $this->byPropertyIdGrouper->getByPropertyId( $propertyId ) );
 		} else {
 			$groupIndex = 0;
 			$count = 0;
@@ -205,7 +205,7 @@ class ByPropertyIdArrayNew {
 		$this->assertValidIndex( $newIndex );
 
 		$object = $this->removeAtIndex( $oldIndex );
-		$this->addAtIndex( $object, $newIndex );
+		$this->addObjectAtIndex( $object, $newIndex );
 
 		return $object;
 	}
@@ -296,7 +296,7 @@ class ByPropertyIdArrayNew {
 
 		foreach ( $this->byPropertyIdGrouper->getPropertyIds() as $propertyId ) {
 			$indices[$propertyId->getSerialization()] = $index;
-			$index += count( $this->byPropertyIdGrouper->getForPropertyId( $propertyId ) );
+			$index += count( $this->byPropertyIdGrouper->getByPropertyId( $propertyId ) );
 		}
 
 		return $indices;

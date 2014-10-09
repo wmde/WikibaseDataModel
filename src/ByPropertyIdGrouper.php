@@ -87,7 +87,7 @@ class ByPropertyIdGrouper {
 	 * @return PropertyIdProvider[]
 	 * @throws OutOfBoundsException
 	 */
-	public function getForPropertyId( PropertyId $propertyId ) {
+	public function getByPropertyId( PropertyId $propertyId ) {
 		$idSerialization = $propertyId->getSerialization();
 
 		if ( !isset( $this->byPropertyId[$idSerialization] ) ) {
@@ -105,7 +105,7 @@ class ByPropertyIdGrouper {
 	 * @param PropertyId $propertyId
 	 * @return boolean
 	 */
-	public function hasForPropertyId( PropertyId $propertyId ) {
+	public function hasPropertyId( PropertyId $propertyId ) {
 		return isset( $this->byPropertyId[$propertyId->getSerialization()] );
 	}
 

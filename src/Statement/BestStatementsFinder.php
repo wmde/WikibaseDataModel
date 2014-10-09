@@ -69,7 +69,7 @@ class BestStatementsFinder {
 		$statements = array();
 
 		/** @var Statement $statement */
-		foreach ( $this->byPropertyIdGrouper->getForPropertyId( $propertyId ) as $statement ) {
+		foreach ( $this->byPropertyIdGrouper->getByPropertyId( $propertyId ) as $statement ) {
 			$rank = $statement->getRank();
 			if ( $rank > $bestRank ) {
 				// clear statements if we found a better one
