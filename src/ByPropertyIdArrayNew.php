@@ -72,7 +72,7 @@ class ByPropertyIdArrayNew {
 	 * @throws RuntimeException
 	 */
 	public function getFlatArrayIndexOfObject( $object ) {
-		return array_search( $object, $this->flatArray );
+		return array_search( $object, $this->flatArray, true );
 	}
 
 	/**

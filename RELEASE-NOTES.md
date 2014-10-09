@@ -1,5 +1,21 @@
 # Wikibase DataModel release notes
 
+## Version 1.2 (dev)
+
+#### Additions
+
+* Added `ByPropertyIdArray::getIndex`
+* Added `ByPropertyIdArray::removeAtIndex`
+* Added `ByPropertyIdArray::removeObject`
+* Added `ByPropertyIdArray::moveToIndex`
+
+#### Deprecations
+
+* `ByPropertyIdArray::buildIndex`
+* `ByPropertyIdArray::getByPropertyId`
+* `ByPropertyIdArray::getFlatArrayIndexOfObject`
+* `ByPropertyIdArray::getPropertyIds`
+
 ## Version 1.1 (2014-09-29)
 
 #### Additions
@@ -15,10 +31,6 @@
 * Added `Statement::setClaim`
 * The `Reference` constructor now accepts a `Snak` array
 * Added `ReferenceList::addNewReference`
-
-#### Deprecations
-
-* Deprecated `ByPropertyIdArray::buildIndex`, `ByPropertyIdArray::getByPropertyId` and `ByPropertyIdArray::getPropertyIds`
 
 ## Version 1.0 (2014-09-02)
 
