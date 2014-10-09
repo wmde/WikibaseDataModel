@@ -50,19 +50,6 @@ class EntityIdTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals( $id, unserialize( serialize( $id ) ) );
 	}
 
-	public function testDeserializationCompatibility() {
-		$v04serialization = 'C:17:"Wikibase\EntityId":12:{["item",123]}';
-
-		$id = new ItemId( 'q123' );
-		$this->assertTrue( $id->equals( unserialize( $v04serialization ) ) );
-
-		$v05serialization = 'C:32:"Wikibase\DataModel\Entity\ItemId":15:{["item","Q123"]}';
-
-		$this->assertEquals(
-			new ItemId( 'q123' ),
-			unserialize( $v05serialization )
-		);
-	}
 
 	/**
 	 * This test will change when the serialization format changes.
