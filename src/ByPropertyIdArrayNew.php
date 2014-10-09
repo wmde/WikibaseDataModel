@@ -9,7 +9,7 @@ use Wikibase\DataModel\Entity\PropertyId;
 /**
  * Helper for managing objects grouped by property id.
  *
- * @since 1.1
+ * @since 0.2
  *
  * @license GNU GPL v2+
  * @author Bene* < benestar.wikimedia@gmail.com >
@@ -43,13 +43,13 @@ class ByPropertyIdArrayNew {
 
 	/**
 	 * @since 0.2
-	 * @deprecated since 1.1
+	 * @deprecated since 1.2
 	 */
 	public function buildIndex() {}
 
 	/**
 	 * @since 0.2
-	 * @deprecated since 1.1
+	 * @deprecated since 1.2
 	 *
 	 * @param PropertyId $propertyId
 	 * @return PropertyIdProvider[]
@@ -61,8 +61,23 @@ class ByPropertyIdArrayNew {
 	}
 
 	/**
+	 * Returns the absolute index of an object or false if the object could not be found.
+	 *
+	 * @since 0.5
+	 * @deprecated since 1.2
+	 *
+	 * @param object $object
+	 * @return bool|int
+	 *
+	 * @throws RuntimeException
+	 */
+	public function getFlatArrayIndexOfObject( $object ) {
+		return array_search( $object, $this->flatArray );
+	}
+
+	/**
 	 * @since 0.2
-	 * @deprecated since 1.1
+	 * @deprecated since 1.2
 	 *
 	 * @return PropertyId[]
 	 */
@@ -84,7 +99,7 @@ class ByPropertyIdArrayNew {
 	/**
 	 * Returns the index of the given PropertyIdPovider in the flat array.
 	 *
-	 * @since 1.1
+	 * @since 1.2
 	 *
 	 * @param PropertyIdProvider $propertyIdProvider
 	 * @return int
@@ -141,7 +156,7 @@ class ByPropertyIdArrayNew {
 	/**
 	 * Removes the PropertyIdProvider at the given index and returns it.
 	 *
-	 * @since 1.1
+	 * @since 1.2
 	 *
 	 * @param int $index
 	 * @return PropertyIdProvider
@@ -161,7 +176,7 @@ class ByPropertyIdArrayNew {
 	/**
 	 * Removes the given PropertyIdProvider and returns it.
 	 *
-	 * @since 1.1
+	 * @since 1.2
 	 * 
 	 * @param PropertyIdProvider $propertyIdProvider
 	 * @return PropertyIdProvider
@@ -176,7 +191,7 @@ class ByPropertyIdArrayNew {
 	/**
 	 * Moves a PropertyIdProvider from the old to the new index and returns it.
 	 *
-	 * @since 1.1
+	 * @since 1.2
 	 *
 	 * @param int $oldIndex
 	 * @param int $newIndex
