@@ -164,6 +164,9 @@ class PropertyTest extends EntityTest {
 	}
 
 	public function notEqualsProvider() {
+		$differentId = $this->getBaseProperty();
+		$differentId->setId( 666 );
+
 		$differentLabel = $this->getBaseProperty();
 		$differentLabel->getFingerprint()->setLabel( 'en', 'Different' );
 
@@ -180,6 +183,7 @@ class PropertyTest extends EntityTest {
 
 		return array(
 			'empty' => array( $property, Property::newFromType( 'string' ) ),
+			'id' => array( $property, $differentId ),
 			'label' => array( $property, $differentLabel ),
 			'description' => array( $property, $differentDescription ),
 			'alias' => array( $property, $differentAlias ),
