@@ -701,14 +701,18 @@ class ItemTest extends EntityTest {
 
 	public function equalsProvider() {
 		$firstItem = Item::newEmpty();
-		$secondItem = Item::newEmpty();
-
 		$firstItem->getStatements()->addNewStatement( new PropertyNoValueSnak( 42 ) );
+
+		$secondItem = Item::newEmpty();
 		$secondItem->getStatements()->addNewStatement( new PropertyNoValueSnak( 42 ) );
+
+		$secondItemWithId = unserialize( serialize( $secondItem ) );
+		$secondItemWithId->setId( 42 );
 
 		return array(
 			array( Item::newEmpty(), Item::newEmpty() ),
 			array( $firstItem, $secondItem ),
+			array( $secondItem, $secondItemWithId ),
 		);
 	}
 
@@ -734,6 +738,9 @@ class ItemTest extends EntityTest {
 	}
 
 	public function notEqualsProvider() {
+		$differentId = $this->getBaseItem();
+		$differentId->setId( 666 );
+
 		$differentLabel = $this->getBaseItem();
 		$differentLabel->getFingerprint()->setLabel( 'en', 'Different' );
 
@@ -755,6 +762,7 @@ class ItemTest extends EntityTest {
 
 		return array(
 			'empty' => array( $item, Item::newEmpty() ),
+			'id' => array( $item, $differentId ),
 			'label' => array( $item, $differentLabel ),
 			'description' => array( $item, $differentDescription ),
 			'alias' => array( $item, $differentAlias ),

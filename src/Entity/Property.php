@@ -151,7 +151,8 @@ class Property extends Entity {
 			return false;
 		}
 
-		return $this->dataTypeId === $that->dataTypeId
+		return ( $this->id === null || $that->id === null || $this->id->equals( $that->id ) )
+			&& $this->dataTypeId === $that->dataTypeId
 			&& $this->fingerprint->equals( $that->fingerprint )
 			&& $this->statements->equals( $that->statements );
 	}
