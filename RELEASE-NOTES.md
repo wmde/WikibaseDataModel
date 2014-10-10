@@ -6,6 +6,10 @@
 * Removed the class aliases for `ItemDiff` and `EntityDiff` (deprecated since 1.0)
 * Removed support for deserializing `EntityId` instances from version 0.4 or earlier
 
+* The `Statement` constructor now accepts a `Claim` parameter followed by an optional `References` one
+* Added `Statement::newFromClaim` and `Statement::newFromMainSnak`
+* The old signature of the `Statement` constructor has been deprecated in favour of the new one
+
 ## Version 1.1 (2014-09-29)
 
 #### Additions

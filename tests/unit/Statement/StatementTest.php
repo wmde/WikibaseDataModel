@@ -32,6 +32,32 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals( 'meh', $statement->getGuid() );
 	}
 
+	public function testNewFromMainSnak() {
+		$snak = new PropertyNoValueSnak( new PropertyId( 'P42' ) );
+
+		$statement = Statement::newFromMainSnak( $snak );
+		$this->assertEquals( $snak, $statement->getMainSnak() );
+	}
+
+	public function testNewFromClaimWithNoReferences() {
+		$snak = new PropertyNoValueSnak( new PropertyId( 'P42' ) );
+
+		$statement = Statement::newFromClaim( new Claim( $snak ) );
+		$this->assertEquals( $snak, $statement->getMainSnak() );
+		$this->assertEquals( new ReferenceList(), $statement->getReferences() );
+	}
+
+	public function testNewFromClaimWithReferences() {
+		$snak = new PropertyNoValueSnak( new PropertyId( 'P42' ) );
+		$references = new ReferenceList();
+		$references->addReference( new Reference( new SnakList( array(
+			new PropertyNoValueSnak( new PropertyId( 'P1' )
+		) ) ) ) );
+
+		$statement = Statement::newFromClaim( new Claim( $snak ), $references );
+		$this->assertEquals( $references, $statement->getReferences() );
+	}
+
 	/**
 	 * @dataProvider instanceProvider
 	 */

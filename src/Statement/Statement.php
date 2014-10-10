@@ -4,6 +4,7 @@ namespace Wikibase\DataModel\Statement;
 
 use InvalidArgumentException;
 use Wikibase\DataModel\Claim\Claim;
+use Wikibase\DataModel\Reference;
 use Wikibase\DataModel\ReferenceList;
 use Wikibase\DataModel\References;
 use Wikibase\DataModel\Snak\Snak;
@@ -32,21 +33,46 @@ class Statement extends Claim {
 	private $rank = self::RANK_NORMAL;
 
 	/**
-	 * @since 0.1
+	 * Parameters as of 2.0:
+	 * - Claim $claim
+	 * - References|null $references
+	 *
+	 * Alternate parameters, deprecated since 2.0:
+	 * - Snak $mainSnak
+	 * - Snaks|null $qualifiers
+	 * - References|null $references
+	 */
+	public function __construct( /* $arguments */ ) {
+		$arguments = func_get_args();
+
+		if ( reset( $arguments ) instanceof Claim ) {
+			call_user_func_array( array( $this, 'initFromClaim' ), $arguments );
+		} else {
+			call_user_func_array( array( $this, 'initFromSnaks' ), $arguments );
+		}
+	}
+
+	/**
+	 * @since 2.0
+	 *
+	 * @param Claim $claim
+	 * @param References $references
+	 *
+	 * @return Statement
+	 */
+	public static function newFromClaim( Claim $claim, References $references = null ) {
+		return new self( $claim, $references );
+	}
+
+	/**
+	 * @since 2.0
 	 *
 	 * @param Snak $mainSnak
-	 * @param Snaks|null $qualifiers
-	 * @param References|null $references
-	 * or
-	 * @param Claim $claim
-	 * @param References|null $references
+	 *
+	 * @return Statement
 	 */
-	public function __construct( $claim /* , $args */ ) {
-		if ( $claim instanceof Claim ) {
-			call_user_func_array( array( $this, 'initFromClaim' ), func_get_args() );
-		} else {
-			call_user_func_array( array( $this, 'initFromSnaks' ), func_get_args() );
-		}
+	public static function newFromMainSnak( Snak $mainSnak ) {
+		return new self( new Claim( $mainSnak ) );
 	}
 
 	private function initFromClaim( Claim $claim, References $references = null ) {
