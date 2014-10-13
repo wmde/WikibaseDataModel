@@ -82,8 +82,8 @@ class StatementListTest extends \PHPUnit_Framework_TestCase {
 			$this->getStubStatement( 3, 'five', Statement::RANK_DEPRECATED ),
 			$this->getStubStatement( 3, 'six', Statement::RANK_NORMAL ),
 
-			$this->getStubStatement( 4, 'seven', Statement::RANK_PREFERRED ),
-			$this->getStubStatement( 4, 'eight', Statement::RANK_TRUTH ),
+			$this->getStubStatement( 4, 'seven', Statement::RANK_NORMAL ),
+			$this->getStubStatement( 4, 'eight', Statement::RANK_PREFERRED ),
 		) );
 
 		$this->assertEquals(
@@ -93,7 +93,7 @@ class StatementListTest extends \PHPUnit_Framework_TestCase {
 
 				$this->getStubStatement( 3, 'six', Statement::RANK_NORMAL ),
 
-				$this->getStubStatement( 4, 'eight', Statement::RANK_TRUTH ),
+				$this->getStubStatement( 4, 'eight', Statement::RANK_PREFERRED ),
 			),
 			$list->getBestStatementPerProperty()->toArray()
 		);

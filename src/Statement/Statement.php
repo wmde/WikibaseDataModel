@@ -2,8 +2,12 @@
 
 namespace Wikibase\DataModel\Statement;
 
+use Comparable;
+use Hashable;
 use InvalidArgumentException;
 use Wikibase\DataModel\Claim\Claim;
+use Wikibase\DataModel\Entity\PropertyId;
+use Wikibase\DataModel\PropertyIdProvider;
 use Wikibase\DataModel\Reference;
 use Wikibase\DataModel\ReferenceList;
 use Wikibase\DataModel\Snak\Snak;
@@ -14,12 +18,13 @@ use Wikibase\DataModel\Snak\SnakList;
  * See https://meta.wikimedia.org/wiki/Wikidata/Data_model#Statements
  *
  * @since 0.1
+ * Does not inherit from Claim anymore since 3.0
  *
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author Bene* < benestar.wikimedia@gmail.com >
  */
-class Statement extends Claim {
+class Statement implements Hashable, Comparable, PropertyIdProvider {
 
 	/**
 	 * Rank enum. Higher values are more preferred.
@@ -29,6 +34,11 @@ class Statement extends Claim {
 	const RANK_PREFERRED = Claim::RANK_PREFERRED;
 	const RANK_NORMAL = Claim::RANK_NORMAL;
 	const RANK_DEPRECATED = Claim::RANK_DEPRECATED;
+
+	/**
+	 * @var Claim
+	 */
+	private $claim;
 
 	/**
 	 * @var ReferenceList
@@ -47,8 +57,26 @@ class Statement extends Claim {
 	 * @param ReferenceList|null $references
 	 */
 	public function __construct( Claim $claim, ReferenceList $references = null ) {
-		$this->setClaim( $claim );
+		$this->claim = $claim;
 		$this->references = $references === null ? new ReferenceList() : $references;
+	}
+
+	/**
+	 * @since 1.1
+	 *
+	 * @param Claim $claim
+	 */
+	public function setClaim( Claim $claim ) {
+		$this->claim = $claim;
+	}
+
+	/**
+	 * @since 1.0
+	 *
+	 * @return Claim
+	 */
+	public function getClaim() {
+		return $this->claim;
 	}
 
 	/**
@@ -104,7 +132,8 @@ class Statement extends Claim {
 	}
 
 	/**
-	 * @see Claim::getRank
+	 * Gets the rank of the claim.
+	 * The rank is an element of the Statement::RANK_ enum.
 	 *
 	 * @since 0.1
 	 *
@@ -112,6 +141,87 @@ class Statement extends Claim {
 	 */
 	public function getRank() {
 		return $this->rank;
+	}
+
+	/**
+	 * @since 0.2
+	 *
+	 * @return PropertyId
+	 */
+	public function getPropertyId() {
+		return $this->claim->getPropertyId();
+	}
+
+	/**
+	 * @see Claim::getMainSnak
+	 *
+	 * @since 0.1
+	 * @deprecated since 3.0 - use getClaim instead
+	 *
+	 * @return Snak
+	 */
+	public function getMainSnak() {
+		return $this->claim->getMainSnak();
+	}
+
+	/**
+	 * @see Claim::setMainSnak
+	 *
+	 * @since 0.1
+	 * @deprecated since 3.0 - use getClaim instead
+	 *
+	 * @param Snak $mainSnak
+	 */
+	public function setMainSnak( Snak $mainSnak ) {
+		$this->claim->setMainSnak( $mainSnak );
+	}
+
+	/**
+	 * @see Claim::getQualifiers
+	 *
+	 * @since 0.1
+	 * @deprecated since 3.0 - use getClaim instead
+	 *
+	 * @return Snaks
+	 */
+	public function getQualifiers() {
+		return $this->claim->getQualifiers();
+	}
+
+	/**
+	 * @see Claim::setQualifiers
+	 *
+	 * @since 0.1
+	 * @deprecated since 3.0 - use getClaim instead
+	 *
+	 * @param Snaks $propertySnaks
+	 */
+	public function setQualifiers( Snaks $propertySnaks ) {
+		$this->claim->setQualifiers( $propertySnaks );
+	}
+
+	/**
+	 * @see Claim::getGuid
+	 *
+	 * @since 0.2
+	 *
+	 * @return string|null
+	 */
+	public function getGuid() {
+		return $this->claim->getGuid();
+	}
+
+	/**
+	 * @see Claim::setGuid
+	 *
+	 * @since 0.2
+	 *
+	 * @param string|null $guid
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setGuid( $guid ) {
+		$this->claim->setGuid( $guid );
 	}
 
 	/**
@@ -125,7 +235,7 @@ class Statement extends Claim {
 		return sha1( implode(
 			'|',
 			array(
-				parent::getHash(),
+				$this->claim->getHash(),
 				$this->rank,
 				$this->references->getValueHash(),
 			)
@@ -141,7 +251,7 @@ class Statement extends Claim {
 	 * @return Snak[]
 	 */
 	public function getAllSnaks() {
-		$snaks = parent::getAllSnaks();
+		$snaks = $this->claim->getAllSnaks();
 
 		/* @var Reference $reference */
 		foreach( $this->getReferences() as $reference ) {
@@ -162,32 +272,17 @@ class Statement extends Claim {
 	 * @return boolean
 	 */
 	public function equals( $target ) {
+		if ( $target === $this ) {
+			return true;
+		}
+
 		if ( !( $target instanceof self ) ) {
 			return false;
 		}
 
-		return $this->claimFieldsEqual( $target )
-			&& $this->references->equals( $target->references );
-	}
-
-	/**
-	 * @since 1.1
-	 *
-	 * @param Claim $claim
-	 */
-	public function setClaim( Claim $claim ) {
-		$this->mainSnak = $claim->getMainSnak();
-		$this->qualifiers = $claim->getQualifiers();
-		$this->guid = $claim->getGuid();
-	}
-
-	/**
-	 * @since 1.0
-	 *
-	 * @return Claim
-	 */
-	public function getClaim() {
-		return $this;
+		return $this->claim->equals( $target->claim )
+			&& $this->references->equals( $target->references )
+			&& $this->rank === $target->rank;
 	}
 
 }
