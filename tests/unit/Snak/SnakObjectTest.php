@@ -2,121 +2,45 @@
 
 namespace Wikibase\Test\Snak;
 
-use Exception;
-use ReflectionClass;
-use Wikibase\DataModel\Snak\Snak;
+use Wikibase\DataModel\Entity\PropertyId;
 
 /**
+ * @covers Wikibase\DataModel\Snak\SnakObject
+ *
  * @group Wikibase
  * @group WikibaseDataModel
  * @group WikibaseSnak
  *
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
+ * @author Bene* < benestar.wikimedia@gmail.com >
  */
-abstract class SnakObjectTest extends \PHPUnit_Framework_TestCase {
+class SnakObjectTest extends \PHPUnit_Framework_TestCase {
 
-	/**
-	 * Returns the name of the concrete class tested by this test.
-	 *
-	 * @since 0.1
-	 *
-	 * @return string
-	 */
-	public abstract function getClass();
-
-	/**
-	 * First element can be a boolean indication if the successive values are valid,
-	 * or a string indicating the type of exception that should be thrown (ie not valid either).
-	 *
-	 * @since 0.1
-	 *
-	 * @return array
-	 */
-	public abstract function constructorProvider();
-
-	/**
-	 * Creates and returns a new instance of the concrete class.
-	 *
-	 * @since 0.1
-	 *
-	 * @return mixed
-	 */
-	public function newInstance() {
-		$reflector = new ReflectionClass( $this->getClass() );
-		$args = func_get_args();
-		$instance = $reflector->newInstanceArgs( $args );
-		return $instance;
-	}
-
-	/**
-	 * @since 0.1
-	 *
-	 * @return array [instance, constructor args]
-	 */
-	public function instanceProvider() {
-		$callable = array( $this, 'newInstance' );
-
-		return array_filter( array_map(
-			function( array $args ) use ( $callable ) {
-				$isValid = array_shift( $args ) === true;
-
-				if ( $isValid ) {
-					return array( call_user_func_array( $callable, $args ), $args );
-				}
-				else {
-					return false;
-				}
-			},
-			$this->constructorProvider()
-		), 'is_array' );
-	}
-
-	/**
-	 * @dataProvider constructorProvider
-	 *
-	 * @since 0.1
-	 */
-	public function testConstructor() {
-		$args = func_get_args();
-
-		$valid = array_shift( $args );
-
-		// TODO: use setExpectedException rather then this clutter
-		// TODO: separate valid from invalid cases (different test methods)
-		try {
-			$dataItem = call_user_func_array( array( $this, 'newInstance' ), $args );
-			$this->assertInstanceOf( $this->getClass(), $dataItem );
-		}
-		catch ( Exception $ex ) {
-			if ( $valid === true ) {
-				throw $ex;
-			}
-
-			if ( is_string( $valid ) ) {
-				$this->assertEquals( $valid, get_class( $ex ) );
-			}
-			else {
-				$this->assertFalse( $valid );
-			}
-		}
-	}
-
-	/**
-	 * @dataProvider instanceProvider
-	 */
-	public function testGetHash( Snak $snak ) {
+	public function testGetHash() {
+		$snak = $this->getSnakObject( 42 );
 		$hash = $snak->getHash();
+
 		$this->assertInternalType( 'string', $hash );
 		$this->assertEquals( 40, strlen( $hash ) );
 	}
 
-	/**
-	 * @dataProvider instanceProvider
-	 */
-	public function testGetPropertyId( Snak $snak ) {
+	public function testGetPropertyId() {
+		$snak = $this->getSnakObject( 42 );
 		$propertyId = $snak->getPropertyId();
-		$this->assertInstanceOf( 'Wikibase\DataModel\Entity\PropertyId', $propertyId );
+
+		$this->assertEquals( new PropertyId( 'P42' ), $propertyId );
+	}
+
+
+	private function getSnakObject( /* ... */ ) {
+		$snakObject = $this->getMockForAbstractClass( 'Wikibase\DataModel\Snak\SnakObject', func_get_args() );
+
+		$snakObject->expects( $this->any() )
+			->method( 'getType' )
+			->will( $this->returnValue( 'mock' ) );
+
+		return $snakObject;
 	}
 
 }
