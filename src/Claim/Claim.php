@@ -10,7 +10,6 @@ use Wikibase\DataModel\PropertyIdProvider;
 use Wikibase\DataModel\Snak\Snak;
 use Wikibase\DataModel\Snak\SnakList;
 use Wikibase\DataModel\Snak\Snaks;
-use Wikibase\DataModel\Statement\Statement;
 
 /**
  * Class that represents a single Wikibase claim.
@@ -212,14 +211,14 @@ class Claim implements Hashable, Comparable, PropertyIdProvider {
 	 * @return boolean
 	 */
 	public function equals( $target ) {
-		if ( !( $target instanceof self ) || $target instanceof Statement ) {
+		if ( $target === $this ) {
+			return true;
+		}
+
+		if ( !( $target instanceof self ) ) {
 			return false;
 		}
 
-		return $this->claimFieldsEqual( $target );
-	}
-
-	protected function claimFieldsEqual( Claim $target ) {
 		return $this->guid === $target->guid
 			&& $this->mainSnak->equals( $target->mainSnak )
 			&& $this->qualifiers->equals( $target->qualifiers );
