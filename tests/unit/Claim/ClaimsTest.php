@@ -516,16 +516,16 @@ class ClaimsTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testIterator() {
-		$array = array(
+		$expected = array(
 			'TESTCLAIM1' => $this->makeClaim( new PropertyNoValueSnak( new PropertyId( "P42" ) ), 'testclaim1' ),
 			'TESTCLAIM2' => $this->makeClaim( new PropertySomeValueSnak( new PropertyId( "P42" ) ), 'testclaim2' ),
 			'TESTCLAIM3' => $this->makeClaim( new PropertyNoValueSnak( new PropertyId( "P23" ) ), 'testclaim3' ),
 			'TESTCLAIM4' => $this->makeClaim( new PropertyNoValueSnak( new PropertyId( "P9000" ) ), 'testclaim4' ),
 		);
-		$claims = new Claims( $array );
+		$claims = new Claims( $expected );
 
-		$iterator = iterator_to_array( $claims->getIterator() );
-		$this->assertSame( $array, $iterator );
+		$actual = iterator_to_array( $claims->getIterator() );
+		$this->assertSame( $expected, $actual );
 	}
 
 	public function testIsEmpty() {
