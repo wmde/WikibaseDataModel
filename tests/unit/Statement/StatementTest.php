@@ -367,4 +367,11 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 		$this->assertSame( $qualifiers, $claim->getQualifiers() );
 	}
 
+	public function testNewFromMainSnak() {
+		$snak = new PropertyNoValueSnak( new PropertyId( 'P42' ) );
+
+		$statement = Statement::newFromMainSnak( $snak );
+		$this->assertEquals( $snak, $statement->getMainSnak() );
+	}
+
 }
