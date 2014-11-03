@@ -158,7 +158,7 @@ class StatementListTest extends \PHPUnit_Framework_TestCase {
 
 	private function getStatementWithSnak( $propertyId, $stringValue ) {
 		$snak = $this->newSnak( $propertyId, $stringValue );
-		$statement = new Statement( new Claim( $snak ) );
+		$statement = new Statement( $snak );
 		$statement->setGuid( sha1( $snak->getHash() ) );
 		return $statement;
 	}
@@ -174,7 +174,7 @@ class StatementListTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			new StatementList( array(
-				new Statement( new Claim( $this->newSnak( 42, 'foo' ) ) )
+				new Statement( $this->newSnak( 42, 'foo' ) )
 			) ),
 			$list
 		);
@@ -192,12 +192,12 @@ class StatementListTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			new StatementList( array(
-				new Statement( new Claim(
+				new Statement(
 					$this->newSnak( 42, 'foo' ),
 					new SnakList( array(
 						$this->newSnak( 1, 'bar' )
 					) )
-				) )
+				)
 			) ),
 			$list
 		);
@@ -216,10 +216,10 @@ class StatementListTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			new StatementList( array(
-				new Statement( new Claim(
+				new Statement(
 					$this->newSnak( 42, 'foo' ),
 					$snakList
-				) )
+				)
 			) ),
 			$list
 		);
@@ -235,10 +235,10 @@ class StatementListTest extends \PHPUnit_Framework_TestCase {
 			'kittens'
 		);
 
-		$statement = new Statement( new Claim(
+		$statement = new Statement(
 			$this->newSnak( 42, 'foo' ),
 			null
-		) );
+		);
 
 		$statement->setGuid( 'kittens' );
 

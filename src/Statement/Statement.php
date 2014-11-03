@@ -8,6 +8,7 @@ use Wikibase\DataModel\Reference;
 use Wikibase\DataModel\ReferenceList;
 use Wikibase\DataModel\Snak\Snak;
 use Wikibase\DataModel\Snak\SnakList;
+use Wikibase\DataModel\Snak\Snaks;
 
 /**
  * Class representing a Wikibase statement.
@@ -43,12 +44,14 @@ class Statement extends Claim {
 	/**
 	 * @since 2.0
 	 *
-	 * @param Claim $claim
+	 * @param Snak $mainSnak
+	 * @param Snaks|null $qualifiers
 	 * @param ReferenceList|null $references
 	 */
-	public function __construct( Claim $claim, ReferenceList $references = null ) {
-		$this->setClaim( $claim );
-		$this->references = $references ?: new ReferenceList();
+	public function __construct( Snak $mainSnak, Snaks $qualifiers = null, ReferenceList $references = null ) {
+		$this->mainSnak = $mainSnak;
+		$this->qualifiers = $qualifiers === null ? new SnakList() : $qualifiers;
+		$this->references = $references === null ? new ReferenceList() : $references;
 	}
 
 	/**
@@ -125,7 +128,7 @@ class Statement extends Claim {
 		return sha1( implode(
 			'|',
 			array(
-				parent::getHash(),
+				sha1( $this->mainSnak->getHash() . $this->qualifiers->getHash() ),
 				$this->rank,
 				$this->references->getValueHash(),
 			)
@@ -141,7 +144,11 @@ class Statement extends Claim {
 	 * @return Snak[]
 	 */
 	public function getAllSnaks() {
-		$snaks = parent::getAllSnaks();
+		$snaks = array( $this->mainSnak );
+
+		foreach( $this->qualifiers as $qualifier ) {
+			$snaks[] = $qualifier;
+		}
 
 		/* @var Reference $reference */
 		foreach( $this->getReferences() as $reference ) {
@@ -171,26 +178,6 @@ class Statement extends Claim {
 			&& $this->claimFieldsEqual( $target )
 			&& $this->rank === $target->getRank()
 			&& $this->references->equals( $target->references );
-	}
-
-	/**
-	 * @since 1.1
-	 *
-	 * @param Claim $claim
-	 */
-	public function setClaim( Claim $claim ) {
-		$this->mainSnak = $claim->getMainSnak();
-		$this->qualifiers = $claim->getQualifiers();
-		$this->guid = $claim->getGuid();
-	}
-
-	/**
-	 * @since 1.0
-	 *
-	 * @return Claim
-	 */
-	public function getClaim() {
-		return $this;
 	}
 
 }
