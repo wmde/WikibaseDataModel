@@ -38,16 +38,19 @@ class SiteLink implements Comparable {
 	 */
 	public function __construct( $siteId, $pageName, $badges = null ) {
 		if ( !is_string( $siteId ) ) {
-			throw new InvalidArgumentException( '$siteId needs to be a string' );
+			goto err;
 		}
 
 		if ( !is_string( $pageName ) ) {
-			throw new InvalidArgumentException( '$pageName needs to be a string' );
+			goto err;
 		}
 
 		$this->siteId = $siteId;
 		$this->pageName = $pageName;
 		$this->setBadges( $badges );
+
+		return;
+		err: throw new InvalidArgumentException( '$siteId and $pageName need to be a strings' );
 	}
 
 	private function setBadges( $badges ) {
