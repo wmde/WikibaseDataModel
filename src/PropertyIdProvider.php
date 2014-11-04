@@ -12,7 +12,7 @@ use Wikibase\DataModel\Entity\PropertyId;
  * @license GNU GPL v2+
  * @author Bene* < benestar.wikimedia@gmail.com >
  */
-interface PropertyIdProvider {
+interface PropertyIdProvider extends InterfaceInterface {
 
 	/**
 	 * Returns the property id of this object.

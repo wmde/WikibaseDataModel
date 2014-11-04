@@ -2,6 +2,8 @@
 
 namespace Wikibase\DataModel\Entity;
 
+use Wikibase\DataModel\InterfaceInterface;
+
 /**
  * Interface for objects that can parse strings into EntityIds
  *
@@ -10,7 +12,7 @@ namespace Wikibase\DataModel\Entity;
  * @licence GNU GPL v2+
  * @author Adam Shorland
  */
-interface EntityIdParser {
+interface EntityIdParser extends InterfaceInterface {
 
 	/**
 	 * @since 0.5
