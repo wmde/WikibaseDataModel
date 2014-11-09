@@ -11,7 +11,7 @@ namespace Wikibase\DataModel\Entity;
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
-interface EntityDocument {
+interface EntityDocument implements \Comparable {
 
 	/**
 	 * Returns the id of the entity or null if it does not have one.
