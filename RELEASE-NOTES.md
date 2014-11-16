@@ -1,5 +1,8 @@
 # Wikibase DataModel release notes
 
+## Version dev (2014-11-16)
+* Removed `StatementList::getBestStatementPerProperty` and `BestStatementsFinder`
+
 ## Version 2.2.0 (2014-11-10)
 
 * `Item` and `Property` now implement `StatementListProvider`
