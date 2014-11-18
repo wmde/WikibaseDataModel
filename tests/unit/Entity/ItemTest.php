@@ -688,6 +688,14 @@ class ItemTest extends EntityTest {
 		$this->assertTrue( $item->getStatements()->isEmpty() );
 	}
 
+	public function testSetStatementsWithoutParameter() {
+		$item = Item::newEmpty();
+		$item->getStatements()->addNewStatement( new PropertyNoValueSnak( 42 ) );
+
+		$item->setStatements();
+		$this->assertTrue( $item->getStatements()->isEmpty() );
+	}
+
 	public function testGetStatementsReturnsCorrectTypeAfterClear() {
 		$item = Item::newEmpty();
 		$item->clear();

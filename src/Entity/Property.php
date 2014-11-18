@@ -195,10 +195,10 @@ class Property extends Entity implements StatementListProvider {
 	/**
 	 * @since 1.1
 	 *
-	 * @param StatementList $statements
+	 * @param StatementList|null $statements
 	 */
-	public function setStatements( StatementList $statements ) {
-		$this->statements = $statements;
+	public function setStatements( StatementList $statements = null ) {
+		$this->statements = $statements ?: new StatementList();
 	}
 
 }

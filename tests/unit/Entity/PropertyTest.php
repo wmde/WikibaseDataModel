@@ -111,11 +111,18 @@ class PropertyTest extends EntityTest {
 
 	public function testSetAndGetStatements() {
 		$property = Property::newFromType( 'string' );
-
 		$statementList = $this->newNonEmptyStatementList();
 		$property->setStatements( $statementList );
 
 		$this->assertEquals( $statementList, $property->getStatements() );
+	}
+
+	public function testSetStatementsWithoutParameter() {
+		$property = Property::newFromType( 'string' );
+		$property->getStatements()->addNewStatement( new PropertyNoValueSnak( 42 ) );
+
+		$property->setStatements();
+		$this->assertTrue( $property->getStatements()->isEmpty() );
 	}
 
 	private function newNonEmptyStatementList() {

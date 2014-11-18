@@ -1,9 +1,10 @@
 # Wikibase DataModel release notes
 
-## Version 2.4.0 (alpha)
+## Version 2.4.0 (dev)
 
 * Added `AliasGroup::isEmpty`
 * Added `TermList::isEmpty`
+* `Item::setStatements` and `Property::setStatements` with no parameter removes all statements
 
 ## Version 2.3.0 (2014-11-18)
 
