@@ -2,6 +2,8 @@
 
 namespace Wikibase\DataModel\Claim;
 
+use Wikibase\DataModel\InterfaceInterface;
+
 /**
  * Interface for objects that can be accessed as a list of Claim objects.
  *
@@ -10,7 +12,7 @@ namespace Wikibase\DataModel\Claim;
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
-interface ClaimListAccess {
+interface ClaimListAccess extends InterfaceInterface {
 
 	/**
 	 * Adds the provided claims to the list. If a claim with the same GUID is already in the list,

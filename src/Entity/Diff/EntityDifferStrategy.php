@@ -4,6 +4,7 @@ namespace Wikibase\DataModel\Entity\Diff;
 
 use InvalidArgumentException;
 use Wikibase\DataModel\Entity\EntityDocument;
+use Wikibase\DataModel\InterfaceInterface;
 
 /**
  * @since 1.0
@@ -11,7 +12,7 @@ use Wikibase\DataModel\Entity\EntityDocument;
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
-interface EntityDifferStrategy {
+interface EntityDifferStrategy extends InterfaceInterface {
 
 	/**
 	 * @param string $entityType

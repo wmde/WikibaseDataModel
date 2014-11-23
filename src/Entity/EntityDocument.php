@@ -2,6 +2,8 @@
 
 namespace Wikibase\DataModel\Entity;
 
+use Wikibase\DataModel\InterfaceInterface;
+
 /**
  * Minimal interface for all objects that represent an entity.
  * All entities have an EntityId and an entity type.
@@ -11,7 +13,7 @@ namespace Wikibase\DataModel\Entity;
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
-interface EntityDocument {
+interface EntityDocument extends InterfaceInterface {
 
 	/**
 	 * Returns the id of the entity or null if it does not have one.
