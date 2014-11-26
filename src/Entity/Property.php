@@ -55,6 +55,9 @@ class Property extends Entity implements StatementListProvider {
 	}
 
 	/**
+	 * @deprecated since 2.5 - item IDs should not be changed after they have been set,
+	 * and should be set in the constructor.
+	 *
 	 * Can be integer since 0.1.
 	 * Can be PropertyId since 0.5.
 	 * Can be null since 1.0.

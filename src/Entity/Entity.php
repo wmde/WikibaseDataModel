@@ -49,6 +49,12 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 		return $this->id;
 	}
 
+	/**
+	 * @deprecated since 2.5 - entity IDs should not be changed after they have been set,
+	 * and should be set in the constructor.
+	 *
+	 * @param mixed $id
+	 */
 	public abstract function setId( $id );
 
 	/**
