@@ -12,10 +12,12 @@ if ( defined( 'WIKIBASE_DATAMODEL_VERSION' ) ) {
 	return 1;
 }
 
-define( 'WIKIBASE_DATAMODEL_VERSION', '2.5.0 alpha' );
+define( 'WIKIBASE_DATAMODEL_VERSION', '3.0.0 alpha' );
 
 if ( defined( 'MEDIAWIKI' ) ) {
 	call_user_func( function() {
 		require_once __DIR__ . '/WikibaseDataModel.mw.php';
 	} );
 }
+
+class_alias( 'Wikibase\DataModel\Statement\Statement', 'Wikibase\DataModel\Claim\Claim' );
