@@ -99,7 +99,6 @@ class StatementListTest extends \PHPUnit_Framework_TestCase {
 			$this->getStatement( 3, 'six', Statement::RANK_NORMAL ),
 
 			$this->getStatement( 4, 'seven', Statement::RANK_PREFERRED ),
-			$this->getStatement( 4, 'eight', Claim::RANK_TRUTH ),
 		) );
 
 		$this->assertEquals(
@@ -109,7 +108,7 @@ class StatementListTest extends \PHPUnit_Framework_TestCase {
 
 				$this->getStatement( 3, 'six', Statement::RANK_NORMAL ),
 
-				$this->getStatement( 4, 'eight', Claim::RANK_TRUTH ),
+				$this->getStatement( 4, 'seven', Statement::RANK_PREFERRED ),
 			),
 			$list->getBestStatementPerProperty()->toArray()
 		);
@@ -265,19 +264,14 @@ class StatementListTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testGivenTraversableWithNonStatements_constructorThrowsException() {
-		$claim = new Claim( new PropertyValueSnak( 42, new StringValue( 'foo' ) ) );
-		$claim->setGuid( 'meh' );
-
-		$claimArray = array(
+		$traversable = new \ArrayObject( array(
 			$this->getStatementWithSnak( 1, 'foo' ),
-			$claim,
+			new \stdClass(),
 			$this->getStatementWithSnak( 2, 'bar' ),
-		);
-
-		$claimsObject = new Claims( $claimArray );
+		) );
 
 		$this->setExpectedException( 'InvalidArgumentException' );
-		new StatementList( $claimsObject );
+		new StatementList( $traversable );
 	}
 
 	public function testGivenNonTraversable_constructorThrowsException() {

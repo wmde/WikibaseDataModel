@@ -2,8 +2,12 @@
 
 namespace Wikibase\DataModel\Statement;
 
+use Comparable;
+use Hashable;
 use InvalidArgumentException;
 use Wikibase\DataModel\Claim\Claim;
+use Wikibase\DataModel\Entity\PropertyId;
+use Wikibase\DataModel\PropertyIdProvider;
 use Wikibase\DataModel\Reference;
 use Wikibase\DataModel\ReferenceList;
 use Wikibase\DataModel\Snak\Snak;
@@ -20,7 +24,7 @@ use Wikibase\DataModel\Snak\Snaks;
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author Bene* < benestar.wikimedia@gmail.com >
  */
-class Statement extends Claim {
+class Statement implements Hashable, Comparable, PropertyIdProvider {
 
 	/**
 	 * Rank enum. Higher values are more preferred.
@@ -30,6 +34,26 @@ class Statement extends Claim {
 	const RANK_PREFERRED = 2;
 	const RANK_NORMAL = 1;
 	const RANK_DEPRECATED = 0;
+
+	/** @deprecated since 2.0 */
+	const RANK_TRUTH = 3;
+
+	/**
+	 * @var Snak
+	 */
+	private $mainSnak;
+
+	/**
+	 * The property snaks that are qualifiers for this claim.
+	 *
+	 * @var Snaks
+	 */
+	private $qualifiers;
+
+	/**
+	 * @var string|null
+	 */
+	private $guid = null;
 
 	/**
 	 * @var ReferenceList
@@ -52,6 +76,50 @@ class Statement extends Claim {
 		$this->mainSnak = $mainSnak;
 		$this->qualifiers = $qualifiers === null ? new SnakList() : $qualifiers;
 		$this->references = $references === null ? new ReferenceList() : $references;
+	}
+
+	/**
+	 * Returns the value snak.
+	 *
+	 * @since 0.1
+	 *
+	 * @return Snak
+	 */
+	public function getMainSnak() {
+		return $this->mainSnak;
+	}
+
+	/**
+	 * Sets the main snak.
+	 *
+	 * @since 0.1
+	 *
+	 * @param Snak $mainSnak
+	 */
+	public function setMainSnak( Snak $mainSnak ) {
+		$this->mainSnak = $mainSnak;
+	}
+
+	/**
+	 * Gets the property snaks making up the qualifiers for this claim.
+	 *
+	 * @since 0.1
+	 *
+	 * @return Snaks
+	 */
+	public function getQualifiers() {
+		return $this->qualifiers;
+	}
+
+	/**
+	 * Sets the property snaks making up the qualifiers for this claim.
+	 *
+	 * @since 0.1
+	 *
+	 * @param Snaks $propertySnaks
+	 */
+	public function setQualifiers( Snaks $propertySnaks ) {
+		$this->qualifiers = $propertySnaks;
 	}
 
 	/**
@@ -136,6 +204,48 @@ class Statement extends Claim {
 	}
 
 	/**
+	 * Returns the id of the property of the main snak.
+	 * Short for ->getMainSnak()->getPropertyId()
+	 *
+	 * @see PropertyIdProvider::getPropertyId
+	 *
+	 * @since 0.2
+	 *
+	 * @return PropertyId
+	 */
+	public function getPropertyId() {
+		return $this->getMainSnak()->getPropertyId();
+	}
+
+	/**
+	 * Returns the GUID of the Claim.
+	 *
+	 * @since 0.2
+	 *
+	 * @return string|null
+	 */
+	public function getGuid() {
+		return $this->guid;
+	}
+
+	/**
+	 * Sets the GUID of the Claim.
+	 *
+	 * @since 0.2
+	 *
+	 * @param string|null $guid
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setGuid( $guid ) {
+		if ( !is_string( $guid ) && $guid !== null ) {
+			throw new InvalidArgumentException( '$guid must be a string or null; got ' . gettype( $guid ) );
+		}
+
+		$this->guid = $guid;
+	}
+
+	/**
 	 * @see Claim::getAllSnaks.
 	 *
 	 * In addition to the Snaks returned by Claim::getAllSnaks(), this also includes all
@@ -178,6 +288,12 @@ class Statement extends Claim {
 			&& $this->claimFieldsEqual( $target )
 			&& $this->rank === $target->getRank()
 			&& $this->references->equals( $target->references );
+	}
+
+	private function claimFieldsEqual( Statement $target ) {
+		return $this->guid === $target->guid
+		&& $this->mainSnak->equals( $target->mainSnak )
+		&& $this->qualifiers->equals( $target->qualifiers );
 	}
 
 }

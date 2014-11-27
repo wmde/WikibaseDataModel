@@ -22,7 +22,7 @@ use Wikibase\DataModel\Statement\Statement;
  * @author Daniel Kinzler
  * @author H. Snater < mediawiki@snater.com >
  */
-class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparable {
+class Claims extends ArrayObject implements Hashable, Comparable {
 
 	/**
 	 * @see GenericArrayObject::__construct
@@ -63,14 +63,14 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 	}
 
 	/**
-	 * @param Claim $claim
+	 * @param Statement $claim
 	 *
-	 * @param Claim $claim
+	 * @param Statement $claim
 	 *
 	 * @throws InvalidArgumentException
 	 * @return string
 	 */
-	private function getClaimKey( Claim $claim ) {
+	private function getClaimKey( Statement $claim ) {
 		$guid = $claim->getGuid();
 
 		if ( $guid === null ) {
@@ -82,16 +82,14 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 	}
 
 	/**
-	 * @see ClaimListAccess::addClaim
-	 *
 	 * @since 0.1
 	 *
-	 * @param Claim $claim
+	 * @param Statement $claim
 	 * @param int|null $index
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function addClaim( Claim $claim, $index = null ) {
+	public function addClaim( Statement $claim, $index = null ) {
 		if ( !is_null( $index ) && !is_integer( $index ) ) {
 			throw new InvalidArgumentException( '$index must be an integer or null; got ' . gettype( $index ) );
 		} else if ( is_null( $index ) || $index >= count( $this ) ) {
@@ -102,10 +100,10 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 	}
 
 	/**
-	 * @param Claim $claim
+	 * @param Statement $claim
 	 * @param int $index
 	 */
-	private function insertClaimAtIndex( Claim $claim, $index ) {
+	private function insertClaimAtIndex( Statement $claim, $index ) {
 		// Determine the claims to shift and remove them from the array:
 		$claimsToShift = array_slice( (array)$this, $index );
 
@@ -122,15 +120,13 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 	}
 
 	/**
-	 * @see ClaimListAccess::hasClaim
-	 *
 	 * @since 0.1
 	 *
-	 * @param Claim $claim
+	 * @param Statement $claim
 	 *
 	 * @return bool
 	 */
-	public function hasClaim( Claim $claim ) {
+	public function hasClaim( Statement $claim ) {
 		$guid = $claim->getGuid();
 
 		if ( $guid === null ) {
@@ -142,20 +138,18 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 	}
 
 	/**
-	 * @see ClaimListAccess::indexOf
-	 *
 	 * @since 0.5
 	 *
-	 * @param Claim $claim
+	 * @param Statement $claim
 	 *
 	 * @return int|bool
 	 */
-	public function indexOf( Claim $claim ) {
+	public function indexOf( Statement $claim ) {
 		$guid = $claim->getGuid();
 		$index = 0;
 
 		/**
-		 * @var Claim $claimObject
+		 * @var Statement $claimObject
 		 */
 		foreach ( $this as $claimObject ) {
 			if ( $claimObject->getGuid() === $guid ) {
@@ -168,13 +162,11 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 	}
 
 	/**
-	 * @see ClaimListAccess::removeClaim
-	 *
 	 * @since 0.1
 	 *
-	 * @param Claim $claim
+	 * @param Statement $claim
 	 */
-	public function removeClaim( Claim $claim ) {
+	public function removeClaim( Statement $claim ) {
 		$guid = $claim->getGuid();
 
 		if ( $guid === null ) {
@@ -189,8 +181,6 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 	}
 
 	/**
-	 * @see ClaimListAccess::hasClaimWithGuid
-	 *
 	 * @since 0.3
 	 *
 	 * @param string $claimGuid
@@ -202,8 +192,6 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 	}
 
 	/**
-	 * @see ClaimListAccess::removeClaimWithGuid
-	 *
 	 * @since 0.3
 	 *
 	 * @param string $claimGuid
@@ -215,8 +203,6 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 	}
 
 	/**
-	 * @see ClaimListAccess::getClaimWithGuid
-	 *
 	 * @since 0.3
 	 *
 	 * @param string $claimGuid
@@ -263,7 +249,7 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 	 * @see ArrayAccess::offsetSet
 	 *
 	 * @param string $guid
-	 * @param Claim $claim
+	 * @param Statement $claim
 	 *
 	 * @throws InvalidArgumentException
 	 */
@@ -303,7 +289,7 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 	 * @return string[]
 	 */
 	public function getGuids() {
-		return array_map( function ( Claim $claim ) {
+		return array_map( function ( Statement $claim ) {
 			return $claim->getGuid();
 		}, iterator_to_array( $this ) );
 	}
@@ -337,7 +323,7 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 	public function getMainSnaks() {
 		$snaks = array();
 
-		/* @var Claim $claim */
+		/* @var Statement $claim */
 		foreach ( $this as $claim ) {
 			$guid = $claim->getGuid();
 			$snaks[$guid] = $claim->getMainSnak();
@@ -356,7 +342,7 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 	public function getHashes() {
 		$snaks = array();
 
-		/* @var Claim $claim */
+		/* @var Statement $claim */
 		foreach ( $this as $claim ) {
 			$guid = $claim->getGuid();
 			$snaks[$guid] = $claim->getHash();
@@ -377,7 +363,7 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 	public function getHash() {
 		$hash = sha1( '' );
 
-		/* @var Claim $claim */
+		/* @var Statement $claim */
 		foreach ( $this as $claim ) {
 			$hash = sha1( $hash . $claim->getHash() );
 		}
@@ -404,7 +390,7 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 	public function getByRank( $rank ) {
 		$claims = new self();
 
-		/* @var Claim $claim */
+		/* @var Statement $claim */
 		foreach ( $this as $claim ) {
 			if ( $claim->getRank() === $rank ) {
 				$claims[] = $claim;
@@ -427,7 +413,7 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 		$ranks = array_flip( $ranks );
 		$claims = new self();
 
-		/* @var Claim $claim */
+		/* @var Statement $claim */
 		foreach ( $this as $claim ) {
 			if ( isset( $ranks[$claim->getRank()] ) ) {
 				$claims[] = $claim;
@@ -444,14 +430,14 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 	 * ClaimList::getBestClaims instead.
 	 *
 	 * @see Claims::getClaimsForProperty
-	 * @see ClaimList::getBestClaimPerProperty
+	 * @see StatementList::getBestStatementPerProperty
 	 *
 	 * @since 0.7
 	 *
 	 * @return Claims
 	 */
 	public function getBestClaims() {
-		$rank = Claim::RANK_TRUTH;
+		$rank = Statement::RANK_PREFERRED;
 
 		do {
 			$claims = $this->getByRank( $rank );
@@ -490,7 +476,7 @@ class Claims extends ArrayObject implements ClaimListAccess, Hashable, Comparabl
 		return true;
 	}
 
-	private function hasExactClaim( Claim $claim ) {
+	private function hasExactClaim( Statement $claim ) {
 		return $this->hasClaim( $claim )
 			&& $this->getClaimWithGuid( $claim->getGuid() )->equals( $claim );
 	}
