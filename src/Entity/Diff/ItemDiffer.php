@@ -76,9 +76,9 @@ class ItemDiffer implements EntityDifferStrategy {
 	private function toDiffArray( Item $item ) {
 		$array = array();
 
-		$array['aliases'] = $item->getAllAliases();
-		$array['label'] = $item->getLabels();
-		$array['description'] = $item->getDescriptions();
+		$array['aliases'] = $item->getFingerprint()->getAliasGroups()->toTextArray();
+		$array['label'] = $item->getFingerprint()->getLabels()->toTextArray();
+		$array['description'] = $item->getFingerprint()->getDescriptions()->toTextArray();
 		$array['links'] = $this->getLinksInDiffFormat( $item );
 
 		return $array;
