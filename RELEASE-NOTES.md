@@ -10,8 +10,8 @@
 * Added `ItemLoookup` and `PropertyLookup` interfaces
 * Added `ItemNotFoundException`
 * Empty strings are now detected as invalid language codes in the term classes
-* `Item` constructor parameters for site links and statements are optional now
-* `Fingerprint` constructor can be empty
+* Made the `Item` constructor parameters optional
+* Made the `Fingerprint` constructor parameters optional
 
 ## Version 2.4.1 (2014-11-26)
 
