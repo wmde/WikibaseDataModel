@@ -9,7 +9,7 @@ use Wikibase\DataModel\Snak\Snak;
 use Wikibase\DataModel\Statement\Statement;
 use Wikibase\DataModel\Statement\StatementList;
 use Wikibase\DataModel\StatementListProvider;
-use Wikibase\DataModel\Term\Fingerprint;
+use Wikibase\DataModel\Term\EntityTerms;
 
 /**
  * Represents a single Wikibase property.
@@ -38,18 +38,18 @@ class Property extends Entity implements StatementListProvider {
 	 * @since 1.0
 	 *
 	 * @param PropertyId|null $id
-	 * @param Fingerprint|null $fingerprint
+	 * @param EntityTerms|null $entityTerms
 	 * @param string $dataTypeId
 	 * @param StatementList|null $statements Since 1.1
 	 */
 	public function __construct(
 		PropertyId $id = null,
-		Fingerprint $fingerprint = null,
+		EntityTerms $entityTerms = null,
 		$dataTypeId,
 		StatementList $statements = null
 	) {
 		$this->id = $id;
-		$this->fingerprint = $fingerprint ?: new Fingerprint();
+		$this->entityTerms = $entityTerms ?: new EntityTerms();
 		$this->setDataTypeId( $dataTypeId );
 		$this->statements = $statements ?: new StatementList();
 	}
@@ -151,7 +151,7 @@ class Property extends Entity implements StatementListProvider {
 
 		return $target instanceof self
 			&& $this->dataTypeId === $target->dataTypeId
-			&& $this->fingerprint->equals( $target->fingerprint )
+			&& $this->entityTerms->equals( $target->entityTerms )
 			&& $this->statements->equals( $target->statements );
 	}
 
@@ -164,7 +164,7 @@ class Property extends Entity implements StatementListProvider {
 	 * @return bool
 	 */
 	public function isEmpty() {
-		return $this->fingerprint->isEmpty()
+		return $this->entityTerms->isEmpty()
 			&& $this->statements->isEmpty();
 	}
 
@@ -175,7 +175,7 @@ class Property extends Entity implements StatementListProvider {
 	 * @since 0.1
 	 */
 	public function clear() {
-		$this->fingerprint = new Fingerprint();
+		$this->entityTerms = new EntityTerms();
 	}
 
 	/**

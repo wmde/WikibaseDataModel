@@ -5,15 +5,15 @@ namespace Wikibase\DataModel\Tests\Term;
 use OutOfBoundsException;
 use Wikibase\DataModel\Term\AliasGroup;
 use Wikibase\DataModel\Term\AliasGroupList;
-use Wikibase\DataModel\Term\Fingerprint;
+use Wikibase\DataModel\Term\EntityTerms;
 use Wikibase\DataModel\Term\Term;
 use Wikibase\DataModel\Term\TermList;
 
 /**
- * @covers Wikibase\DataModel\Term\Fingerprint
+ * @covers Wikibase\DataModel\Term\EntityTerms
  * @uses Wikibase\DataModel\Term\AliasGroup
  * @uses Wikibase\DataModel\Term\AliasGroupList
- * @uses Wikibase\DataModel\Term\Fingerprint
+ * @uses Wikibase\DataModel\Term\EntityTerms
  * @uses Wikibase\DataModel\Term\Term
  * @uses Wikibase\DataModel\Term\TermList
  *
@@ -21,7 +21,7 @@ use Wikibase\DataModel\Term\TermList;
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author Thiemo Mättig
  */
-class FingerprintTest extends \PHPUnit_Framework_TestCase {
+class EntityTermsTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @var TermList
@@ -39,9 +39,9 @@ class FingerprintTest extends \PHPUnit_Framework_TestCase {
 	private $aliasGroups;
 
 	/**
-	 * @var Fingerprint
+	 * @var EntityTerms
 	 */
-	private $fingerprint;
+	private $entityTerms;
 
 	protected function setUp() {
 		$this->labels = $this->getMockBuilder( 'Wikibase\DataModel\Term\TermList' )
@@ -53,7 +53,7 @@ class FingerprintTest extends \PHPUnit_Framework_TestCase {
 		$this->aliasGroups = $this->getMockBuilder( 'Wikibase\DataModel\Term\AliasGroupList' )
 			->disableOriginalConstructor()->getMock();
 
-		$this->fingerprint = new Fingerprint(
+		$this->entityTerms = new EntityTerms(
 			new TermList( array(
 				new Term( 'en', 'enlabel' ),
 				new Term( 'de', 'delabel' ),
@@ -70,135 +70,135 @@ class FingerprintTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testEmptyConstructor() {
-		$fingerprint = new Fingerprint();
+		$entityTerms = new EntityTerms();
 
-		$this->assertTrue( $fingerprint->getLabels()->isEmpty() );
-		$this->assertTrue( $fingerprint->getDescriptions()->isEmpty() );
-		$this->assertTrue( $fingerprint->getAliasGroups()->isEmpty() );
+		$this->assertTrue( $entityTerms->getLabels()->isEmpty() );
+		$this->assertTrue( $entityTerms->getDescriptions()->isEmpty() );
+		$this->assertTrue( $entityTerms->getAliasGroups()->isEmpty() );
 	}
 
 	public function testConstructorSetsValues() {
-		$fingerprint = new Fingerprint( $this->labels, $this->descriptions, $this->aliasGroups );
+		$entityTerms = new EntityTerms( $this->labels, $this->descriptions, $this->aliasGroups );
 
-		$this->assertEquals( $this->labels, $fingerprint->getLabels() );
-		$this->assertEquals( $this->descriptions, $fingerprint->getDescriptions() );
-		$this->assertEquals( $this->aliasGroups, $fingerprint->getAliasGroups() );
+		$this->assertEquals( $this->labels, $entityTerms->getLabels() );
+		$this->assertEquals( $this->descriptions, $entityTerms->getDescriptions() );
+		$this->assertEquals( $this->aliasGroups, $entityTerms->getAliasGroups() );
 	}
 
 	public function testGetLabel() {
 		$term = new Term( 'en', 'enlabel' );
-		$this->assertEquals( $term, $this->fingerprint->getLabel( 'en' ) );
+		$this->assertEquals( $term, $this->entityTerms->getLabel( 'en' ) );
 	}
 
 	public function testSetLabel() {
 		$term = new Term( 'en', 'changed' );
-		$this->fingerprint->setLabel( 'en', 'changed' );
-		$this->assertEquals( $term, $this->fingerprint->getLabel( 'en' ) );
+		$this->entityTerms->setLabel( 'en', 'changed' );
+		$this->assertEquals( $term, $this->entityTerms->getLabel( 'en' ) );
 	}
 
 	public function testRemoveLabel() {
 		$labels = new TermList( array(
 			new Term( 'de', 'delabel' ),
 		) );
-		$this->fingerprint->removeLabel( 'en' );
-		$this->assertEquals( $labels, $this->fingerprint->getLabels() );
+		$this->entityTerms->removeLabel( 'en' );
+		$this->assertEquals( $labels, $this->entityTerms->getLabels() );
 	}
 
 	/**
 	 * @expectedException OutOfBoundsException
 	 */
 	public function testRemoveLabelMakesGetterThrowException() {
-		$this->fingerprint->removeLabel( 'en' );
-		$this->fingerprint->getLabel( 'en' );
+		$this->entityTerms->removeLabel( 'en' );
+		$this->entityTerms->getLabel( 'en' );
 	}
 
 	public function testGetDescription() {
 		$term = new Term( 'en', 'endescription' );
-		$this->assertEquals( $term, $this->fingerprint->getDescription( 'en' ) );
+		$this->assertEquals( $term, $this->entityTerms->getDescription( 'en' ) );
 	}
 
 	public function testSetDescription() {
 		$description = new Term( 'en', 'changed' );
-		$this->fingerprint->setDescription( 'en', 'changed' );
-		$this->assertEquals( $description, $this->fingerprint->getDescription( 'en' ) );
+		$this->entityTerms->setDescription( 'en', 'changed' );
+		$this->assertEquals( $description, $this->entityTerms->getDescription( 'en' ) );
 	}
 
 	public function testRemoveDescription() {
 		$descriptions = new TermList( array(
 			new Term( 'de', 'dedescription' ),
 		) );
-		$this->fingerprint->removeDescription( 'en' );
-		$this->assertEquals( $descriptions, $this->fingerprint->getDescriptions() );
+		$this->entityTerms->removeDescription( 'en' );
+		$this->assertEquals( $descriptions, $this->entityTerms->getDescriptions() );
 	}
 
 	/**
 	 * @expectedException OutOfBoundsException
 	 */
 	public function testRemoveDescriptionMakesGetterThrowException() {
-		$this->fingerprint->removeDescription( 'en' );
-		$this->fingerprint->getDescription( 'en' );
+		$this->entityTerms->removeDescription( 'en' );
+		$this->entityTerms->getDescription( 'en' );
 	}
 
 	public function testGetAliasGroup() {
 		$aliasGroup = new AliasGroup( 'en', array( 'enalias' ) );
-		$this->assertEquals( $aliasGroup, $this->fingerprint->getAliasGroup( 'en' ) );
+		$this->assertEquals( $aliasGroup, $this->entityTerms->getAliasGroup( 'en' ) );
 	}
 
 	public function testSetAliasGroup() {
 		$aliasGroup = new AliasGroup( 'en', array( 'changed' ) );
-		$this->fingerprint->setAliasGroup( 'en', array( 'changed' ) );
-		$this->assertEquals( $aliasGroup, $this->fingerprint->getAliasGroup( 'en' ) );
+		$this->entityTerms->setAliasGroup( 'en', array( 'changed' ) );
+		$this->assertEquals( $aliasGroup, $this->entityTerms->getAliasGroup( 'en' ) );
 	}
 
 	public function testRemoveAliasGroup() {
 		$aliasGroups = new AliasGroupList( array(
 			new AliasGroup( 'de', array( 'dealias' ) ),
 		) );
-		$this->fingerprint->removeAliasGroup( 'en' );
-		$this->assertEquals( $aliasGroups, $this->fingerprint->getAliasGroups() );
+		$this->entityTerms->removeAliasGroup( 'en' );
+		$this->assertEquals( $aliasGroups, $this->entityTerms->getAliasGroups() );
 	}
 
 	/**
 	 * @expectedException OutOfBoundsException
 	 */
 	public function testRemoveAliasGroupMakesGetterThrowException() {
-		$this->fingerprint->removeAliasGroup( 'en' );
-		$this->fingerprint->getAliasGroup( 'en' );
+		$this->entityTerms->removeAliasGroup( 'en' );
+		$this->entityTerms->getAliasGroup( 'en' );
 	}
 
 	/**
-	 * @dataProvider fingerprintProvider
+	 * @dataProvider entityTermsProvider
 	 */
-	public function testFingerprintsEqualThemselves( Fingerprint $fingerprint ) {
-		$this->assertTrue( $fingerprint->equals( $fingerprint ) );
-		$this->assertTrue( $fingerprint->equals( clone $fingerprint ) );
+	public function testEntityTermsEqualThemselves( EntityTerms $entityTerms ) {
+		$this->assertTrue( $entityTerms->equals( $entityTerms ) );
+		$this->assertTrue( $entityTerms->equals( clone $entityTerms ) );
 	}
 
-	public function fingerprintProvider() {
+	public function entityTermsProvider() {
 		return array(
 			array(
-				new Fingerprint()
+				new EntityTerms()
 			),
 			array(
-				new Fingerprint(
+				new EntityTerms(
 					new TermList( array( new Term( 'en', 'foo' ) ) )
 				)
 			),
 			array(
-				new Fingerprint(
+				new EntityTerms(
 					new TermList(),
 					new TermList( array( new Term( 'en', 'foo' ) ) )
 				)
 			),
 			array(
-				new Fingerprint(
+				new EntityTerms(
 					new TermList(),
 					new TermList(),
 					new AliasGroupList( array( new AliasGroup( 'en', array( 'foo' ) ) ) )
 				)
 			),
 			array(
-				new Fingerprint(
+				new EntityTerms(
 					new TermList( array( new Term( 'nl', 'bar' ), new Term( 'fr', 'le' ) ) ),
 					new TermList( array( new Term( 'de', 'baz' ) ) ),
 					new AliasGroupList( array( new AliasGroup( 'en', array( 'foo' ) ) ) )
@@ -208,50 +208,50 @@ class FingerprintTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @dataProvider differentFingerprintsProvider
+	 * @dataProvider differentEntityTermsProvider
 	 */
-	public function testDifferentFingerprintsDoNotEqual( Fingerprint $one, Fingerprint $two ) {
+	public function testDifferentEntityTermsDoNotEqual( EntityTerms $one, EntityTerms $two ) {
 		$this->assertFalse( $one->equals( $two ) );
 	}
 
-	public function differentFingerprintsProvider() {
+	public function differentEntityTermsProvider() {
 		return array(
 			array(
-				new Fingerprint(),
-				new Fingerprint(
+				new EntityTerms(),
+				new EntityTerms(
 					new TermList( array( new Term( 'en', 'foo' ) ) )
 				)
 			),
 			array(
-				new Fingerprint(
+				new EntityTerms(
 					new TermList( array( new Term( 'en', 'foo' ), new Term( 'de', 'bar' ) ) )
 				),
-				new Fingerprint(
+				new EntityTerms(
 					new TermList( array( new Term( 'en', 'foo' ) ) )
 				)
 			),
 			array(
-				new Fingerprint(),
-				new Fingerprint(
+				new EntityTerms(),
+				new EntityTerms(
 					new TermList(),
 					new TermList( array( new Term( 'en', 'foo' ) ) )
 				)
 			),
 			array(
-				new Fingerprint(),
-				new Fingerprint(
+				new EntityTerms(),
+				new EntityTerms(
 					new TermList(),
 					new TermList(),
 					new AliasGroupList( array( new AliasGroup( 'en', array( 'foo' ) ) ) )
 				)
 			),
 			array(
-				new Fingerprint(
+				new EntityTerms(
 					new TermList( array( new Term( 'nl', 'bar' ), new Term( 'fr', 'le' ) ) ),
 					new TermList( array( new Term( 'de', 'HAX' ) ) ),
 					new AliasGroupList( array( new AliasGroup( 'en', array( 'foo' ) ) ) )
 				),
-				new Fingerprint(
+				new EntityTerms(
 					new TermList( array( new Term( 'nl', 'bar' ), new Term( 'fr', 'le' ) ) ),
 					new TermList( array( new Term( 'de', 'baz' ) ) ),
 					new AliasGroupList( array( new AliasGroup( 'en', array( 'foo' ) ) ) )
@@ -260,35 +260,35 @@ class FingerprintTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
-	public function testEmptyFingerprintIsEmpty() {
-		$fingerprint = new Fingerprint();
-		$this->assertTrue( $fingerprint->isEmpty() );
+	public function testEmptyEntityTermsIsEmpty() {
+		$entityTerms = new EntityTerms();
+		$this->assertTrue( $entityTerms->isEmpty() );
 	}
 
 	/**
-	 * @dataProvider nonEmptyFingerprintProvider
+	 * @dataProvider nonEmptyEntityTermsProvider
 	 */
-	public function testNonEmptyFingerprintIsNotEmpty( Fingerprint $nonEmptyFingerprint ) {
-		$this->assertFalse( $nonEmptyFingerprint->isEmpty() );
+	public function testNonEmptyEntityTermsIsNotEmpty( EntityTerms $nonEmptyEntityTerms ) {
+		$this->assertFalse( $nonEmptyEntityTerms->isEmpty() );
 	}
 
-	public function nonEmptyFingerprintProvider() {
+	public function nonEmptyEntityTermsProvider() {
 		return array(
 			array(
-				new Fingerprint(
+				new EntityTerms(
 					new TermList( array( new Term( 'en', 'foo' ) ) )
 				)
 			),
 
 			array(
-				new Fingerprint(
+				new EntityTerms(
 					new TermList(),
 					new TermList( array( new Term( 'en', 'foo' ) ) )
 				)
 			),
 
 			array(
-				new Fingerprint(
+				new EntityTerms(
 					new TermList(),
 					new TermList(),
 					new AliasGroupList( array( new AliasGroup( 'en', array( 'foo' ) ) ) )
@@ -296,7 +296,7 @@ class FingerprintTest extends \PHPUnit_Framework_TestCase {
 			),
 
 			array(
-				new Fingerprint(
+				new EntityTerms(
 					new TermList( array( new Term( 'nl', 'bar' ), new Term( 'fr', 'le' ) ) ),
 					new TermList( array( new Term( 'de', 'baz' ) ) ),
 					new AliasGroupList( array( new AliasGroup( 'en', array( 'foo' ) ) ) )
@@ -306,81 +306,81 @@ class FingerprintTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testSetLabels() {
-		$fingerprint = new Fingerprint();
-		$fingerprint->setLabel( 'en', 'foo' );
+		$entityTerms = new EntityTerms();
+		$entityTerms->setLabel( 'en', 'foo' );
 
 		$labels = new TermList( array(
 			new Term( 'de', 'bar' )
 		) );
 
-		$fingerprint->setLabels( $labels );
+		$entityTerms->setLabels( $labels );
 
-		$this->assertEquals( $labels, $fingerprint->getLabels() );
+		$this->assertEquals( $labels, $entityTerms->getLabels() );
 	}
 
 	public function testSetDescriptions() {
-		$fingerprint = new Fingerprint();
-		$fingerprint->setDescription( 'en', 'foo' );
+		$entityTerms = new EntityTerms();
+		$entityTerms->setDescription( 'en', 'foo' );
 
 		$descriptions = new TermList( array(
 			new Term( 'de', 'bar' )
 		) );
 
-		$fingerprint->setDescriptions( $descriptions );
+		$entityTerms->setDescriptions( $descriptions );
 
-		$this->assertEquals( $descriptions, $fingerprint->getDescriptions() );
+		$this->assertEquals( $descriptions, $entityTerms->getDescriptions() );
 	}
 
 	public function testSetAliasGroups() {
-		$fingerprint = new Fingerprint();
-		$fingerprint->setAliasGroup( 'en', array( 'foo' ) );
+		$entityTerms = new EntityTerms();
+		$entityTerms->setAliasGroup( 'en', array( 'foo' ) );
 
 		$groups = new AliasGroupList( array(
 			new AliasGroup( 'de', array( 'bar' ) )
 		) );
 
-		$fingerprint->setAliasGroups( $groups );
+		$entityTerms->setAliasGroups( $groups );
 
-		$this->assertEquals( $groups, $fingerprint->getAliasGroups() );
+		$this->assertEquals( $groups, $entityTerms->getAliasGroups() );
 	}
 
-	public function testEmptyFingerprintDoesNotHaveLabel() {
-		$fingerprint = new Fingerprint();
-		$this->assertFalse( $fingerprint->hasLabel( 'en' ) );
+	public function testEmptyEntityTermsDoesNotHaveLabel() {
+		$entityTerms = new EntityTerms();
+		$this->assertFalse( $entityTerms->hasLabel( 'en' ) );
 	}
 
-	public function testEmptyFingerprintDoesNotHaveDescription() {
-		$fingerprint = new Fingerprint();
-		$this->assertFalse( $fingerprint->hasDescription( 'en' ) );
+	public function testEmptyEntityTermsDoesNotHaveDescription() {
+		$entityTerms = new EntityTerms();
+		$this->assertFalse( $entityTerms->hasDescription( 'en' ) );
 	}
 
-	public function testEmptyFingerprintDoesNotHaveAliasGroup() {
-		$fingerprint = new Fingerprint();
-		$this->assertFalse( $fingerprint->hasAliasGroup( 'en' ) );
+	public function testEmptyEntityTermsDoesNotHaveAliasGroup() {
+		$entityTerms = new EntityTerms();
+		$this->assertFalse( $entityTerms->hasAliasGroup( 'en' ) );
 	}
 
 	public function testHasLabelReturnsTrueOnlyWhenLabelExists() {
-		$fingerprint = new Fingerprint();
-		$fingerprint->setLabel( 'en', 'foo' );
+		$entityTerms = new EntityTerms();
+		$entityTerms->setLabel( 'en', 'foo' );
 
-		$this->assertTrue( $fingerprint->hasLabel( 'en' ) );
-		$this->assertFalse( $fingerprint->hasLabel( 'de' ) );
+		$this->assertTrue( $entityTerms->hasLabel( 'en' ) );
+		$this->assertFalse( $entityTerms->hasLabel( 'de' ) );
 	}
 
 	public function testHasDescriptionReturnsTrueOnlyWhenDescriptionExists() {
-		$fingerprint = new Fingerprint();
-		$fingerprint->setDescription( 'en', 'foo' );
+		$entityTerms = new EntityTerms();
+		$entityTerms->setDescription( 'en', 'foo' );
 
-		$this->assertTrue( $fingerprint->hasDescription( 'en' ) );
-		$this->assertFalse( $fingerprint->hasDescription( 'de' ) );
+		$this->assertTrue( $entityTerms->hasDescription( 'en' ) );
+		$this->assertFalse( $entityTerms->hasDescription( 'de' ) );
 	}
 
 	public function testHasAliasGroupReturnsTrueOnlyWhenAliasGroupExists() {
-		$fingerprint = new Fingerprint();
-		$fingerprint->setAliasGroup( 'en', array( 'foo' ) );
+		$entityTerms = new EntityTerms();
+		$entityTerms->setAliasGroup( 'en', array( 'foo' ) );
 
-		$this->assertTrue( $fingerprint->hasAliasGroup( 'en' ) );
-		$this->assertFalse( $fingerprint->hasAliasGroup( 'de' ) );
+		$this->assertTrue( $entityTerms->hasAliasGroup( 'en' ) );
+		$this->assertFalse( $entityTerms->hasAliasGroup( 'de' ) );
 	}
 
 }

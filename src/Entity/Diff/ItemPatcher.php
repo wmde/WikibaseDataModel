@@ -16,9 +16,9 @@ use Wikibase\DataModel\Statement\StatementListPatcher;
 class ItemPatcher implements EntityPatcherStrategy {
 
 	/**
-	 * @var FingerprintPatcher
+	 * @var EntityTermsPatcher
 	 */
-	private $fingerprintPatcher;
+	private $entityTermsPatcher;
 
 	/**
 	 * @var StatementListPatcher
@@ -31,7 +31,7 @@ class ItemPatcher implements EntityPatcherStrategy {
 	private $siteLinkListPatcher;
 
 	public function __construct() {
-		$this->fingerprintPatcher = new FingerprintPatcher();
+		$this->entityTermsPatcher = new EntityTermsPatcher();
 		$this->statementListPatcher = new StatementListPatcher();
 		$this->siteLinkListPatcher = new SiteLinkListPatcher();
 	}
@@ -65,7 +65,7 @@ class ItemPatcher implements EntityPatcherStrategy {
 	}
 
 	private function patchItem( Item $item, EntityDiff $patch ) {
-		$this->fingerprintPatcher->patchFingerprint( $item->getFingerprint(), $patch );
+		$this->entityTermsPatcher->patchEntityTerms( $item->getEntityTerms(), $patch );
 
 		if ( $patch instanceof ItemDiff ) {
 			$item->setSiteLinkList( $this->siteLinkListPatcher->getPatchedSiteLinkList(

@@ -19,3 +19,10 @@ if ( defined( 'MEDIAWIKI' ) ) {
 		require_once __DIR__ . '/WikibaseDataModel.mw.php';
 	} );
 }
+
+// Aliasing of classes that got renamed.
+// For more details, see Aliases.php.
+
+// Aliases introduced in 3.0.0
+class_alias( 'Wikibase\DataModel\Entity\Diff\EntityTermsPatcher', 'Wikibase\DataModel\Entity\Diff\FingerprintPatcher' );
+class_alias( 'Wikibase\DataModel\Term\EntityTerms', 'Wikibase\DataModel\Term\Fingerprint' );

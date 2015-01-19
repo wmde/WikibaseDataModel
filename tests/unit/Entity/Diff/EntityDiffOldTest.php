@@ -131,7 +131,7 @@ abstract class EntityDiffOldTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testApply( Entity $a, Entity $b ) {
 		$a->patch( $a->getDiff( $b ) );
-		$this->assertTrue( $a->getFingerprint()->equals( $b->getFingerprint() ) );
+		$this->assertTrue( $a->getEntityTerms()->equals( $b->getEntityTerms() ) );
 	}
 
 	public function provideConflictDetection() {

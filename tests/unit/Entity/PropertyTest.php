@@ -11,7 +11,7 @@ use Wikibase\DataModel\Snak\PropertyNoValueSnak;
 use Wikibase\DataModel\Snak\PropertySomeValueSnak;
 use Wikibase\DataModel\Statement\Statement;
 use Wikibase\DataModel\Statement\StatementList;
-use Wikibase\DataModel\Term\Fingerprint;
+use Wikibase\DataModel\Term\EntityTerms;
 
 /**
  * @covers Wikibase\DataModel\Entity\Property
@@ -50,13 +50,13 @@ class PropertyTest extends EntityTest {
 	public function testConstructorWithAllParameters() {
 		$property = new Property(
 			new PropertyId( 'P42' ),
-			new Fingerprint(),
+			new EntityTerms(),
 			'string',
 			new StatementList()
 		);
 		$this->assertInstanceOf( 'Wikibase\DataModel\Entity\Property', $property );
 		$this->assertEquals( new PropertyId( 'P42' ), $property->getId() );
-		$this->assertEquals( new Fingerprint(), $property->getFingerprint() );
+		$this->assertEquals( new EntityTerms(), $property->getEntityTerms() );
 		$this->assertEquals( 'string', $property->getDataTypeId() );
 		$this->assertEquals( new StatementList(), $property->getStatements() );
 	}
@@ -65,7 +65,7 @@ class PropertyTest extends EntityTest {
 		$property = new Property( null, null, '' );
 		$this->assertInstanceOf( 'Wikibase\DataModel\Entity\Property', $property );
 		$this->assertNull( $property->getId() );
-		$this->assertEquals( new Fingerprint(), $property->getFingerprint() );
+		$this->assertEquals( new EntityTerms(), $property->getEntityTerms() );
 		$this->assertEquals( '', $property->getDataTypeId() );
 		$this->assertEquals( new StatementList(), $property->getStatements() );
 	}
@@ -120,9 +120,9 @@ class PropertyTest extends EntityTest {
 		$this->assertTrue( $property->isEmpty() );
 	}
 
-	public function testPropertyWithFingerprintIsNotEmpty() {
+	public function testPropertyWithEntityTermsIsNotEmpty() {
 		$property = Property::newFromType( 'string' );
-		$property->getFingerprint()->setAliasGroup( 'en', array( 'foo' ) );
+		$property->getEntityTerms()->setAliasGroup( 'en', array( 'foo' ) );
 		$this->assertFalse( $property->isEmpty() );
 	}
 
@@ -130,12 +130,12 @@ class PropertyTest extends EntityTest {
 		$property = Property::newFromType( 'string' );
 
 		$property->setId( 42 );
-		$property->getFingerprint()->setLabel( 'en', 'foo' );
+		$property->getEntityTerms()->setLabel( 'en', 'foo' );
 
 		$property->clear();
 
 		$this->assertEquals( new PropertyId( 'P42' ), $property->getId() );
-		$this->assertTrue( $property->getFingerprint()->isEmpty() );
+		$this->assertTrue( $property->getEntityTerms()->isEmpty() );
 	}
 
 	public function testGetStatementsReturnsEmptyListForEmptyProperty() {
@@ -194,9 +194,9 @@ class PropertyTest extends EntityTest {
 		$property = Property::newFromType( 'string' );
 
 		$property->setId( 42 );
-		$property->getFingerprint()->setLabel( 'en', 'Same' );
-		$property->getFingerprint()->setDescription( 'en', 'Same' );
-		$property->getFingerprint()->setAliasGroup( 'en', array( 'Same' ) );
+		$property->getEntityTerms()->setLabel( 'en', 'Same' );
+		$property->getEntityTerms()->setDescription( 'en', 'Same' );
+		$property->getEntityTerms()->setAliasGroup( 'en', array( 'Same' ) );
 		$property->setStatements( $this->newNonEmptyStatementList() );
 
 		return $property;
@@ -204,13 +204,13 @@ class PropertyTest extends EntityTest {
 
 	public function notEqualsProvider() {
 		$differentLabel = $this->getBaseProperty();
-		$differentLabel->getFingerprint()->setLabel( 'en', 'Different' );
+		$differentLabel->getEntityTerms()->setLabel( 'en', 'Different' );
 
 		$differentDescription = $this->getBaseProperty();
-		$differentDescription->getFingerprint()->setDescription( 'en', 'Different' );
+		$differentDescription->getEntityTerms()->setDescription( 'en', 'Different' );
 
 		$differentAlias = $this->getBaseProperty();
-		$differentAlias->getFingerprint()->setAliasGroup( 'en', array( 'Different' ) );
+		$differentAlias->getEntityTerms()->setAliasGroup( 'en', array( 'Different' ) );
 
 		$differentStatement = $this->getBaseProperty();
 		$differentStatement->setStatements( new StatementList() );

@@ -28,14 +28,14 @@ class ItemDifferTest extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue( $diff->isEmpty() );
 	}
 
-	public function testFingerprintIsDiffed() {
+	public function testEntityTermsIsDiffed() {
 		$firstItem = new Item();
-		$firstItem->getFingerprint()->setLabel( 'en', 'kittens' );
-		$firstItem->getFingerprint()->setAliasGroup( 'en', array( 'cats' ) );
+		$firstItem->getEntityTerms()->setLabel( 'en', 'kittens' );
+		$firstItem->getEntityTerms()->setAliasGroup( 'en', array( 'cats' ) );
 
 		$secondItem = new Item();
-		$secondItem->getFingerprint()->setLabel( 'en', 'nyan' );
-		$secondItem->getFingerprint()->setDescription( 'en', 'foo bar baz' );
+		$secondItem->getEntityTerms()->setLabel( 'en', 'nyan' );
+		$secondItem->getEntityTerms()->setDescription( 'en', 'foo bar baz' );
 
 		$differ = new ItemDiffer();
 		$diff = $differ->diffItems( $firstItem, $secondItem );
@@ -80,7 +80,7 @@ class ItemDifferTest extends \PHPUnit_Framework_TestCase {
 
 	public function testConstructionDiffContainsAddOperations() {
 		$item = new Item();
-		$item->getFingerprint()->setLabel( 'en', 'foo' );
+		$item->getEntityTerms()->setLabel( 'en', 'foo' );
 		$item->getSiteLinkList()->addNewSiteLink( 'bar', 'baz' );
 
 		$differ = new ItemDiffer();

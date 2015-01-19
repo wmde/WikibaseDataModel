@@ -16,9 +16,9 @@ use Wikibase\DataModel\Statement\StatementListPatcher;
 class PropertyPatcher implements EntityPatcherStrategy {
 
 	/**
-	 * @var FingerprintPatcher
+	 * @var EntityTermsPatcher
 	 */
-	private $fingerprintPatcher;
+	private $entityTermsPatcher;
 
 	/**
 	 * @var StatementListPatcher
@@ -26,7 +26,7 @@ class PropertyPatcher implements EntityPatcherStrategy {
 	private $statementListPatcher;
 
 	public function __construct() {
-		$this->fingerprintPatcher = new FingerprintPatcher();
+		$this->entityTermsPatcher = new EntityTermsPatcher();
 		$this->statementListPatcher = new StatementListPatcher();
 	}
 
@@ -59,7 +59,7 @@ class PropertyPatcher implements EntityPatcherStrategy {
 	}
 
 	private function patchProperty( Property $property, EntityDiff $patch ) {
-		$this->fingerprintPatcher->patchFingerprint( $property->getFingerprint(), $patch );
+		$this->entityTermsPatcher->patchEntityTerms( $property->getEntityTerms(), $patch );
 
 		$property->setStatements( $this->statementListPatcher->getPatchedStatementList(
 			$property->getStatements(),

@@ -13,12 +13,12 @@ use OutOfBoundsException;
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author Thiemo Mättig
  */
-class Fingerprint implements Comparable {
+class EntityTerms implements Comparable {
 
 	/**
-	 * @deprecated since 2.5, use new Fingerprint() instead.
+	 * @deprecated since 2.5, use new EntityTerms() instead.
 	 *
-	 * @return Fingerprint
+	 * @return EntityTerms
 	 */
 	public static function newEmpty() {
 		return new self();

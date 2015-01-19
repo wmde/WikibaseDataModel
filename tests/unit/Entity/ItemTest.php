@@ -616,7 +616,7 @@ class ItemTest extends EntityTest {
 
 	public function testItemWithStuffIsNotEmpty() {
 		$item = new Item();
-		$item->getFingerprint()->setAliasGroup( 'en', array( 'foo' ) );
+		$item->getEntityTerms()->setAliasGroup( 'en', array( 'foo' ) );
 		$this->assertFalse( $item->isEmpty() );
 
 		$item = new Item();
@@ -649,14 +649,14 @@ class ItemTest extends EntityTest {
 		$item = new Item();
 
 		$item->setId( 42 );
-		$item->getFingerprint()->setLabel( 'en', 'foo' );
+		$item->getEntityTerms()->setLabel( 'en', 'foo' );
 		$item->getSiteLinkList()->addNewSiteLink( 'enwiki', 'Foo' );
 		$item->addClaim( $this->newStatement() );
 
 		$item->clear();
 
 		$this->assertEquals( new ItemId( 'Q42' ), $item->getId() );
-		$this->assertTrue( $item->getFingerprint()->isEmpty() );
+		$this->assertTrue( $item->getEntityTerms()->isEmpty() );
 		$this->assertTrue( $item->getSiteLinkList()->isEmpty() );
 		$this->assertTrue( $item->getStatements()->isEmpty() );
 	}
@@ -665,7 +665,7 @@ class ItemTest extends EntityTest {
 		$item = new Item();
 
 		$this->assertNull( $item->getId() );
-		$this->assertTrue( $item->getFingerprint()->isEmpty() );
+		$this->assertTrue( $item->getEntityTerms()->isEmpty() );
 		$this->assertTrue( $item->getSiteLinkList()->isEmpty() );
 		$this->assertTrue( $item->getStatements()->isEmpty() );
 	}
@@ -732,9 +732,9 @@ class ItemTest extends EntityTest {
 		$item = new Item();
 
 		$item->setId( 42 );
-		$item->getFingerprint()->setLabel( 'en', 'Same' );
-		$item->getFingerprint()->setDescription( 'en', 'Same' );
-		$item->getFingerprint()->setAliasGroup( 'en', array( 'Same' ) );
+		$item->getEntityTerms()->setLabel( 'en', 'Same' );
+		$item->getEntityTerms()->setDescription( 'en', 'Same' );
+		$item->getEntityTerms()->setAliasGroup( 'en', array( 'Same' ) );
 		$item->getSiteLinkList()->addNewSiteLink( 'enwiki', 'Same' );
 		$item->getStatements()->addNewStatement( new PropertyNoValueSnak( 42 ) );
 
@@ -743,13 +743,13 @@ class ItemTest extends EntityTest {
 
 	public function notEqualsProvider() {
 		$differentLabel = $this->getBaseItem();
-		$differentLabel->getFingerprint()->setLabel( 'en', 'Different' );
+		$differentLabel->getEntityTerms()->setLabel( 'en', 'Different' );
 
 		$differentDescription = $this->getBaseItem();
-		$differentDescription->getFingerprint()->setDescription( 'en', 'Different' );
+		$differentDescription->getEntityTerms()->setDescription( 'en', 'Different' );
 
 		$differentAlias = $this->getBaseItem();
-		$differentAlias->getFingerprint()->setAliasGroup( 'en', array( 'Different' ) );
+		$differentAlias->getEntityTerms()->setAliasGroup( 'en', array( 'Different' ) );
 
 		$differentSiteLink = $this->getBaseItem();
 		$differentSiteLink->getSiteLinkList()->removeLinkWithSiteId( 'enwiki' );

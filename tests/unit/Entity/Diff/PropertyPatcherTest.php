@@ -23,7 +23,7 @@ class PropertyPatcherTest extends \PHPUnit_Framework_TestCase {
 
 	public function testGivenEmptyDiff_itemIsReturnedAsIs() {
 		$property = Property::newFromType( 'kittens' );
-		$property->getFingerprint()->setLabel( 'en', 'foo' );
+		$property->getEntityTerms()->setLabel( 'en', 'foo' );
 		$property->getStatements()->addNewStatement( new PropertyNoValueSnak( 42 ) );
 
 		$patchedProperty = $this->getPatchedProperty( $property, new EntityDiff() );

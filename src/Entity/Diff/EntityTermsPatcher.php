@@ -7,7 +7,7 @@ use Diff\Patcher\MapPatcher;
 use InvalidArgumentException;
 use Wikibase\DataModel\Term\AliasGroup;
 use Wikibase\DataModel\Term\AliasGroupList;
-use Wikibase\DataModel\Term\Fingerprint;
+use Wikibase\DataModel\Term\EntityTerms;
 use Wikibase\DataModel\Term\TermList;
 
 /**
@@ -16,7 +16,7 @@ use Wikibase\DataModel\Term\TermList;
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
-class FingerprintPatcher {
+class EntityTermsPatcher {
 
 	/**
 	 * @var MapPatcher
@@ -28,27 +28,27 @@ class FingerprintPatcher {
 	}
 
 	/**
-	 * @param Fingerprint $fingerprint
+	 * @param EntityTerms $entityTerms
 	 * @param EntityDiff $patch
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function patchFingerprint( Fingerprint $fingerprint, EntityDiff $patch ) {
+	public function patchEntityTerms( EntityTerms $entityTerms, EntityDiff $patch ) {
 		$labels = $this->patcher->patch(
-			$fingerprint->getLabels()->toTextArray(),
+			$entityTerms->getLabels()->toTextArray(),
 			$patch->getLabelsDiff()
 		);
 
-		$fingerprint->setLabels( $this->newTermListFromArray( $labels ) );
+		$entityTerms->setLabels( $this->newTermListFromArray( $labels ) );
 
 		$descriptions = $this->patcher->patch(
-			$fingerprint->getDescriptions()->toTextArray(),
+			$entityTerms->getDescriptions()->toTextArray(),
 			$patch->getDescriptionsDiff()
 		);
 
-		$fingerprint->setDescriptions( $this->newTermListFromArray( $descriptions ) );
+		$entityTerms->setDescriptions( $this->newTermListFromArray( $descriptions ) );
 
-		$this->patchAliases( $fingerprint, $patch->getAliasesDiff() );
+		$this->patchAliases( $entityTerms, $patch->getAliasesDiff() );
 	}
 
 	private function newTermListFromArray( $termArray ) {
@@ -61,13 +61,13 @@ class FingerprintPatcher {
 		return $termList;
 	}
 
-	private function patchAliases( Fingerprint $fingerprint, Diff $aliasesDiff ) {
+	private function patchAliases( EntityTerms $entityTerms, Diff $aliasesDiff ) {
 		$patchedAliases = $this->patcher->patch(
-			$this->getAliasesArrayForPatching( $fingerprint->getAliasGroups() ),
+			$this->getAliasesArrayForPatching( $entityTerms->getAliasGroups() ),
 			$aliasesDiff
 		);
 
-		$fingerprint->setAliasGroups( $this->getAliasesFromArrayForPatching( $patchedAliases ) );
+		$entityTerms->setAliasGroups( $this->getAliasesFromArrayForPatching( $patchedAliases ) );
 	}
 
 	private function getAliasesArrayForPatching( AliasGroupList $aliases ) {

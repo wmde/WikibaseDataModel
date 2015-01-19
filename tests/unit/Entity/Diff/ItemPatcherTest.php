@@ -20,7 +20,7 @@ class ItemPatcherTest extends \PHPUnit_Framework_TestCase {
 
 	public function testGivenEmptyDiff_itemIsReturnedAsIs() {
 		$item = new Item();
-		$item->getFingerprint()->setLabel( 'en', 'foo' );
+		$item->getEntityTerms()->setLabel( 'en', 'foo' );
 		$item->getSiteLinkList()->addNewSiteLink( 'enwiki', 'bar' );
 
 		$patchedItem = $this->getPatchedItem( $item, new ItemDiff() );
@@ -55,8 +55,8 @@ class ItemPatcherTest extends \PHPUnit_Framework_TestCase {
 
 	public function testPatchesLabels() {
 		$item = new Item();
-		$item->getFingerprint()->setLabel( 'en', 'foo' );
-		$item->getFingerprint()->setLabel( 'de', 'bar' );
+		$item->getEntityTerms()->setLabel( 'en', 'foo' );
+		$item->getEntityTerms()->setLabel( 'de', 'bar' );
 
 		$patch = new ItemDiff( array(
 			'label' => new Diff( array(
@@ -73,7 +73,7 @@ class ItemPatcherTest extends \PHPUnit_Framework_TestCase {
 				'de' => 'bar',
 				'nl' => 'baz',
 			),
-			$patchedItem->getFingerprint()->getLabels()->toTextArray()
+			$patchedItem->getEntityTerms()->getLabels()->toTextArray()
 		);
 	}
 

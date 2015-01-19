@@ -12,7 +12,7 @@ use Wikibase\DataModel\Snak\Snak;
 use Wikibase\DataModel\Statement\Statement;
 use Wikibase\DataModel\Statement\StatementList;
 use Wikibase\DataModel\StatementListProvider;
-use Wikibase\DataModel\Term\Fingerprint;
+use Wikibase\DataModel\Term\EntityTerms;
 
 /**
  * Represents a single Wikibase item.
@@ -41,18 +41,18 @@ class Item extends Entity implements StatementListProvider {
 	 * @since 1.0
 	 *
 	 * @param ItemId|null $id
-	 * @param Fingerprint|null $fingerprint
+	 * @param EntityTerms|null $entityTerms
 	 * @param SiteLinkList|null $siteLinks
 	 * @param StatementList|null $statements
 	 */
 	public function __construct(
 		ItemId $id = null,
-		Fingerprint $fingerprint = null,
+		EntityTerms $entityTerms = null,
 		SiteLinkList $siteLinks = null,
 		StatementList $statements = null
 	) {
 		$this->id = $id;
-		$this->fingerprint = $fingerprint ?: new Fingerprint();
+		$this->entityTerms = $entityTerms ?: new EntityTerms();
 		$this->siteLinks = $siteLinks ?: new SiteLinkList();
 		$this->statements = $statements ?: new StatementList();
 	}
@@ -220,7 +220,7 @@ class Item extends Entity implements StatementListProvider {
 	 * @return bool
 	 */
 	public function isEmpty() {
-		return $this->fingerprint->isEmpty()
+		return $this->entityTerms->isEmpty()
 			&& $this->statements->isEmpty()
 			&& $this->siteLinks->isEmpty();
 	}
@@ -232,7 +232,7 @@ class Item extends Entity implements StatementListProvider {
 	 * @since 0.1
 	 */
 	public function clear() {
-		$this->fingerprint = new Fingerprint();
+		$this->entityTerms = new EntityTerms();
 		$this->siteLinks = new SiteLinkList();
 		$this->statements = new StatementList();
 	}
@@ -319,7 +319,7 @@ class Item extends Entity implements StatementListProvider {
 		}
 
 		return $target instanceof self
-			&& $this->fingerprint->equals( $target->fingerprint )
+			&& $this->entityTerms->equals( $target->entityTerms )
 			&& $this->siteLinks->equals( $target->siteLinks )
 			&& $this->statements->equals( $target->statements );
 	}
