@@ -1,8 +1,10 @@
 # Wikibase DataModel release notes
 
-## Version 2.6.0 (dev)
+## Version 3.0.0 (dev)
 
 * Empty strings are now detected as invalid in the `SiteLink` constructor
+* TermFallback and AliasGroupFallback now have more consitency checks,
+  constructing them may throw exceptions where it didn't before
 
 ## Version 2.5.0 (2014-01-20)
 

@@ -27,34 +27,29 @@ class TermFallbackTest extends \PHPUnit_Framework_TestCase {
 		$this->assertNull( $term->getSourceLanguageCode() );
 	}
 
-	/**
-	 * @dataProvider invalidLanguageCodeProvider
-	 * @expectedException InvalidArgumentException
-	 */
-	public function testGivenInvalidActualLanguageCode_constructorThrowsException( $languageCode ) {
-		new TermFallback( 'foor', 'bar', $languageCode, 'foos' );
-	}
-
-	public function invalidLanguageCodeProvider() {
-		return array(
-			array( null ),
-			array( 21 ),
-			array( '' ),
-		);
+	public function testConstructorWithActualSameAsRequestedLanguage() {
+		new TermFallback( 'foor', 'bar', 'foor', 'foos' );
 	}
 
 	/**
-	 * @dataProvider invalidSourceLanguageCodeProvider
+	 * @dataProvider invalidArgumentCombinationsProvider
 	 * @expectedException InvalidArgumentException
 	 */
-	public function testGivenInvalidSourceLanguageCode_constructorThrowsException( $languageCode ) {
-		new TermFallback( 'foor', 'bar', 'fooa', $languageCode );
+	public function testGivenInvalidArgumentCombinations_constructorThrowsException( $requestedLanguage, $sourceLanguage, $actualLanguage ) {
+		new TermFallback( $requestedLanguage, 'bar', $sourceLanguage, $actualLanguage );
 	}
 
-	public function invalidSourceLanguageCodeProvider() {
+	public function invalidArgumentCombinationsProvider() {
 		return array(
-			array( 21 ),
-			array( '' ),
+			'nullSource' => array( 'foor', null, 'fooa' ),
+			'integerSource' => array( 'foor', 21, 'fooa' ),
+			'integerActual' => array( 'foor', 'foos', 21 ),
+			'emptyStringSource' => array( 'foor', '', 'fooa' ),
+			'emptyStringActual' => array( 'foor', 'fooa', '' ),
+			'actualSameAsSource' => array( 'foor', 'foos', 'foos' ),
+			'actualSameAsRequested' => array( 'foor', 'foos', 'foor' ),
+			'requestedSameAsSourceAndNoActual' => array( 'foor', 'foor', null ),
+			'requestedSameAsSourceAndActual' => array( 'foor', 'foor', 'foor' ),
 		);
 	}
 
@@ -81,7 +76,7 @@ class TermFallbackTest extends \PHPUnit_Framework_TestCase {
 			'actualLanguage' => array( new TermFallback( 'foor', 'bar', 'spam', 'foos' ) ),
 			'sourceLanguage' => array( new TermFallback( 'foor', 'bar', 'fooa', 'spam' ) ),
 			'null sourceLanguage' => array( new TermFallback( 'foor', 'bar', 'fooa', null ) ),
-			'all' => array( new TermFallback( 'ham', 'nom', 'nom', 'nom' ) ),
+			'all' => array( new TermFallback( 'ham', 'nom1', 'nom2', 'nom3' ) ),
 			'instance Term' => array( new Term( 'foor', 'bar' ) ),
 		);
 	}
