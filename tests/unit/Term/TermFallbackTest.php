@@ -27,19 +27,24 @@ class TermFallbackTest extends \PHPUnit_Framework_TestCase {
 		$this->assertNull( $term->getSourceLanguageCode() );
 	}
 
+	public function testConstructorWithActualSameAsRequestedLanguage() {
+		new TermFallback( 'foor', 'bar', 'foor', 'foos' );
+	}
+
 	/**
-	 * @dataProvider invalidLanguageCodeProvider
+	 * @dataProvider invalidActualLanguageCodeProvider
 	 * @expectedException InvalidArgumentException
 	 */
-	public function testGivenInvalidActualLanguageCode_constructorThrowsException( $languageCode ) {
+	public function testGivenActualLanguageCode_constructorThrowsException( $languageCode ) {
 		new TermFallback( 'foor', 'bar', $languageCode, 'foos' );
 	}
 
-	public function invalidLanguageCodeProvider() {
+	public function invalidActualLanguageCodeProvider() {
 		return array(
-			array( null ),
-			array( 21 ),
-			array( '' ),
+			'null' => array( null ),
+			'integer' => array( 21 ),
+			'emptyString' => array( '' ),
+			'sameAsSourceLanguageCode' => array( 'foos' ),
 		);
 	}
 
@@ -47,16 +52,25 @@ class TermFallbackTest extends \PHPUnit_Framework_TestCase {
 	 * @dataProvider invalidSourceLanguageCodeProvider
 	 * @expectedException InvalidArgumentException
 	 */
-	public function testGivenInvalidSourceLanguageCode_constructorThrowsException( $languageCode ) {
+	public function testGivenSourceLanguageCode_constructorThrowsException( $languageCode ) {
 		new TermFallback( 'foor', 'bar', 'fooa', $languageCode );
 	}
 
 	public function invalidSourceLanguageCodeProvider() {
 		return array(
-			array( 21 ),
-			array( '' ),
+			'integer' => array( 21 ),
+			'emptyString' => array( '' ),
+			'sameAsRequestedLanguageCode' => array( 'foor' ),
 		);
 	}
+
+	/**
+	 * @expectedException InvalidArgumentException
+	 */
+	public function testGivenInvalidRequestedSameAsActualAndNoTransliteration_constructorThrowsException() {
+		new TermFallback( 'foor', 'bar', 'foor', null );
+	}
+
 
 	public function testEquality() {
 		$term = new TermFallback( 'foor', 'bar', 'fooa', 'foos' );
@@ -81,7 +95,7 @@ class TermFallbackTest extends \PHPUnit_Framework_TestCase {
 			'actualLanguage' => array( new TermFallback( 'foor', 'bar', 'spam', 'foos' ) ),
 			'sourceLanguage' => array( new TermFallback( 'foor', 'bar', 'fooa', 'spam' ) ),
 			'null sourceLanguage' => array( new TermFallback( 'foor', 'bar', 'fooa', null ) ),
-			'all' => array( new TermFallback( 'ham', 'nom', 'nom', 'nom' ) ),
+			'all' => array( new TermFallback( 'ham', 'nom1', 'nom2', 'nom3' ) ),
 			'instance Term' => array( new Term( 'foor', 'bar' ) ),
 		);
 	}
