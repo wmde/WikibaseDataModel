@@ -47,63 +47,6 @@ use Wikibase\DataModel\Statement\StatementList;
 class ItemTest extends EntityTest {
 
 	/**
-	 * Returns several more or less complex claims
-	 *
-	 * @return Claim[]
-	 */
-	public function makeClaims() {
-		$id9001 = new EntityIdValue( new ItemId( 'q9001' ) );
-		$id1 = new EntityIdValue( new ItemId( 'q1' ) );
-
-		$claims = array();
-
-		$claims[] = new Claim( new PropertyNoValueSnak( 42 ) );
-
-		$claims[] = new Statement(
-			new Claim( new PropertyNoValueSnak( 42 ), null ),
-			new ReferenceList( array(
-				new Reference( new SnakList( array(
-					new PropertyNoValueSnak( 24 ),
-					new PropertyValueSnak( 1, new StringValue( 'onoez' ) ) ) )
-				),
-				new Reference( new SnakList( array(
-					new PropertyValueSnak( 1, $id9001 ) ) )
-				)
-			) )
-		);
-
-		$claims[] = new Claim( new PropertySomeValueSnak( 43 ) );
-
-		$claims[] = new Claim(
-			new PropertyNoValueSnak( 42 ),
-			new SnakList( array(
-				new PropertyNoValueSnak( 42 ),
-				new PropertySomeValueSnak( 43 ),
-				new PropertyValueSnak( 1, new StringValue( 'onoez' ) ),
-			) )
-		);
-
-		$claims[] = new Claim(
-			new PropertyValueSnak( 2, $id9001 ),
-			new SnakList( array(
-				new PropertyNoValueSnak( 42 ),
-				new PropertySomeValueSnak( 43 ),
-				new PropertyValueSnak( 1, new StringValue( 'onoez' ) ),
-				new PropertyValueSnak( 2, $id1 ),
-			) )
-		);
-
-		/**
-		 * @var Claim $claim
-		 */
-		foreach ( $claims as $i => $claim ) {
-			$claim->setGuid( "ItemTest\$claim-$i" );
-		}
-
-		return $claims;
-	}
-
-	/**
 	 * @see EntityTest::getNewEmpty
 	 *
 	 * @since 0.1
@@ -571,10 +514,10 @@ class ItemTest extends EntityTest {
 	public function testSetClaims() {
 		$item = new Item();
 
-		$statement0 = new Statement( new Claim( new PropertyNoValueSnak( 42 ) ) );
+		$statement0 = new Statement( new PropertyNoValueSnak( 42 ) );
 		$statement0->setGuid( 'TEST$NVS42' );
 
-		$statement1 = new Statement( new Claim( new PropertySomeValueSnak( 42 ) ) );
+		$statement1 = new Statement( new PropertySomeValueSnak( 42 ) );
 		$statement1->setGuid( 'TEST$SVS42' );
 
 		$statements = array( $statement0, $statement1 );
@@ -640,7 +583,7 @@ class ItemTest extends EntityTest {
 	}
 
 	private function newStatement() {
-		$statement = new Statement( new Claim( new PropertyNoValueSnak( 42 ) ) );
+		$statement = new Statement( new PropertyNoValueSnak( 42 ) );
 		$statement->setGuid( 'kittens' );
 		return $statement;
 	}
@@ -671,7 +614,7 @@ class ItemTest extends EntityTest {
 	}
 
 	public function testCanConstructWithStatementList() {
-		$statement = new Statement( new Claim( new PropertyNoValueSnak( 42 ) ) );
+		$statement = new Statement( new PropertyNoValueSnak( 42 ) );
 		$statement->setGuid( 'meh' );
 
 		$statements = new StatementList( $statement );

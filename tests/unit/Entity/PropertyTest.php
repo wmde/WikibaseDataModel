@@ -28,15 +28,6 @@ use Wikibase\DataModel\Term\Fingerprint;
 class PropertyTest extends EntityTest {
 
 	/**
-	 * Returns no claims
-	 *
-	 * @return Claim[]
-	 */
-	public function makeClaims() {
-		return array();
-	}
-
-	/**
 	 * @see EntityTest::getNewEmpty
 	 *
 	 * @since 0.1
@@ -255,10 +246,10 @@ class PropertyTest extends EntityTest {
 	public function testSetClaims() {
 		$property = Property::newFromType( 'string' );
 
-		$statement0 = new Statement( new Claim( new PropertyNoValueSnak( 42 ) ) );
+		$statement0 = new Statement( new PropertyNoValueSnak( 42 ) );
 		$statement0->setGuid( 'TEST$NVS42' );
 
-		$statement1 = new Statement( new Claim( new PropertySomeValueSnak( 42 ) ) );
+		$statement1 = new Statement( new PropertySomeValueSnak( 42 ) );
 		$statement1->setGuid( 'TEST$SVS42' );
 
 		$statements = array( $statement0, $statement1 );
