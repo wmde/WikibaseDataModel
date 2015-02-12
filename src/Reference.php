@@ -26,22 +26,25 @@ class Reference implements \Hashable, \Comparable, \Immutable, \Countable {
 	/**
 	 * An array of Snak is only supported since version 1.1.
 	 *
-	 * @param Snaks|Snak[]|null $snaks
+	 * @param Snak[]|Snaks|Snak $snaks
+	 * @param Snak [$snak2,...]
+	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct( $snaks = null ) {
-		if ( $snaks === null ) {
-			$this->snaks = new SnakList();
+	public function __construct( $snaks = array() /*...*/ ) {
+		if ( $snaks instanceof Snak ) {
+			$snaks = func_get_args();
 		}
-		elseif ( $snaks instanceof Snaks ) {
-			$this->snaks = $snaks;
+
+		if ( is_array( $snaks ) ) {
+			$snaks = new SnakList( $snaks );
 		}
-		elseif ( is_array( $snaks ) ) {
-			$this->snaks = new SnakList( $snaks );
+
+		if ( !( $snaks instanceof Snaks ) ) {
+			throw new InvalidArgumentException( '$snaks must be an array or an instance of Snaks' );
 		}
-		else {
-			throw new InvalidArgumentException( '$snaks must be an instance of Snaks, an array of instances of Snak, or null' );
-		}
+
+		$this->snaks = $snaks;
 	}
 
 	/**

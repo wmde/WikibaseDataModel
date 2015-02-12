@@ -25,6 +25,30 @@ use Wikibase\DataModel\Snak\SnakList;
 class ReferenceList extends HashableObjectStorage {
 
 	/**
+	 * @param Reference[]|Traversable|Reference $references
+	 * @param Reference [$reference2,...]
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function __construct( $references = array() /*...*/ ) {
+		if ( $references instanceof Reference ) {
+			$references = func_get_args();
+		}
+
+		if ( !is_array( $references ) && !( $references instanceof Traversable ) ) {
+			throw new InvalidArgumentException( '$references must be an array or an instance of Traversable' );
+		}
+
+		foreach ( $references as $reference ) {
+			if ( !( $reference instanceof Reference ) ) {
+				throw new InvalidArgumentException( 'Every element in $references must be an instance of Reference' );
+			}
+
+			$this->addReference( $reference );
+		}
+	}
+
+	/**
 	 * Adds the provided reference to the list.
 	 *
 	 * @since 0.1

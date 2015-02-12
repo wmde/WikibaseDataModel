@@ -241,9 +241,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 			new SnakList( array(
 				new PropertyNoValueSnak( 1337 ),
 			) ),
-			new ReferenceList( array(
-				new PropertyNoValueSnak( 1337 ),
-			) )
+			new ReferenceList( new Reference( new PropertyNoValueSnak( 1337 ) ) )
 		);
 
 		$statement->setGuid( 'kittens' );
@@ -293,17 +291,13 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 		$statement = new Statement(
 			new PropertyNoValueSnak( 42 ),
 			new SnakList( array() ),
-			new ReferenceList( array(
-				new PropertyNoValueSnak( 1337 ),
-			) )
+			new ReferenceList( new Reference( new PropertyNoValueSnak( 1337 ) ) )
 		);
 
 		$differentStatement = new Statement(
 			new PropertyNoValueSnak( 42 ),
 			new SnakList( array() ),
-			new ReferenceList( array(
-				new PropertyNoValueSnak( 32202 ),
-			) )
+			new ReferenceList( new Reference( new PropertyNoValueSnak( 32202 ) ) )
 		);
 
 		$this->assertFalse( $statement->equals( $differentStatement ) );
@@ -352,7 +346,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 		$statement = new Statement(
 			new PropertyNoValueSnak( 42 ),
 			$qualifiers,
-			new ReferenceList( array( new PropertyNoValueSnak( 1337 ) ) )
+			new ReferenceList( new Reference( new PropertyNoValueSnak( 1337 ) ) )
 		);
 
 		$statement->setRank( Statement::RANK_NORMAL );

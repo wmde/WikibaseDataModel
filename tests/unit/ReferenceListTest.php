@@ -40,9 +40,34 @@ class ReferenceListTest extends \PHPUnit_Framework_TestCase {
 
 	public function getConstructorArg() {
 		return array(
-			null,
 			array(),
 			$this->getElementInstances(),
+		);
+	}
+
+	/**
+	 * @dataProvider invalidConstructorArgumentsProvider
+	 * @expectedException InvalidArgumentException
+	 */
+	public function testGivenInvalidConstructorArguments_constructorThrowsException( $input ) {
+		new ReferenceList( $input );
+	}
+
+	public function invalidConstructorArgumentsProvider() {
+		$id1 = new PropertyId( 'P1' );
+
+		return array(
+			array( null ),
+			array( false ),
+			array( 1 ),
+			array( 0.1 ),
+			array( 'string' ),
+			array( $id1 ),
+			array( new PropertyNoValueSnak( $id1 ) ),
+			array( new SnakList( array( new PropertyNoValueSnak( $id1 ) ) ) ),
+			array( array( new PropertyNoValueSnak( $id1 ) ) ),
+			array( array( new ReferenceList() ) ),
+			array( array( new SnakList() ) ),
 		);
 	}
 
@@ -66,7 +91,6 @@ class ReferenceListTest extends \PHPUnit_Framework_TestCase {
 			$this->assertFalse( $array->hasReference( $hashable ) );
 		}
 	}
-
 
 	public function testGivenCloneOfReferenceInList_hasReferenceReturnsTrue() {
 		$list = new ReferenceList();
