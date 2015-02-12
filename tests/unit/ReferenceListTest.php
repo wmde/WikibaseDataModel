@@ -76,7 +76,6 @@ class ReferenceListTest extends \PHPUnit_Framework_TestCase {
 			array( 'string' ),
 			array( $id1 ),
 			array( new PropertyNoValueSnak( $id1 ) ),
-			array( new Reference() ),
 			array( new SnakList( array( new PropertyNoValueSnak( $id1 ) ) ) ),
 			array( array( new PropertyNoValueSnak( $id1 ) ) ),
 			array( array( new ReferenceList() ) ),

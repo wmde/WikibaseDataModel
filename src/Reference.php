@@ -29,10 +29,16 @@ class Reference implements Hashable, Comparable, Immutable, Countable {
 	/**
 	 * An array of Snak objects is only supported since version 1.1.
 	 *
-	 * @param Snak[]|SnakList $snaks
+	 * @param Snak[]|SnakList|Snak $snaks
+	 * @param Snak [$snak2,...]
+	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct( $snaks = array() ) {
+	public function __construct( $snaks = array() /*...*/ ) {
+		if ( $snaks instanceof Snak ) {
+			$snaks = func_get_args();
+		}
+
 		if ( is_array( $snaks ) ) {
 			$snaks = new SnakList( $snaks );
 		}
