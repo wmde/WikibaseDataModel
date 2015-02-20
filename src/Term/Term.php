@@ -16,7 +16,7 @@ use InvalidArgumentException;
 class Term implements Comparable {
 
 	/**
-	 * @var string
+	 * @var string Random, non-empty string we can't say anythiong about. Good luck.
 	 */
 	private $languageCode;
 
@@ -26,7 +26,7 @@ class Term implements Comparable {
 	private $text;
 
 	/**
-	 * @param string $languageCode
+	 * @param string $languageCode Random, non-empty string we don't care about. Do whatever you want.
 	 * @param string $text
 	 *
 	 * @throws InvalidArgumentException

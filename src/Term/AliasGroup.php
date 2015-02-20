@@ -19,7 +19,7 @@ use InvalidArgumentException;
 class AliasGroup implements Comparable, Countable {
 
 	/**
-	 * @var string
+	 * @var string Random, non-empty string we can't say anything about. Good luck.
 	 */
 	private $languageCode;
 
@@ -29,7 +29,7 @@ class AliasGroup implements Comparable, Countable {
 	private $aliases;
 
 	/**
-	 * @param string $languageCode
+	 * @param string $languageCode Random, non-empty string we don't care about. Do whatever you want.
 	 * @param string[] $aliases
 	 *
 	 * @throws InvalidArgumentException
