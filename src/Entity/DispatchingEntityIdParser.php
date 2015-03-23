@@ -9,6 +9,7 @@ use InvalidArgumentException;
  *
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
+ * @author Thiemo Mättig
  */
 class DispatchingEntityIdParser implements EntityIdParser {
 
@@ -37,7 +38,9 @@ class DispatchingEntityIdParser implements EntityIdParser {
 	 * @return EntityId
 	 */
 	public function parse( $idSerialization ) {
-		$this->assertIdIsString( $idSerialization );
+		if ( !is_string( $idSerialization ) ) {
+			throw new EntityIdParsingException( '$idSerialization must be a string' );
+		}
 
 		if ( empty( $this->idBuilders ) ) {
 			throw new EntityIdParsingException( 'No id builders are configured' );
@@ -45,40 +48,18 @@ class DispatchingEntityIdParser implements EntityIdParser {
 
 		foreach ( $this->idBuilders as $idPattern => $idBuilder ) {
 			if ( preg_match( $idPattern, $idSerialization ) ) {
-				return $this->buildId( $idBuilder, $idSerialization );
+				try {
+					return call_user_func( $idBuilder, $idSerialization );
+				} catch ( InvalidArgumentException $ex ) {
+					// Should not happen, but if it does, re-throw the original message
+					throw new EntityIdParsingException( $ex->getMessage() );
+				}
 			}
 		}
 
 		throw new EntityIdParsingException(
 			"The serialization \"$idSerialization\" is not recognized by the configured id builders"
 		);
-	}
-
-	/**
-	 * @param string $idSerialization
-	 *
-	 * @throws EntityIdParsingException
-	 */
-	private function assertIdIsString( $idSerialization ) {
-		if ( !is_string( $idSerialization ) ) {
-			throw new EntityIdParsingException( '$idSerialization must be a string' );
-		}
-	}
-
-	/**
-	 * @param callable $idBuilder
-	 * @param string $idSerialization
-	 *
-	 * @throws EntityIdParsingException
-	 * @return EntityId
-	 */
-	private function buildId( $idBuilder, $idSerialization ) {
-		try {
-			return call_user_func( $idBuilder, $idSerialization );
-		} catch ( InvalidArgumentException $ex ) {
-			// Should not happen, but if it does, re-throw the original message
-			throw new EntityIdParsingException( $ex->getMessage() );
-		}
 	}
 
 }
