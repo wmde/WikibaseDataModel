@@ -299,7 +299,7 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 			$index++;
 		}
 
-		return false;
+		return null;
 	}
 
 }
