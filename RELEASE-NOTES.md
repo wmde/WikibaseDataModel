@@ -20,7 +20,7 @@
 * Removed `Claims::equals` (and `Claims` no longer implements `Comparable`)
 * Removed `Claims::getHash` (and `Claims` no longer implements `Hashable`)
 * Removed `Claims::isEmpty` (you can use `StatementList::isEmpty` instead)
-* Removed `Claims::indexOf` (you can use `StatementList::getIndexByGuid` instead)
+* Removed `Claims::indexOf` (you can use `StatementList::getIndexByGuid` instead. caution: returns null instead of false)
 
 #### Additions
 

@@ -541,10 +541,10 @@ class StatementListTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
-	public function testGivenNotPresentStatement_getIndexByGuidReturnsFalse() {
+	public function testGivenNotPresentStatement_getIndexByGuidReturnsNull() {
 		$statements = new StatementList();
 
-		$this->assertFalse( $statements->getIndexByGuid( $this->getStatement( 1, 'kittens' ) ) );
+		$this->assertNull( $statements->getIndexByGuid( $this->getStatement( 1, 'kittens' ) ) );
 	}
 
 	public function testGivenPresentStatement_getIndexByGuidReturnsItsIndex() {
