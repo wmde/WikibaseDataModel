@@ -49,6 +49,12 @@ class ReferenceListTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
+	public function testCanConstructWithReferenceListObject() {
+		$original = new ReferenceList( array( new Reference( array( new PropertyNoValueSnak( 1 ) ) ) ) );
+		$copy = new ReferenceList( $original );
+		$this->assertSame( 1, $copy->count() );
+	}
+
 	/**
 	 * @dataProvider invalidConstructorArgumentsProvider
 	 * @expectedException InvalidArgumentException
