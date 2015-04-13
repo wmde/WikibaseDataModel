@@ -35,7 +35,6 @@ class ReferenceListTest extends \PHPUnit_Framework_TestCase {
 
 	public function getElementInstances() {
 		return array(
-			new Reference(),
 			new Reference( array( new PropertyNoValueSnak( 2 ) ) ),
 			new Reference( array( new PropertyNoValueSnak( 3 ) ) ),
 		);
@@ -184,28 +183,24 @@ class ReferenceListTest extends \PHPUnit_Framework_TestCase {
 		$this->assertSameReferenceOrder( $expectedList, $references );
 	}
 
-	public function testGivenEmptyReference_addReferenceDoesNotAdd() {
+	public function testGivenEmptyReference_addReferenceThrowsException() {
 		$reference1 = new Reference( array( new PropertyNoValueSnak( 1 ) ) );
 		$reference2 = new Reference( array( new PropertyNoValueSnak( 2 ) ) );
 		$emptyReference = new Reference( array() );
 
 		$references = new ReferenceList( array( $reference1, $reference2 ) );
+		$this->setExpectedException( 'RuntimeException' );
 		$references->addReference( $emptyReference );
-
-		$expectedList = new ReferenceList( array( $reference1, $reference2 ) );
-		$this->assertSameReferenceOrder( $expectedList, $references );
 	}
 
-	public function testGivenEmptyReferenceAndIndex_addReferenceDoesNotAdd() {
+	public function testGivenEmptyReferenceAndIndex_addReferenceThrowsException() {
 		$reference1 = new Reference( array( new PropertyNoValueSnak( 1 ) ) );
 		$reference2 = new Reference( array( new PropertyNoValueSnak( 2 ) ) );
 		$emptyReference = new Reference( array() );
 
 		$references = new ReferenceList( array( $reference1, $reference2 ) );
+		$this->setExpectedException( 'RuntimeException' );
 		$references->addReference( $emptyReference, 0 );
-
-		$expectedList = new ReferenceList( array( $reference1, $reference2 ) );
-		$this->assertSameReferenceOrder( $expectedList, $references );
 	}
 
 	/**
@@ -341,8 +336,6 @@ class ReferenceListTest extends \PHPUnit_Framework_TestCase {
 
 	public function testSerializeRoundtrip() {
 		$references = new ReferenceList();
-
-		$references->addReference( new Reference() );
 
 		$references->addReference( new Reference( array(
 			new PropertyNoValueSnak( 2 ),
