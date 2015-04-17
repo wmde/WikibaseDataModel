@@ -481,16 +481,6 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 		// (simple serialize does not work, since the order is not relevant, and not only on the top level)
 	}
 
-	/**
-	 * @dataProvider instanceProvider
-	 * @param Entity $entity
-	 */
-	public function testGetClaims( Entity $entity ) {
-		$claims = $entity->getClaims();
-
-		$this->assertInternalType( 'array', $claims );
-	}
-
 	public function testWhenNoStuffIsSet_getFingerprintReturnsEmptyFingerprint() {
 		$entity = $this->getNewEmpty();
 

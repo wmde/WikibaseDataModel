@@ -232,22 +232,4 @@ class PropertyTest extends EntityTest {
 		$this->assertFalse( $property->isEmpty() );
 	}
 
-	public function testSetClaims() {
-		$property = Property::newFromType( 'string' );
-
-		$statement0 = new Statement( new PropertyNoValueSnak( 42 ) );
-		$statement0->setGuid( 'TEST$NVS42' );
-
-		$statement1 = new Statement( new PropertySomeValueSnak( 42 ) );
-		$statement1->setGuid( 'TEST$SVS42' );
-
-		$statements = array( $statement0, $statement1 );
-
-		$property->setClaims( new Claims( $statements ) );
-		$this->assertEquals( count( $statements ), $property->getStatements()->count(), "added some statements" );
-
-		$property->setClaims( new Claims() );
-		$this->assertTrue( $property->getStatements()->isEmpty(), "should be empty again" );
-	}
-
 }
