@@ -19,4 +19,9 @@ interface StatementListProvider {
 	 */
 	public function getStatements();
 
+	/**
+	 * @param StatementList $statements
+	 */
+	public function setStatements( StatementList $statements );
+
 }
