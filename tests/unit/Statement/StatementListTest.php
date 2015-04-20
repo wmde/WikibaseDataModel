@@ -48,7 +48,7 @@ class StatementListTest extends \PHPUnit_Framework_TestCase {
 		$statement = $this->getStatement( 1, 'guid' );
 		$list = new StatementList( array( 'ignore-me' => $statement ) );
 
-		$this->assertSame( array( 0 => $statement ), $list->toArray() );
+		$this->assertSame( array( 'guid' => $statement ), $list->toArray() );
 	}
 
 	/**
@@ -91,25 +91,22 @@ class StatementListTest extends \PHPUnit_Framework_TestCase {
 			$this->getStatement( 1, 'one', Statement::RANK_PREFERRED ),
 			$this->getStatement( 1, 'two', Statement::RANK_NORMAL ),
 			$this->getStatement( 1, 'three', Statement::RANK_PREFERRED ),
-
 			$this->getStatement( 2, 'four', Statement::RANK_DEPRECATED ),
-
 			$this->getStatement( 3, 'five', Statement::RANK_DEPRECATED ),
 			$this->getStatement( 3, 'six', Statement::RANK_NORMAL ),
-
 			$this->getStatement( 4, 'seven', Statement::RANK_PREFERRED )
 		);
 
+		$expected = array(
+			$this->getStatement( 1, 'one', Statement::RANK_PREFERRED ),
+			$this->getStatement( 1, 'three', Statement::RANK_PREFERRED ),
+			$this->getStatement( 3, 'six', Statement::RANK_NORMAL ),
+			$this->getStatement( 4, 'seven', Statement::RANK_PREFERRED ),
+		);
+
 		$this->assertEquals(
-			array(
-				$this->getStatement( 1, 'one', Statement::RANK_PREFERRED ),
-				$this->getStatement( 1, 'three', Statement::RANK_PREFERRED ),
-
-				$this->getStatement( 3, 'six', Statement::RANK_NORMAL ),
-
-				$this->getStatement( 4, 'seven', Statement::RANK_PREFERRED ),
-			),
-			$list->getBestStatementPerProperty()->toArray()
+			$expected,
+			array_values( $list->getBestStatementPerProperty()->toArray() )
 		);
 	}
 

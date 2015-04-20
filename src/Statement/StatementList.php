@@ -54,7 +54,7 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 				throw new InvalidArgumentException( 'Every element in $statements must be an instance of Statement' );
 			}
 
-			$this->statements[] = $statement;
+			$this->addStatement( $statement );
 		}
 	}
 
@@ -87,7 +87,13 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 	}
 
 	public function addStatement( Statement $statement ) {
-		$this->statements[] = $statement;
+		if ( $statement->getGuid() !== null
+			&& !array_key_exists( $statement->getGuid(), $this->statements )
+		) {
+			$this->statements[$statement->getGuid()] = $statement;
+		} else {
+			$this->statements[] = $statement;
+		}
 	}
 
 	/**
@@ -226,7 +232,8 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 	}
 
 	/**
-	 * @return Statement[] Numerically indexed (non-sparse) array.
+	 * @return Statement[] Array indexed by GUID (numerically indexed for statements that do not
+	 * have a GUID). Use array_values befor passing this to a for loop.
 	 */
 	public function toArray() {
 		return $this->statements;
