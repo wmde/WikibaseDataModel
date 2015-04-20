@@ -6,7 +6,6 @@ use InvalidArgumentException;
 use Wikibase\DataModel\Entity\Diff\EntityDiff;
 use Wikibase\DataModel\Entity\Diff\EntityDiffer;
 use Wikibase\DataModel\Entity\Diff\EntityPatcher;
-use Wikibase\DataModel\Statement\Statement;
 use Wikibase\DataModel\Term\AliasGroup;
 use Wikibase\DataModel\Term\AliasGroupList;
 use Wikibase\DataModel\Term\Fingerprint;
@@ -343,16 +342,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 	 */
 	public function copy() {
 		return unserialize( serialize( $this ) );
-	}
-
-	/**
-	 * @since 0.3
-	 * @deprecated since 1.0, use getStatements()->toArray() instead.
-	 *
-	 * @return Statement[]
-	 */
-	public function getClaims() {
-		return array();
 	}
 
 	/**

@@ -491,25 +491,6 @@ class ItemTest extends EntityTest {
 		$this->assertTrue( $item->getSiteLinkList()->hasLinkWithSiteId( 'foo bar' ) );
 	}
 
-	public function testSetClaims() {
-		$item = new Item();
-
-		$statement0 = new Statement( new PropertyNoValueSnak( 42 ) );
-		$statement0->setGuid( 'TEST$NVS42' );
-
-		$statement1 = new Statement( new PropertySomeValueSnak( 42 ) );
-		$statement1->setGuid( 'TEST$SVS42' );
-
-		$statements = array( $statement0, $statement1 );
-
-		$item->setClaims( new Claims( $statements ) );
-		$this->assertEquals( count( $statements ), $item->getStatements()->count(), "added some statements" );
-
-		$item->setClaims( new Claims() );
-		$this->assertTrue( $item->getStatements()->isEmpty(), "should be empty again" );
-	}
-
-
 	public function testEmptyItemReturnsEmptySiteLinkList() {
 		$item = new Item();
 		$this->assertTrue( $item->getSiteLinkList()->isEmpty() );
