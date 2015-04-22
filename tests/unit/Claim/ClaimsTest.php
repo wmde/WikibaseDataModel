@@ -57,10 +57,9 @@ class ClaimsTest extends \PHPUnit_Framework_TestCase {
 		$statement1 = $this->makeStatement( new PropertyNoValueSnak( 1 ) );
 		$statement2 = $this->makeStatement( new PropertyNoValueSnak( 2 ) );
 
-		$statementList = new StatementList();
-		$statementList->addStatement( $statement1 );
+		$list = new \ArrayObject( array( $statement1 ) );
 
-		$claims = new Claims( $statementList );
+		$claims = new Claims( $list );
 		// According to the documentation append() "cannot be called when the ArrayObject was
 		// constructed from an object." This test makes sure it was not constructed from an object.
 		$claims->append( $statement2 );

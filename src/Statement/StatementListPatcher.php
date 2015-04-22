@@ -40,10 +40,7 @@ class StatementListPatcher {
 	public function getPatchedStatementList( StatementList $statements, Diff $patch ) {
 		$statementsByGuid = array();
 
-		/**
-		 * @var Statement $statement
-		 */
-		foreach ( $statements as $statement ) {
+		foreach ( $statements->toArray() as $statement ) {
 			$statementsByGuid[$statement->getGuid()] = $statement;
 		}
 

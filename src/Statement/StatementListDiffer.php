@@ -46,10 +46,7 @@ class StatementListDiffer {
 	private function toDiffArray( StatementList $statementList ) {
 		$statementArray = array();
 
-		/**
-		 * @var Statement $statement
-		 */
-		foreach ( $statementList as $statement ) {
+		foreach ( $statementList->toArray() as $statement ) {
 			$statementArray[$statement->getGuid()] = $statement;
 		}
 
