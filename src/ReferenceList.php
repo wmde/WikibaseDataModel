@@ -4,6 +4,7 @@ namespace Wikibase\DataModel;
 
 use Hashable;
 use InvalidArgumentException;
+use RuntimeException;
 use Traversable;
 use Wikibase\DataModel\Snak\Snak;
 
@@ -72,11 +73,15 @@ class ReferenceList extends HashableObjectStorage {
 	 *
 	 * @param Reference $reference
 	 * @param mixed $data Unused in the ReferenceList class.
+	 *
+	 * @throws RuntimeException
 	 */
 	public function attach( $reference, $data = null ) {
-		if ( !$reference->isEmpty() ) {
-			parent::attach( $reference, $data );
+		if ( $reference->isEmpty() ) {
+			throw new RuntimeException( 'Cannot attach empty reference' );
 		}
+
+		parent::attach( $reference, $data );
 	}
 
 	/**
