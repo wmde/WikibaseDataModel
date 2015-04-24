@@ -27,7 +27,7 @@ use Wikibase\DataModel\Snak\Snaks;
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
-class StatementList implements IteratorAggregate, Comparable, Countable {
+class StatementList implements Comparable, Countable {
 
 	/**
 	 * @var Statement[]
@@ -66,7 +66,7 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 	 * @return self
 	 */
 	public function getBestStatementPerProperty() {
-		$bestStatementsFinder = new BestStatementsFinder( $this );
+		$bestStatementsFinder = new BestStatementsFinder( $this->toArray() );
 		return new self( $bestStatementsFinder->getBestStatementsPerProperty() );
 	}
 
@@ -216,13 +216,6 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 		}
 
 		return $snaks;
-	}
-
-	/**
-	 * @return Traversable
-	 */
-	public function getIterator() {
-		return new ArrayIterator( $this->statements );
 	}
 
 	/**

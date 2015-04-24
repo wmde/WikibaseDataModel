@@ -29,10 +29,6 @@ class BestStatementsFinder {
 	 * @throws InvalidArgumentException
 	 */
 	public function __construct( $statements ) {
-		if ( !( $statements instanceof StatementList ) ) {
-			$statements = new StatementList( $statements );
-		}
-
 		$this->byPropertyIdGrouper = new ByPropertyIdGrouper( $statements );
 	}
 
