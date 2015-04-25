@@ -1,5 +1,9 @@
 # Wikibase DataModel release notes
 
+## Version 2.6.1 (2015-04-25)
+
+* Allow installation together with Diff 2.x.
+
 ## Version 2.6.0 (2015-03-08)
 
 * Added `Reference::isEmpty`
