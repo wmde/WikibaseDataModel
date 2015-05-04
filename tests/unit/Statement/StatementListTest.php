@@ -260,6 +260,45 @@ class StatementListTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals( new StatementList( $statement ), $list );
 	}
 
+	public function testRemoveStatementsByGuid() {
+		$statement1 = new Statement( $this->newSnak( 24, 'foo' ), null, null, 'foo' );
+		$statement2 = new Statement( $this->newSnak( 32, 'bar' ), null, null, 'bar' );
+		$statement3 = new Statement( $this->newSnak( 32, 'bar' ), null, null, 'bar' );
+
+		$list = new StatementList( array( $statement1, $statement2, $statement3 ) );
+
+		$result = $list->removeStatementsByGuid( 'foo' );
+
+		$this->assertEquals(
+			new StatementList( array( $statement2, $statement3 ) ),
+			$list
+		);
+		$this->assertEquals( array( $statement1 ), $result );
+
+		$result = $list->removeStatementsByGuid( 'baz' );
+
+		$this->assertEquals(
+			new StatementList( array( $statement2, $statement3 ) ),
+			$list
+		);
+		$this->assertEquals( array(), $result );
+
+		$result = $list->removeStatementsByGuid( 'bar' );
+
+		$this->assertTrue( $list->isEmpty() );
+		$this->assertEquals( array( $statement2, $statement3 ), $result );
+	}
+
+	public function testHasStatementWithGuid() {
+		$statement1 = new Statement( $this->newSnak( 24, 'foo' ), null, null, 'foo' );
+		$statement2 = new Statement( $this->newSnak( 32, 'bar' ), null, null, 'bar' );
+
+		$list = new StatementList( array( $statement1 ) );
+
+		$this->assertTrue( $list->hasStatementWithGuid( 'foo' ) );
+		$this->assertFalse( $list->hasStatementWithGuid( 'bar' ) );
+	}
+
 	public function testCanConstructWithClaimsObjectContainingOnlyStatements() {
 		$statementArray = array(
 			$this->getStatementWithSnak( 1, 'foo' ),
