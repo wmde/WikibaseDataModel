@@ -25,6 +25,7 @@ use Wikibase\DataModel\Snak\SnakList;
  *
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
+ * @author Bene* < benestar.wikimedia@gmail.com >
  */
 class StatementList implements IteratorAggregate, Comparable, Countable {
 
@@ -103,6 +104,39 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 		$statement->setGuid( $guid );
 
 		$this->addStatement( $statement );
+	}
+
+	/**
+	 * @param string $guid
+	 * @return Statement[]
+	 */
+	public function removeStatementsByGuid( $guid ) {
+		$removedStatements = array();
+
+		foreach ( $this->statements as $index => $statement ) {
+			if ( $statement->getGuid() === $guid ) {
+				$removedStatements[] = $statement;
+				unset( $this->statements[$index] );
+			}
+		}
+
+		$this->statements = array_values( $this->statements );
+
+		return $removedStatements;
+	}
+
+	/**
+	 * @param string $guid
+	 * @return bool
+	 */
+	public function hasStatementWithGuid( $guid ) {
+		foreach ( $this->statements as $statement ) {
+			if ( $statement->getGuid() === $guid ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
