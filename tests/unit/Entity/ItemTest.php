@@ -49,17 +49,22 @@ class ItemTest extends EntityTest {
 		return new Item();
 	}
 
+	/**
+	 * @see EntityTest::getNewId
+	 *
+	 * @since 3.0
+	 *
+	 * @param int $numericId
+	 * @return ItemId
+	 */
+	protected function getNewId( $numericId ) {
+		return new ItemId( 'Q' . $numericId );
+	}
+
 	public function testGetId() {
 		foreach ( TestItems::getItems() as $item ) {
 			$id = $item->getId();
 			$this->assertTrue( $id === null || $id instanceof ItemId );
-		}
-	}
-
-	public function testSetIdUsingNumber() {
-		foreach ( TestItems::getItems() as $item ) {
-			$item->setId( 42 );
-			$this->assertEquals( new ItemId( 'Q42' ), $item->getId() );
 		}
 	}
 
@@ -627,10 +632,10 @@ class ItemTest extends EntityTest {
 		$secondItem->getStatements()->addNewStatement( new PropertyNoValueSnak( 42 ) );
 
 		$secondItemWithId = unserialize( serialize( $secondItem ) );
-		$secondItemWithId->setId( 42 );
+		$secondItemWithId->setId( new ItemId( 'Q42' ) );
 
 		$differentId = unserialize( serialize( $secondItemWithId ) );
-		$differentId->setId( 43 );
+		$differentId->setId( new ItemId( 'Q43' ) );
 
 		return array(
 			array( new Item(), new Item() ),

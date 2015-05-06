@@ -53,24 +53,19 @@ class Property extends Entity implements StatementListProvider {
 	}
 
 	/**
-	 * Can be integer since 0.1.
 	 * Can be PropertyId since 0.5.
 	 * Can be null since 1.0.
 	 *
-	 * @param PropertyId|int|null $id
+	 * @param PropertyId|null $id
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function setId( $id ) {
-		if ( $id === null || $id instanceof PropertyId ) {
-			$this->id = $id;
+	public function setId( EntityId $id = null ) {
+		if ( !( $id instanceof PropertyId ) && $id !== null ) {
+			throw new InvalidArgumentException( '$id must be an instance of PropertyId or null' );
 		}
-		elseif ( is_integer( $id ) ) {
-			$this->id = PropertyId::newFromNumber( $id );
-		}
-		else {
-			throw new InvalidArgumentException( '$id must be an instance of PropertyId, an integer, or null' );
-		}
+
+		$this->id = $id;
 	}
 
 	/**

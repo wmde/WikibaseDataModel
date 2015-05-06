@@ -3,6 +3,7 @@
 namespace Wikibase\DataModel\Fixtures;
 
 use Wikibase\DataModel\Entity\EntityDocument;
+use Wikibase\DataModel\Entity\EntityId;
 
 /**
  * @licence GNU GPL v2+
@@ -18,7 +19,7 @@ class EntityOfUnknownType implements EntityDocument {
 		return 'unknown-entity-type';
 	}
 
-	public function setId( $id ) {
+	public function setId( EntityId $id = null ) {
 	}
 
 }

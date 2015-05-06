@@ -38,8 +38,10 @@ interface EntityDocument {
 	 *
 	 * @since 3.0
 	 *
+	 * @param EntityId|null $id
+	 *
 	 * @throws InvalidArgumentException if the id is not of the correct type.
 	 */
-	public function setId( $id );
+	public function setId( EntityId $id = null );
 
 }

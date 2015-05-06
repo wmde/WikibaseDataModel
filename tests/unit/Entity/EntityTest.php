@@ -34,6 +34,14 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 	 */
 	protected abstract function getNewEmpty();
 
+	/**
+	 * @since 3.0
+	 *
+	 * @param int $numericId
+	 * @return EntityId
+	 */
+	protected abstract function getNewId( $numericId );
+
 	public function labelProvider() {
 		return array(
 			array( 'en', 'spam' ),
@@ -334,7 +342,7 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 
 		// ID only
 		$entity = clone $entity;
-		$entity->setId( 44 );
+		$entity->setId( $this->getNewId( 44 ) );
 
 		$entities[] = $entity;
 
@@ -348,7 +356,7 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 
 		// with labels etc and ID
 		$entity = clone $entity;
-		$entity->setId( 42 );
+		$entity->setId( $this->getNewId( 42 ) );
 
 		$entities[] = $entity;
 
