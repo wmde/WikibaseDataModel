@@ -35,91 +35,91 @@ abstract class EntityDiffOldTest extends \PHPUnit_Framework_TestCase {
 
 		// #0: add label
 		$a = self::newEntity( $entityType );
-		$a->setLabel( 'en', 'Test' );
+		$a->getFingerprint()->setLabel( 'en', 'Test' );
 
 		$b = $a->copy();
-		$b->setLabel( 'de', 'Test' );
+		$b->getFingerprint()->setLabel( 'de', 'Test' );
 
 		$tests[] = array( $a, $b );
 
 		// #1: remove label
 		$a = self::newEntity( $entityType );
-		$a->setLabel( 'en', 'Test' );
-		$a->setLabel( 'de', 'Test' );
+		$a->getFingerprint()->setLabel( 'en', 'Test' );
+		$a->getFingerprint()->setLabel( 'de', 'Test' );
 
 		$b = self::newEntity( $entityType );
-		$b->setLabel( 'de', 'Test' );
+		$b->getFingerprint()->setLabel( 'de', 'Test' );
 
 		$tests[] = array( $a, $b );
 
 		// #2: change label
 		$a = self::newEntity( $entityType );
-		$a->setLabel( 'en', 'Test' );
+		$a->getFingerprint()->setLabel( 'en', 'Test' );
 
 		$b = $a->copy();
-		$b->setLabel( 'en', 'Test!!!' );
+		$b->getFingerprint()->setLabel( 'en', 'Test!!!' );
 
 		// #3: add description ------------------------------
 		$a = self::newEntity( $entityType );
-		$a->setDescription( 'en', 'Test' );
+		$a->getFingerprint()->setDescription( 'en', 'Test' );
 
 		$b = $a->copy();
-		$b->setDescription( 'de', 'Test' );
+		$b->getFingerprint()->setDescription( 'de', 'Test' );
 
 		$tests[] = array( $a, $b );
 
 		// #4: remove description
 		$a = self::newEntity( $entityType );
-		$a->setDescription( 'en', 'Test' );
-		$a->setDescription( 'de', 'Test' );
+		$a->getFingerprint()->setDescription( 'en', 'Test' );
+		$a->getFingerprint()->setDescription( 'de', 'Test' );
 
 		$b = $a->copy();
-		$b->removeDescription( 'en' );
+		$b->getFingerprint()->removeDescription( 'en' );
 
 		$tests[] = array( $a, $b );
 
 		// #5: change description
 		$a = self::newEntity( $entityType );
-		$a->setDescription( 'en', 'Test' );
+		$a->getFingerprint()->setDescription( 'en', 'Test' );
 
 		$b = $a->copy();
-		$b->setDescription( 'en', 'Test!!!' );
+		$b->getFingerprint()->setDescription( 'en', 'Test!!!' );
 
 		$tests[] = array( $a, $b );
 
 		// #6: add alias ------------------------------
 		$a = self::newEntity( $entityType );
-		$a->addAliases( 'en', array( 'Foo', 'Bar' ) );
+		$a->getFingerprint()->setAliasGroup( 'en', array( 'Foo', 'Bar' ) );
 
 		$b = $a->copy();
-		$b->addAliases( 'en', array( 'Quux' ) );
+		$b->getFingerprint()->setAliasGroup( 'en', array( 'Foo', 'Bar', 'Quux' ) );
 
 		$tests[] = array( $a, $b );
 
 		// #7: add alias language
 		$a = self::newEntity( $entityType );
-		$a->addAliases( 'en', array( 'Foo', 'Bar' ) );
+		$a->getFingerprint()->setAliasGroup( 'en', array( 'Foo', 'Bar' ) );
 
 		$b = $a->copy();
-		$b->addAliases( 'de', array( 'Quux' ) );
+		$b->getFingerprint()->setAliasGroup( 'de', array( 'Quux' ) );
 
 		$tests[] = array( $a, $b );
 
 		// #8: remove alias
 		$a = self::newEntity( $entityType );
-		$a->addAliases( 'en', array( 'Foo', 'Bar' ) );
+		$a->getFingerprint()->setAliasGroup( 'en', array( 'Foo', 'Bar' ) );
 
 		$b = $a->copy();
-		$b->removeAliases( 'en', array( 'Foo' ) );
+		$b->getFingerprint()->setAliasGroup( 'en', array( 'Bar' ) );
 
 		$tests[] = array( $a, $b );
 
 		// #9: remove alias language
 		$a = self::newEntity( $entityType );
+		$a->getFingerprint()->setAliasGroup( 'en', array( 'Foo', 'Bar' ) );
 
 		$b = $a->copy();
-		$b->addAliases( 'en', array( 'Foo', 'Bar' ) );
-		$b->removeAliases( 'en', array( 'Foo', 'Bar' ) );
+		$b->getFingerprint()->setAliasGroup( 'en', array() );
 
 		$tests[] = array( $a, $b );
 		return $tests;
@@ -142,7 +142,7 @@ abstract class EntityDiffOldTest extends \PHPUnit_Framework_TestCase {
 		$current = $base->copy();
 
 		$new = $base->copy();
-		$new->setLabel( 'en', 'TEST' );
+		$new->getFingerprint()->setLabel( 'en', 'TEST' );
 
 		$cases[] = array(
 			$base,
@@ -156,7 +156,7 @@ abstract class EntityDiffOldTest extends \PHPUnit_Framework_TestCase {
 		$current = $base;
 
 		$new = $base->copy();
-		$new->addAliases( 'en', array( 'TEST' ) );
+		$new->getFingerprint()->setAliasGroup( 'en', array( 'TEST' ) );
 
 		$cases[] = array(
 			$base,
@@ -167,11 +167,11 @@ abstract class EntityDiffOldTest extends \PHPUnit_Framework_TestCase {
 
 		// #2: adding an alias where there already was one before
 		$base = self::newEntity( Item::ENTITY_TYPE );
-		$base->addAliases( 'en', array( 'Foo' ) );
+		$base->getFingerprint()->setAliasGroup( 'en', array( 'Foo' ) );
 		$current = $base;
 
 		$new = $base->copy();
-		$new->addAliases( 'en', array( 'Bar' ) );
+		$new->getFingerprint()->setAliasGroup( 'en', array( 'Foo', 'Bar' ) );
 
 		$cases[] = array(
 			$base,
@@ -182,11 +182,11 @@ abstract class EntityDiffOldTest extends \PHPUnit_Framework_TestCase {
 
 		// #3: adding an alias where there already was one in another language
 		$base = self::newEntity( Item::ENTITY_TYPE );
-		$base->addAliases( 'en', array( 'Foo' ) );
+		$base->getFingerprint()->setAliasGroup( 'en', array( 'Foo' ) );
 		$current = $base;
 
 		$new = $base->copy();
-		$new->addAliases( 'de', array( 'Bar' ) );
+		$new->getFingerprint()->setAliasGroup( 'de', array( 'Bar' ) );
 
 		$cases[] = array(
 			$base,
