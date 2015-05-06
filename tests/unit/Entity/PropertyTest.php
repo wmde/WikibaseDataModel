@@ -37,6 +37,18 @@ class PropertyTest extends EntityTest {
 		return Property::newFromType( 'string' );
 	}
 
+	/**
+	 * @see EntityTest::getNewId
+	 *
+	 * @since 3.0
+	 *
+	 * @param int $numericId
+	 * @return PropertyId
+	 */
+	protected function getNewId( $numericId ) {
+		return new PropertyId( 'P' . $numericId );
+	}
+
 	public function testConstructorWithAllParameters() {
 		$property = new Property(
 			new PropertyId( 'P42' ),
@@ -82,13 +94,6 @@ class PropertyTest extends EntityTest {
 		}
 	}
 
-	public function testWhenIdSetWithNumber_GetIdReturnsPropertyId() {
-		$property = Property::newFromType( 'string' );
-		$property->setId( 42 );
-
-		$this->assertHasCorrectIdType( $property );
-	}
-
 	protected function assertHasCorrectIdType( Property $property ) {
 		$this->assertInstanceOf( 'Wikibase\DataModel\Entity\PropertyId', $property->getId() );
 	}
@@ -106,7 +111,7 @@ class PropertyTest extends EntityTest {
 
 	public function testPropertyWithIdIsEmpty() {
 		$property = Property::newFromType( 'string' );
-		$property->setId( 1337 );
+		$property->setId( new PropertyId( 'P1337' ) );
 		$this->assertTrue( $property->isEmpty() );
 	}
 
@@ -119,7 +124,7 @@ class PropertyTest extends EntityTest {
 	public function testClearRemovesAllButId() {
 		$property = Property::newFromType( 'string' );
 
-		$property->setId( 42 );
+		$property->setId( new PropertyId( 'P42' ) );
 		$property->getFingerprint()->setLabel( 'en', 'foo' );
 
 		$property->clear();
@@ -159,10 +164,10 @@ class PropertyTest extends EntityTest {
 		$secondProperty->setStatements( $this->newNonEmptyStatementList() );
 
 		$secondPropertyWithId = unserialize( serialize( $secondProperty ) );
-		$secondPropertyWithId->setId( 42 );
+		$secondPropertyWithId->setId( new PropertyId( 'P42' ) );
 
 		$differentId = unserialize( serialize( $secondPropertyWithId ) );
-		$differentId->setId( 43 );
+		$differentId->setId( new PropertyId( 'P43' ) );
 
 		return array(
 			array( Property::newFromType( 'string' ), Property::newFromType( 'string' ) ),
@@ -183,7 +188,7 @@ class PropertyTest extends EntityTest {
 	private function getBaseProperty() {
 		$property = Property::newFromType( 'string' );
 
-		$property->setId( 42 );
+		$property->setId( new PropertyId( 'P42' ) );
 		$property->getFingerprint()->setLabel( 'en', 'Same' );
 		$property->getFingerprint()->setDescription( 'en', 'Same' );
 		$property->getFingerprint()->setAliasGroup( 'en', array( 'Same' ) );
