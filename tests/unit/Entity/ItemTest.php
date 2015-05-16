@@ -372,125 +372,6 @@ class ItemTest extends EntityTest {
 		return $argLists;
 	}
 
-	public function testGetSiteLinkWithNonSetSiteId() {
-		$item = new Item();
-
-		$this->setExpectedException( 'OutOfBoundsException' );
-		$item->getSiteLinkList()->getBySiteId( 'enwiki' );
-	}
-
-	/**
-	 * @dataProvider simpleSiteLinkProvider
-	 */
-	public function testAddSiteLink( SiteLink $siteLink ) {
-		$item = new Item();
-
-		$item->getSiteLinkList()->addSiteLink( $siteLink );
-
-		$this->assertEquals(
-			$siteLink,
-			$item->getSiteLinkList()->getBySiteId( $siteLink->getSiteId() )
-		);
-	}
-
-	public function simpleSiteLinkProvider() {
-		$argLists = array();
-
-		$argLists[] = array(
-			new SiteLink(
-				'enwiki',
-				'Wikidata',
-				array(
-					new ItemId( 'Q42' )
-				)
-			)
-		);
-		$argLists[] = array(
-			new SiteLink(
-				'nlwiki',
-				'Wikidata'
-			)
-		);
-		$argLists[] = array(
-			new SiteLink(
-				'enwiki',
-				'Nyan!',
-				array(
-					new ItemId( 'Q42' ),
-					new ItemId( 'Q149' )
-				)
-			)
-		);
-		$argLists[] = array(
-			new SiteLink(
-				'foo bar',
-				'baz bah',
-				array(
-					new ItemId( 'Q3' ),
-					new ItemId( 'Q7' )
-				)
-			)
-		);
-
-		return $argLists;
-	}
-
-	/**
-	 * @dataProvider simpleSiteLinksProvider
-	 */
-	public function testGetSiteLinks() {
-		$siteLinks = func_get_args();
-		$item = new Item();
-
-		foreach ( $siteLinks as $siteLink ) {
-			$item->getSiteLinkList()->addSiteLink( $siteLink );
-		}
-
-		$this->assertInternalType( 'array', $item->getSiteLinks() );
-		$this->assertEquals( $siteLinks, $item->getSiteLinks() );
-	}
-
-	public function simpleSiteLinksProvider() {
-		$argLists = array();
-
-		$argLists[] = array();
-
-		$argLists[] = array( new SiteLink( 'enwiki', 'Wikidata', array( new ItemId( 'Q42' ) ) ) );
-
-		$argLists[] = array(
-			new SiteLink( 'enwiki', 'Wikidata' ),
-			new SiteLink( 'nlwiki', 'Wikidata', array( new ItemId( 'Q3' ) ) )
-		);
-
-		$argLists[] = array(
-			new SiteLink( 'enwiki', 'Wikidata' ),
-			new SiteLink( 'nlwiki', 'Wikidata' ),
-			new SiteLink( 'foo bar', 'baz bah', array( new ItemId( 'Q2' ) ) )
-		);
-
-		return $argLists;
-	}
-
-	public function testHasLinkToSiteForFalse() {
-		$item = new Item();
-		$item->getSiteLinkList()->addSiteLink( new SiteLink( 'ENWIKI', 'Wikidata', array( new ItemId( 'Q42' ) ) ) );
-
-		$this->assertFalse( $item->getSiteLinkList()->hasLinkWithSiteId( 'enwiki' ) );
-		$this->assertFalse( $item->getSiteLinkList()->hasLinkWithSiteId( 'dewiki' ) );
-		$this->assertFalse( $item->getSiteLinkList()->hasLinkWithSiteId( 'foo bar' ) );
-	}
-
-	public function testHasLinkToSiteForTrue() {
-		$item = new Item();
-		$item->getSiteLinkList()->addSiteLink( new SiteLink( 'enwiki', 'Wikidata', array( new ItemId( 'Q42' ) ) ) );
-		$item->getSiteLinkList()->addSiteLink( new SiteLink( 'dewiki', 'Wikidata' ) );
-		$item->getSiteLinkList()->addSiteLink( new SiteLink( 'foo bar', 'Wikidata' ) );
-
-		$this->assertTrue( $item->getSiteLinkList()->hasLinkWithSiteId( 'enwiki' ) );
-		$this->assertTrue( $item->getSiteLinkList()->hasLinkWithSiteId( 'dewiki' ) );
-		$this->assertTrue( $item->getSiteLinkList()->hasLinkWithSiteId( 'foo bar' ) );
-	}
-
 	public function testSetClaims() {
 		$item = new Item();
 
@@ -509,21 +390,9 @@ class ItemTest extends EntityTest {
 		$this->assertTrue( $item->getStatements()->isEmpty(), "should be empty again" );
 	}
 
-
 	public function testEmptyItemReturnsEmptySiteLinkList() {
 		$item = new Item();
 		$this->assertTrue( $item->getSiteLinkList()->isEmpty() );
-	}
-
-	public function testAddSiteLinkOverridesOldLinks() {
-		$item = new Item();
-
-		$item->getSiteLinkList()->addSiteLink( new SiteLink( 'kittens', 'foo' ) );
-
-		$newLink = new SiteLink( 'kittens', 'bar' );
-		$item->addSiteLink( $newLink );
-
-		$this->assertTrue( $item->getSiteLinkList()->getBySiteId( 'kittens' )->equals( $newLink ) );
 	}
 
 	public function testEmptyItemIsEmpty() {
@@ -548,17 +417,6 @@ class ItemTest extends EntityTest {
 		$item = new Item();
 		$item->getStatements()->addStatement( $this->newStatement() );
 		$this->assertFalse( $item->isEmpty() );
-	}
-
-	public function testItemWithSitelinksHasSitelinks() {
-		$item = new Item();
-		$item->getSiteLinkList()->addNewSiteLink( 'en', 'foo' );
-		$this->assertFalse( $item->getSiteLinkList()->isEmpty() );
-	}
-
-	public function testItemWithoutSitelinksHasNoSitelinks() {
-		$item = new Item();
-		$this->assertTrue( $item->getSiteLinkList()->isEmpty() );
 	}
 
 	private function newStatement() {
