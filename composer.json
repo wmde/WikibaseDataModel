@@ -25,7 +25,7 @@
 	"require": {
 		"php": ">=5.3.0",
 		"diff/diff": "~1.0|~2.0",
-		"data-values/data-values": "~0.1|~1.0"
+		"data-values/data-values": "~0.1|~1.0|~2.0"
 	},
 	"require-dev": {
 		"squizlabs/php_codesniffer": "~2.1",
