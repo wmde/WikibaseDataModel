@@ -32,6 +32,13 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals( 'meh', $statement->getGuid() );
 	}
 
+	public function testConstructorWithtoutClaim() {
+		$snak = new PropertyNoValueSnak( new PropertyId( 'P42' ) );
+		$statement = new Statement( $snak );
+
+		$this->assertTrue( $statement->getMainSnak()->equals( $snak ) );
+	}
+
 	/**
 	 * @dataProvider instanceProvider
 	 */
