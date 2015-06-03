@@ -1,5 +1,9 @@
 # Wikibase DataModel release notes
 
+## Version 2.6.2 (dev)
+
+* The `Statement` constructor now also accepts a `Snak` parameter
+
 ## Version 2.6.1 (2015-04-25)
 
 * Allow installation together with Diff 2.x.

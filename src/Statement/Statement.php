@@ -45,10 +45,38 @@ class Statement extends Claim {
 	 *
 	 * @param Claim $claim
 	 * @param ReferenceList|null $references
+	 * or
+	 * @param Snak $mainSnak
+	 * @param Snaks|null $qualifiers
+	 * @param ReferenceList|null $references
+	 * @param string|null $guid
 	 */
-	public function __construct( Claim $claim, ReferenceList $references = null ) {
+	public function __construct( $claim /* , $args */ ) {
+		if ( $claim instanceof Claim ) {
+			call_user_func_array( array( $this, 'initFromClaim' ), func_get_args() );
+		} else {
+			call_user_func_array( array( $this, 'initFromSnaks' ), func_get_args() );
+		}
+	}
+
+	private function initFromClaim(
+		Claim $claim,
+		ReferenceList $references = null
+	) {
 		$this->setClaim( $claim );
 		$this->references = $references ?: new ReferenceList();
+	}
+
+	private function initFromSnaks(
+		Snak $mainSnak,
+		Snaks $qualifiers = null,
+		ReferenceList $references = null,
+		$guid = null
+	) {
+		$this->mainSnak = $mainSnak;
+		$this->qualifiers = $qualifiers ?: new SnakList();
+		$this->references = $references ?: new ReferenceList();
+		$this->setGuid( $guid );
 	}
 
 	/**
