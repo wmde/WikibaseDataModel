@@ -24,14 +24,14 @@ final class TestItems {
 
 		$item = new Item();
 
-		$item->setDescription( 'en', 'foo' );
-		$item->setLabel( 'en', 'bar' );
+		$item->getFingerprint()->setDescription( 'en', 'foo' );
+		$item->getFingerprint()->setLabel( 'en', 'bar' );
 
 		$items[] = $item;
 
 		$item = new Item();
 
-		$item->addAliases( 'en', array( 'foobar', 'baz' ) );
+		$item->getFingerprint()->setAliasGroup( 'en', array( 'foobar', 'baz' ) );
 
 		$items[] = $item;
 
@@ -44,11 +44,11 @@ final class TestItems {
 		$item->getSiteLinkList()->addSiteLink( new SiteLink( 'enwiki', 'spamz' ) );
 		$item->getSiteLinkList()->addSiteLink( new SiteLink( 'dewiki', 'foobar' ) );
 
-		$item->setDescription( 'en', 'foo' );
-		$item->setLabel( 'en', 'bar' );
+		$item->getFingerprint()->setDescription( 'en', 'foo' );
+		$item->getFingerprint()->setLabel( 'en', 'bar' );
 
-		$item->addAliases( 'en', array( 'foobar', 'baz' ) );
-		$item->addAliases( 'de', array( 'foobar', 'spam' ) );
+		$item->getFingerprint()->setAliasGroup( 'en', array( 'foobar', 'baz' ) );
+		$item->getFingerprint()->setAliasGroup( 'de', array( 'foobar', 'spam' ) );
 
 		$items[] = $item;
 

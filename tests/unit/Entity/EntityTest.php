@@ -340,9 +340,9 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 
 		// with labels and stuff
 		$entity = $this->getNewEmpty();
-		$entity->setAliases( 'en', array( 'o', 'noez' ) );
-		$entity->setLabel( 'de', 'spam' );
-		$entity->setDescription( 'en', 'foo bar baz' );
+		$entity->getFingerprint()->setAliasGroup( 'en', array( 'o', 'noez' ) );
+		$entity->getFingerprint()->setLabel( 'de', 'spam' );
+		$entity->getFingerprint()->setDescription( 'en', 'foo bar baz' );
 
 		$entities[] = $entity;
 
