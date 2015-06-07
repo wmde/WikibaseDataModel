@@ -50,8 +50,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 	/**
 	 * Sets the value for the label in a certain value.
 	 *
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
-	 *
 	 * @param string $languageCode
 	 * @param string $value
 	 */
@@ -61,8 +59,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 
 	/**
 	 * Sets the value for the description in a certain value.
-	 *
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
 	 *
 	 * @param string $languageCode
 	 * @param string $value
@@ -74,8 +70,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 	/**
 	 * Removes the labels in the specified languages.
 	 *
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
-	 *
 	 * @param string $languageCode
 	 */
 	public function removeLabel( $languageCode ) {
@@ -85,8 +79,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 	/**
 	 * Removes the descriptions in the specified languages.
 	 *
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
-	 *
 	 * @param string $languageCode
 	 */
 	public function removeDescription( $languageCode ) {
@@ -95,8 +87,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 
 	/**
 	 * Returns the aliases for the item in the language with the specified code.
-	 *
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
 	 *
 	 * @param string $languageCode
 	 *
@@ -115,8 +105,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 	/**
 	 * Returns all the aliases for the item.
 	 * The result is an array with language codes pointing to an array of aliases in the language they specify.
-	 *
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
 	 *
 	 * @param string[]|null $languageCodes
 	 *
@@ -142,8 +130,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 	/**
 	 * Sets the aliases for the item in the language with the specified code.
 	 *
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
-	 *
 	 * @param string $languageCode
 	 * @param string[] $aliases
 	 */
@@ -153,8 +139,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 
 	/**
 	 * Add the provided aliases to the aliases list of the item in the language with the specified code.
-	 *
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
 	 *
 	 * @param string $languageCode
 	 * @param string[] $aliases
@@ -172,8 +156,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 	/**
 	 * Removed the provided aliases from the aliases list of the item in the language with the specified code.
 	 *
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
-	 *
 	 * @param string $languageCode
 	 * @param string[] $aliases
 	 */
@@ -190,8 +172,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 	/**
 	 * Returns the descriptions of the entity in the provided languages.
 	 *
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
-	 *
 	 * @param string[]|null $languageCodes Note that an empty array gives
 	 * descriptions for no languages while a null pointer gives all
 	 *
@@ -203,8 +183,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 
 	/**
 	 * Returns the labels of the entity in the provided languages.
-	 *
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
 	 *
 	 * @param string[]|null $languageCodes Note that an empty array gives
 	 * labels for no languages while a null pointer gives all
@@ -218,8 +196,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 	/**
 	 * Returns the description of the entity in the language with the provided code,
 	 * or false in cases there is none in this language.
-	 *
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
 	 *
 	 * @param string $languageCode
 	 *
@@ -236,8 +212,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 	/**
 	 * Returns the label of the entity in the language with the provided code,
 	 * or false in cases there is none in this language.
-	 *
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
 	 *
 	 * @param string $languageCode
 	 *
@@ -279,7 +253,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 	 * language codes pointing to the label in that language.
 	 *
 	 * @since 0.4
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
 	 *
 	 * @param string[] $labels
 	 */
@@ -297,7 +270,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 	 * language codes pointing to the description in that language.
 	 *
 	 * @since 0.4
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
 	 *
 	 * @param string[] $descriptions
 	 */
@@ -316,7 +288,6 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 	 * in that language.
 	 *
 	 * @since 0.4
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
 	 *
 	 * @param array[] $aliasLists
 	 */
