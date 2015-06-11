@@ -2,9 +2,13 @@
 
 namespace Wikibase\DataModel;
 
+use Comparable;
 use Hashable;
 use InvalidArgumentException;
+use Serializable;
+use SplObjectStorage;
 use Traversable;
+use Wikibase\DataModel\Internal\MapValueHasher;
 use Wikibase\DataModel\Snak\Snak;
 
 /**
@@ -23,7 +27,7 @@ use Wikibase\DataModel\Snak\Snak;
  * @author H. Snater < mediawiki@snater.com >
  * @author Thiemo Mättig
  */
-class ReferenceList extends HashableObjectStorage {
+class ReferenceList extends SplObjectStorage implements Comparable {
 
 	/**
 	 * @param Reference[]|Traversable $references
@@ -239,6 +243,61 @@ class ReferenceList extends HashableObjectStorage {
 	 */
 	public function unserialize( $data ) {
 		$this->__construct( unserialize( $data ) );
+	}
+
+	/**
+	 * Removes duplicates bases on hash value.
+	 *
+	 * @since 0.2
+	 */
+	public function removeDuplicates() {
+		$knownHashes = array();
+
+		/**
+		 * @var Hashable $hashable
+		 */
+		foreach ( iterator_to_array( $this ) as $hashable ) {
+			$hash = $hashable->getHash();
+
+			if ( in_array( $hash, $knownHashes ) ) {
+				$this->detach( $hashable );
+			}
+			else {
+				$knownHashes[] = $hash;
+			}
+		}
+	}
+
+	/**
+	 * The hash is purely valuer based. Order of the elements in the array is not held into account.
+	 *
+	 * @since 0.3
+	 *
+	 * @return string
+	 */
+	public function getValueHash() {
+		$hasher = new MapValueHasher();
+		return $hasher->hash( $this );
+	}
+
+	/**
+	 * @see Comparable::equals
+	 *
+	 * The comparison is done purely value based, ignoring the order of the elements in the array.
+	 *
+	 * @since 0.3
+	 *
+	 * @param mixed $target
+	 *
+	 * @return bool
+	 */
+	public function equals( $target ) {
+		if ( $this === $target ) {
+			return true;
+		}
+
+		return $target instanceof self
+			&& $this->getValueHash() === $target->getValueHash();
 	}
 
 }
