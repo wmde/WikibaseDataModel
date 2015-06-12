@@ -3,7 +3,6 @@
 namespace Wikibase\DataModel;
 
 use Comparable;
-use Hashable;
 use InvalidArgumentException;
 use SplObjectStorage;
 use Traversable;
@@ -25,7 +24,7 @@ use Wikibase\DataModel\Snak\Snak;
  * @author H. Snater < mediawiki@snater.com >
  * @author Thiemo Mättig
  */
-class ReferenceList extends SplObjectStorage implements Comparable, Hashable {
+class ReferenceList extends SplObjectStorage implements Comparable {
 
 	/**
 	 * @param Reference[]|Traversable $references
@@ -222,15 +221,13 @@ class ReferenceList extends SplObjectStorage implements Comparable, Hashable {
 	}
 
 	/**
-	 * @see Hashable::getHash
-	 *
 	 * The hash is purely value based. Order of the elements in the array is not held into account.
 	 *
 	 * @since 4.0
 	 *
 	 * @return string
 	 */
-	public function getHash() {
+	public function getValueHash() {
 		$hashes = array();
 
 		foreach ( $this->toArray() as $reference ) {
@@ -266,7 +263,7 @@ class ReferenceList extends SplObjectStorage implements Comparable, Hashable {
 		}
 
 		return $target instanceof self
-			&& $this->getHash() === $target->getHash();
+			&& $this->getValueHash() === $target->getValueHash();
 	}
 
 }
