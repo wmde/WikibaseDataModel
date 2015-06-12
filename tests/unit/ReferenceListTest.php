@@ -233,7 +233,7 @@ class ReferenceListTest extends \PHPUnit_Framework_TestCase {
 	 * @param ReferenceList $array
 	 */
 	public function testGetHashReturnsString( ReferenceList $array ) {
-		$this->assertInternalType( 'string', $array->getValueHash() );
+		$this->assertInternalType( 'string', $array->getHash() );
 	}
 
 	/**
@@ -242,7 +242,7 @@ class ReferenceListTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testGetHashValueIsTheSameForClone( ReferenceList $array ) {
 		$copy = unserialize( serialize( $array ) );
-		$this->assertEquals( $array->getValueHash(), $copy->getValueHash() );
+		$this->assertEquals( $array->getHash(), $copy->getHash() );
 	}
 
 	/**
@@ -349,33 +349,6 @@ class ReferenceListTest extends \PHPUnit_Framework_TestCase {
 
 		$serialized = serialize( $references );
 		$this->assertTrue( $references->equals( unserialize( $serialized ) ) );
-	}
-
-	public function testRemoveDuplicates_noDuplicatesPresent() {
-		$list = new ReferenceList();
-
-		$list->attach( new Reference( array( new PropertyNoValueSnak( 1 ) ) ) );
-		$list->attach( new Reference( array( new PropertyNoValueSnak( 2 ) ) ) );
-		$list->attach( new Reference( array( new PropertyNoValueSnak( 3 ) ) ) );
-
-		$list->removeDuplicates();
-
-		$this->assertEquals( 3, count( $list ) );
-	}
-
-	public function testRemoveDuplicates_duplicatesGetRemoved() {
-		$list = new ReferenceList();
-
-		$list->attach( new Reference( array( new PropertyNoValueSnak( 1 ) ) ) );
-		$list->attach( new Reference( array( new PropertyNoValueSnak( 2 ) ) ) );
-		$list->attach( new Reference( array( new PropertyNoValueSnak( 3 ) ) ) );
-		$list->attach( new Reference( array( new PropertyNoValueSnak( 1 ) ) ) );
-		$list->attach( new Reference( array( new PropertyNoValueSnak( 2 ) ) ) );
-		$list->attach( new Reference( array( new PropertyNoValueSnak( 4 ) ) ) );
-
-		$list->removeDuplicates();
-
-		$this->assertEquals( 4, count( $list ) );
 	}
 
 }
