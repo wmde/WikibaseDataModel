@@ -230,7 +230,7 @@ class Statement implements Hashable, Comparable, PropertyIdProvider {
 			array(
 				sha1( $this->mainSnak->getHash() . $this->qualifiers->getHash() ),
 				$this->rank,
-				$this->references->getValueHash(),
+				$this->references->getHash(),
 			)
 		) );
 	}
