@@ -2,8 +2,10 @@
 
 namespace Wikibase\DataModel;
 
+use Comparable;
 use Hashable;
 use InvalidArgumentException;
+use SplObjectStorage;
 use Traversable;
 use Wikibase\DataModel\Snak\Snak;
 
@@ -23,7 +25,7 @@ use Wikibase\DataModel\Snak\Snak;
  * @author H. Snater < mediawiki@snater.com >
  * @author Thiemo Mättig
  */
-class ReferenceList extends HashableObjectStorage {
+class ReferenceList extends SplObjectStorage implements Comparable, Hashable {
 
 	/**
 	 * @param Reference[]|Traversable $references
@@ -220,25 +222,51 @@ class ReferenceList extends HashableObjectStorage {
 	}
 
 	/**
-	 * @see Serializable::serialize
+	 * @see Hashable::getHash
 	 *
-	 * @since 2.1
+	 * The hash is purely value based. Order of the elements in the array is not held into account.
+	 *
+	 * @since 4.0
 	 *
 	 * @return string
 	 */
-	public function serialize() {
-		return serialize( iterator_to_array( $this ) );
+	public function getHash() {
+		$hashes = array();
+
+		foreach ( $this->toArray() as $reference ) {
+			$hashes[] = $reference->getHash();
+		}
+
+		sort( $hashes );
+
+		return implode( '|', $hashes );
 	}
 
 	/**
-	 * @see Serializable::unserialize
-	 *
-	 * @since 2.1
-	 *
-	 * @param string $data
+	 * @return Reference[]
 	 */
-	public function unserialize( $data ) {
-		$this->__construct( unserialize( $data ) );
+	public function toArray() {
+		return iterator_to_array( $this );
+	}
+
+	/**
+	 * @see Comparable::equals
+	 *
+	 * The comparison is done purely value based, ignoring the order of the elements in the array.
+	 *
+	 * @since 0.3
+	 *
+	 * @param mixed $target
+	 *
+	 * @return bool
+	 */
+	public function equals( $target ) {
+		if ( $this === $target ) {
+			return true;
+		}
+
+		return $target instanceof self
+			&& $this->getHash() === $target->getHash();
 	}
 
 }
