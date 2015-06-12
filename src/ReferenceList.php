@@ -5,10 +5,8 @@ namespace Wikibase\DataModel;
 use Comparable;
 use Hashable;
 use InvalidArgumentException;
-use Serializable;
 use SplObjectStorage;
 use Traversable;
-use Wikibase\DataModel\Internal\MapValueHasher;
 use Wikibase\DataModel\Snak\Snak;
 
 /**
@@ -27,7 +25,7 @@ use Wikibase\DataModel\Snak\Snak;
  * @author H. Snater < mediawiki@snater.com >
  * @author Thiemo Mättig
  */
-class ReferenceList extends SplObjectStorage implements Comparable {
+class ReferenceList extends SplObjectStorage implements Comparable, Hashable {
 
 	/**
 	 * @param Reference[]|Traversable $references
@@ -224,60 +222,31 @@ class ReferenceList extends SplObjectStorage implements Comparable {
 	}
 
 	/**
-	 * @see Serializable::serialize
+	 * @see Hashable::getHash
 	 *
-	 * @since 2.1
+	 * The hash is purely value based. Order of the elements in the array is not held into account.
+	 *
+	 * @since 4.0
 	 *
 	 * @return string
 	 */
-	public function serialize() {
-		return serialize( iterator_to_array( $this ) );
-	}
+	public function getHash() {
+		$hashes = array();
 
-	/**
-	 * @see Serializable::unserialize
-	 *
-	 * @since 2.1
-	 *
-	 * @param string $data
-	 */
-	public function unserialize( $data ) {
-		$this->__construct( unserialize( $data ) );
-	}
-
-	/**
-	 * Removes duplicates bases on hash value.
-	 *
-	 * @since 0.2
-	 */
-	public function removeDuplicates() {
-		$knownHashes = array();
-
-		/**
-		 * @var Hashable $hashable
-		 */
-		foreach ( iterator_to_array( $this ) as $hashable ) {
-			$hash = $hashable->getHash();
-
-			if ( in_array( $hash, $knownHashes ) ) {
-				$this->detach( $hashable );
-			}
-			else {
-				$knownHashes[] = $hash;
-			}
+		foreach ( $this->toArray() as $reference ) {
+			$hashes[] = $reference->getHash();
 		}
+
+		sort( $hashes );
+
+		return implode( '|', $hashes );
 	}
 
 	/**
-	 * The hash is purely valuer based. Order of the elements in the array is not held into account.
-	 *
-	 * @since 0.3
-	 *
-	 * @return string
+	 * @return Reference[]
 	 */
-	public function getValueHash() {
-		$hasher = new MapValueHasher();
-		return $hasher->hash( $this );
+	public function toArray() {
+		return iterator_to_array( $this );
 	}
 
 	/**
@@ -297,7 +266,7 @@ class ReferenceList extends SplObjectStorage implements Comparable {
 		}
 
 		return $target instanceof self
-			&& $this->getValueHash() === $target->getValueHash();
+			&& $this->getHash() === $target->getHash();
 	}
 
 }
