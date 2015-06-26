@@ -1,5 +1,9 @@
 # Wikibase DataModel release notes
 
+## Version 3.0.1 (2015-06-10)
+
+* Restored removed `Property::newEmpty` for compatibility reasons
+
 ## Version 3.0.0 (2015-06-06)
 
 #### Breaking changes
