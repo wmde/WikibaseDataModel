@@ -3,6 +3,11 @@
 ## Version 3.1 (dev)
 
 * Added `DerivedPropertyValueSnak`
+* Deprecated `Entity::copy`
+* Deprecated `Entity::getFingerprint`
+* Deprecated `Entity::setFingerprint`
+* Deprecated `Entity::isEmpty`
+* Deprecated `Entity::clear`
 
 ## Version 3.0.1 (2015-07-01)
 
