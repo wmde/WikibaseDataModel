@@ -3,6 +3,7 @@
 ## Version 3.1 (dev)
 
 * Added `DerivedPropertyValueSnak`
+* Added `LabelsProvider`, `DescriptionsProvider` and `AliasesProvider`
 
 ## Version 3.0.1 (2015-07-01)
 
