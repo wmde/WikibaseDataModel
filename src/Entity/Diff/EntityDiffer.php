@@ -37,15 +37,12 @@ class EntityDiffer {
 	 * @throws RuntimeException
 	 */
 	public function diffEntities( EntityDocument $from, EntityDocument $to ) {
-		$this->assertTypesMatch( $from, $to );
-
-		return $this->getDiffStrategy( $from->getType() )->diffEntities( $from, $to );
-	}
-
-	private function assertTypesMatch( EntityDocument $from, EntityDocument $to ) {
-		if ( $from->getType() !== $to->getType() ) {
-			throw new InvalidArgumentException( 'Can only diff two entities of the same type' );
+		if ( $from->getType() === $to->getType() ) {
+			return $this->getDiffStrategy( $from->getType() )->diffEntities( $from, $to );
 		}
+
+		$differ = new GenericEntityDiffer();
+		return $differ->diffEntities( $from, $to );
 	}
 
 	private function getDiffStrategy( $entityType ) {
