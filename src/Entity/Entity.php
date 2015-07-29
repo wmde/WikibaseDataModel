@@ -7,7 +7,6 @@ use Wikibase\DataModel\Term\AliasGroup;
 use Wikibase\DataModel\Term\AliasGroupList;
 use Wikibase\DataModel\Term\Fingerprint;
 use Wikibase\DataModel\Term\FingerprintProvider;
-use Wikibase\DataModel\Term\Term;
 use Wikibase\DataModel\Term\TermList;
 
 /**
@@ -353,25 +352,5 @@ abstract class Entity implements \Comparable, FingerprintProvider, EntityDocumen
 	public function setFingerprint( Fingerprint $fingerprint ) {
 		$this->fingerprint = $fingerprint;
 	}
-
-	/**
-	 * Returns if the Entity has no content.
-	 * Having an id set does not count as having content.
-	 *
-	 * @since 0.1
-	 * @deprecated since 1.0
-	 *
-	 * @return bool
-	 */
-	public abstract function isEmpty();
-
-	/**
-	 * Removes all content from the Entity.
-	 * The id is not part of the content.
-	 *
-	 * @since 0.1
-	 * @deprecated since 1.0
-	 */
-	public abstract function clear();
 
 }
