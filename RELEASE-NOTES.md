@@ -30,6 +30,7 @@ Wikibase DataModel Services library. These symbols have been removed:
 #### Additions
 
 * Added `DerivedPropertyValueSnak`
+* Added `LabelsProvider`, `DescriptionsProvider` and `AliasesProvider`
 
 ## Version 3.0.1 (2015-07-01)
 
