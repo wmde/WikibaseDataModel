@@ -4,7 +4,7 @@
 
 #### Breaking changes
 
-* Removed `Entity::copy`
+* Removed `Entity::copy`, `Entity::isEmpty` and `Entity::clear`
 
 ## Version 4.0 (2015-07-28)
 
