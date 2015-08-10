@@ -5,16 +5,19 @@ namespace Wikibase\DataModel\Tests\Entity;
 use Wikibase\DataModel\Claim\Claims;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
-use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\SiteLink;
 use Wikibase\DataModel\Snak\PropertyNoValueSnak;
 use Wikibase\DataModel\Snak\PropertySomeValueSnak;
 use Wikibase\DataModel\Statement\Statement;
 use Wikibase\DataModel\Statement\StatementList;
+use Wikibase\DataModel\Term\AliasGroup;
+use Wikibase\DataModel\Term\AliasGroupList;
+use Wikibase\DataModel\Term\Fingerprint;
+use Wikibase\DataModel\Term\Term;
+use Wikibase\DataModel\Term\TermList;
 
 /**
  * @covers Wikibase\DataModel\Entity\Item
- * @covers Wikibase\DataModel\Entity\Entity
  *
  * Some tests for this class are located in ItemMultilangTextsTest,
  * ItemNewEmptyTest and ItemNewFromArrayTest.
@@ -31,18 +34,7 @@ use Wikibase\DataModel\Statement\StatementList;
  * @author John Erling Blad < jeblad@gmail.com >
  * @author Michał Łazowik
  */
-class ItemTest extends EntityTest {
-
-	/**
-	 * @see EntityTest::getNewEmpty
-	 *
-	 * @since 0.1
-	 *
-	 * @return Item
-	 */
-	protected function getNewEmpty() {
-		return new Item();
-	}
+class ItemTest extends \PHPUnit_Framework_TestCase {
 
 	public function testGetId() {
 		foreach ( TestItems::getItems() as $item ) {
@@ -56,38 +48,6 @@ class ItemTest extends EntityTest {
 			$item->setId( 42 );
 			$this->assertEquals( new ItemId( 'Q42' ), $item->getId() );
 		}
-	}
-
-	public function itemProvider() {
-		$items = array();
-
-		$items[] = new Item();
-
-		$item = new Item();
-		$item->setDescription( 'en', 'foo' );
-		$items[] = $item;
-
-		$item = new Item();
-		$item->setDescription( 'en', 'foo' );
-		$item->setDescription( 'de', 'foo' );
-		$item->setLabel( 'en', 'foo' );
-		$item->setAliases( 'de', array( 'bar', 'baz' ) );
-		$items[] = $item;
-
-		/** @var Item $item */
-		$item = $item->copy();
-		$item->getStatements()->addNewStatement(
-			new PropertyNoValueSnak( new PropertyId( 'P42' ) )
-		);
-		$items[] = $item;
-
-		$argLists = array();
-
-		foreach ( $items as $item ) {
-			$argLists[] = array( $item );
-		}
-
-		return $argLists;
 	}
 
 	public function testGetSiteLinkWithNonSetSiteId() {
@@ -413,6 +373,94 @@ class ItemTest extends EntityTest {
 	public function testNotEquals( Item $firstItem, Item $secondItem ) {
 		$this->assertFalse( $firstItem->equals( $secondItem ) );
 		$this->assertFalse( $secondItem->equals( $firstItem ) );
+	}
+
+	public function testWhenNoStuffIsSet_getFingerprintReturnsEmptyFingerprint() {
+		$item = new Item();
+
+		$this->assertEquals(
+			new Fingerprint(),
+			$item->getFingerprint()
+		);
+	}
+
+	public function testWhenLabelsAreSet_getFingerprintReturnsFingerprintWithLabels() {
+		$item = new Item();
+
+		$item->setLabel( 'en', 'foo' );
+		$item->setLabel( 'de', 'bar' );
+
+		$this->assertEquals(
+			new Fingerprint(
+				new TermList( array(
+					new Term( 'en', 'foo' ),
+					new Term( 'de', 'bar' ),
+				) )
+			),
+			$item->getFingerprint()
+		);
+	}
+
+	public function testWhenTermsAreSet_getFingerprintReturnsFingerprintWithTerms() {
+		$item = new Item();
+
+		$item->setLabel( 'en', 'foo' );
+		$item->setDescription( 'en', 'foo bar' );
+		$item->setAliases( 'en', array( 'foo', 'bar' ) );
+
+		$this->assertEquals(
+			new Fingerprint(
+				new TermList( array(
+					new Term( 'en', 'foo' ),
+				) ),
+				new TermList( array(
+					new Term( 'en', 'foo bar' )
+				) ),
+				new AliasGroupList( array(
+					new AliasGroup( 'en', array( 'foo', 'bar' ) )
+				) )
+			),
+			$item->getFingerprint()
+		);
+	}
+
+	public function testGivenEmptyFingerprint_noTermsAreSet() {
+		$item = new Item();
+		$item->setFingerprint( new Fingerprint() );
+
+		$this->assertTrue( $item->getFingerprint()->isEmpty() );
+	}
+
+	public function testGivenEmptyFingerprint_existingTermsAreRemoved() {
+		$item = new Item();
+
+		$item->setLabel( 'en', 'foo' );
+		$item->setDescription( 'en', 'foo bar' );
+		$item->setAliases( 'en', array( 'foo', 'bar' ) );
+
+		$item->setFingerprint( new Fingerprint() );
+
+		$this->assertTrue( $item->getFingerprint()->isEmpty() );
+	}
+
+	public function testWhenSettingFingerprint_getFingerprintReturnsIt() {
+		$fingerprint = new Fingerprint(
+			new TermList( array(
+				new Term( 'en', 'english label' ),
+			) ),
+			new TermList( array(
+				new Term( 'en', 'english description' )
+			) ),
+			new AliasGroupList( array(
+				new AliasGroup( 'en', array( 'first en alias', 'second en alias' ) )
+			) )
+		);
+
+		$item = new Item();
+		$item->setFingerprint( $fingerprint );
+		$newFingerprint = $item->getFingerprint();
+
+		$this->assertEquals( $fingerprint, $newFingerprint );
 	}
 
 }

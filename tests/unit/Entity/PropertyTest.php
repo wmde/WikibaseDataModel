@@ -10,11 +10,14 @@ use Wikibase\DataModel\Snak\PropertyNoValueSnak;
 use Wikibase\DataModel\Snak\PropertySomeValueSnak;
 use Wikibase\DataModel\Statement\Statement;
 use Wikibase\DataModel\Statement\StatementList;
+use Wikibase\DataModel\Term\AliasGroup;
+use Wikibase\DataModel\Term\AliasGroupList;
 use Wikibase\DataModel\Term\Fingerprint;
+use Wikibase\DataModel\Term\Term;
+use Wikibase\DataModel\Term\TermList;
 
 /**
  * @covers Wikibase\DataModel\Entity\Property
- * @covers Wikibase\DataModel\Entity\Entity
  *
  * @group Wikibase
  * @group WikibaseProperty
@@ -24,18 +27,7 @@ use Wikibase\DataModel\Term\Fingerprint;
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
-class PropertyTest extends EntityTest {
-
-	/**
-	 * @see EntityTest::getNewEmpty
-	 *
-	 * @since 0.1
-	 *
-	 * @return Property
-	 */
-	protected function getNewEmpty() {
-		return Property::newFromType( 'string' );
-	}
+class PropertyTest extends \PHPUnit_Framework_TestCase {
 
 	public function testConstructorWithAllParameters() {
 		$property = new Property(
@@ -248,6 +240,94 @@ class PropertyTest extends EntityTest {
 
 		$property->setClaims( new Claims() );
 		$this->assertTrue( $property->getStatements()->isEmpty(), "should be empty again" );
+	}
+
+	public function testWhenNoStuffIsSet_getFingerprintReturnsEmptyFingerprint() {
+		$property = Property::newFromType( 'string' );
+
+		$this->assertEquals(
+			new Fingerprint(),
+			$property->getFingerprint()
+		);
+	}
+
+	public function testWhenLabelsAreSet_getFingerprintReturnsFingerprintWithLabels() {
+		$property = Property::newFromType( 'string' );
+
+		$property->setLabel( 'en', 'foo' );
+		$property->setLabel( 'de', 'bar' );
+
+		$this->assertEquals(
+			new Fingerprint(
+				new TermList( array(
+					new Term( 'en', 'foo' ),
+					new Term( 'de', 'bar' ),
+				) )
+			),
+			$property->getFingerprint()
+		);
+	}
+
+	public function testWhenTermsAreSet_getFingerprintReturnsFingerprintWithTerms() {
+		$property = Property::newFromType( 'string' );
+
+		$property->setLabel( 'en', 'foo' );
+		$property->setDescription( 'en', 'foo bar' );
+		$property->setAliases( 'en', array( 'foo', 'bar' ) );
+
+		$this->assertEquals(
+			new Fingerprint(
+				new TermList( array(
+					new Term( 'en', 'foo' ),
+				) ),
+				new TermList( array(
+					new Term( 'en', 'foo bar' )
+				) ),
+				new AliasGroupList( array(
+					new AliasGroup( 'en', array( 'foo', 'bar' ) )
+				) )
+			),
+			$property->getFingerprint()
+		);
+	}
+
+	public function testGivenEmptyFingerprint_noTermsAreSet() {
+		$property = Property::newFromType( 'string' );
+		$property->setFingerprint( new Fingerprint() );
+
+		$this->assertTrue( $property->getFingerprint()->isEmpty() );
+	}
+
+	public function testGivenEmptyFingerprint_existingTermsAreRemoved() {
+		$property = Property::newFromType( 'string' );
+
+		$property->setLabel( 'en', 'foo' );
+		$property->setDescription( 'en', 'foo bar' );
+		$property->setAliases( 'en', array( 'foo', 'bar' ) );
+
+		$property->setFingerprint( new Fingerprint() );
+
+		$this->assertTrue( $property->getFingerprint()->isEmpty() );
+	}
+
+	public function testWhenSettingFingerprint_getFingerprintReturnsIt() {
+		$fingerprint = new Fingerprint(
+			new TermList( array(
+				new Term( 'en', 'english label' ),
+			) ),
+			new TermList( array(
+				new Term( 'en', 'english description' )
+			) ),
+			new AliasGroupList( array(
+				new AliasGroup( 'en', array( 'first en alias', 'second en alias' ) )
+			) )
+		);
+
+		$property = Property::newFromType( 'string' );
+		$property->setFingerprint( $fingerprint );
+		$newFingerprint = $property->getFingerprint();
+
+		$this->assertEquals( $fingerprint, $newFingerprint );
 	}
 
 }
