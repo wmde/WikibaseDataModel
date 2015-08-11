@@ -20,6 +20,15 @@ namespace Wikibase\DataModel\Claim {
 
 }
 
+namespace Wikibase\DataModel\Entity {
+
+	/**
+	 * @deprecated since 1.0.0, use the base interface instead.
+	 */
+	interface Entity extends \Wikibase\DataModel\Entity\EntityDocument {}
+
+}
+
 namespace Wikibase\DataModel {
 
 	/**

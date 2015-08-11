@@ -2,12 +2,14 @@
 
 namespace Wikibase\DataModel\Entity;
 
+use Comparable;
 use InvalidArgumentException;
 use Wikibase\DataModel\Claim\Claims;
 use Wikibase\DataModel\Statement\Statement;
 use Wikibase\DataModel\Statement\StatementList;
 use Wikibase\DataModel\Statement\StatementListHolder;
 use Wikibase\DataModel\Term\Fingerprint;
+use Wikibase\DataModel\Term\FingerprintHolder;
 
 /**
  * Represents a single Wikibase property.
@@ -18,7 +20,7 @@ use Wikibase\DataModel\Term\Fingerprint;
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
-class Property extends Entity implements StatementListHolder {
+class Property implements EntityDocument, FingerprintHolder, StatementListHolder, Comparable {
 
 	const ENTITY_TYPE = 'property';
 

@@ -31,7 +31,7 @@ final class TestItems {
 
 		$item = new Item();
 
-		$item->addAliases( 'en', array( 'foobar', 'baz' ) );
+		$item->setAliases( 'en', array( 'foobar', 'baz' ) );
 
 		$items[] = $item;
 
@@ -47,8 +47,8 @@ final class TestItems {
 		$item->setDescription( 'en', 'foo' );
 		$item->setLabel( 'en', 'bar' );
 
-		$item->addAliases( 'en', array( 'foobar', 'baz' ) );
-		$item->addAliases( 'de', array( 'foobar', 'spam' ) );
+		$item->setAliases( 'en', array( 'foobar', 'baz' ) );
+		$item->setAliases( 'de', array( 'foobar', 'spam' ) );
 
 		$items[] = $item;
 
