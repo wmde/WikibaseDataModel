@@ -99,7 +99,7 @@ class SiteLinkList implements IteratorAggregate, Countable, Comparable {
 	 *
 	 * Returns a Traversable of SiteLink in which the keys are the site ids.
 	 *
-	 * @return Traversable|SiteLink[]
+	 * @return ArrayIterator|SiteLink[]
 	 */
 	public function getIterator() {
 		return new ArrayIterator( $this->siteLinks );
