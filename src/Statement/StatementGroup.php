@@ -2,30 +2,32 @@
 
 namespace Wikibase\DataModel\Statement;
 
+use Countable;
 use InvalidArgumentException;
+use IteratorAggregate;
 use Traversable;
 use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\PropertyIdProvider;
 
 /**
- * List of statements with the same property id, grouped by rank.
+ * List of statements with the same property id.
  *
- * @since 4.2
+ * @since 4.3
  *
  * @license GNU GPL v2+
  * @author Bene* < benestar.wikimedia@gmail.com >
  */
-class StatementGroup implements PropertyIdProvider {
-
-	/**
-	 * @var Statement[][]
-	 */
-	private $statementsByRank = array();
+class StatementGroup implements IteratorAggregate, Countable {
 
 	/**
 	 * @var PropertyId
 	 */
 	private $propertyId;
+
+	/**
+	 * @var Statement[]
+	 */
+	private $statements = array();
 
 	/**
 	 * @param PropertyId|int $propertyId
@@ -69,11 +71,10 @@ class StatementGroup implements PropertyIdProvider {
 			throw new InvalidArgumentException( '$statement must have the property id ' . $this->propertyId->getSerialization() );
 		}
 
-		$this->statementsByRank[$statement->getRank()][] = $statement;
+		$this->statements[] = $statement;
 	}
 
 	/**
-	 * @see PropertyIdProvider::getPropertyId
 	 * @return PropertyId
 	 */
 	public function getPropertyId() {
@@ -85,11 +86,45 @@ class StatementGroup implements PropertyIdProvider {
 	 * @return Statement[]
 	 */
 	public function getByRank( $rank ) {
-		if ( isset( $this->statementsByRank[$rank] ) ) {
-			return $this->statementsByRank[$rank];
+		$statements = array();
+
+		foreach ( $this->statements as $statement ) {
+			if ( $statement->getRank() === $rank ) {
+				$statements[] = $statement;
+			}
 		}
 
-		return array();
+		return $statements;
+	}
+
+	/**
+	 * @return Traversable
+	 */
+	public function getIterator() {
+		return new ArrayIterator( $this->statements );
+	}
+
+	/**
+	 * @return Statement[] Numerically indexed (non-sparse) array.
+	 */
+	public function toArray() {
+		return $this->statements;
+	}
+
+	/**
+	 * @see Countable::count
+	 *
+	 * @return int
+	 */
+	public function count() {
+		return count( $this->statements );
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isEmpty() {
+		return empty( $this->statements );
 	}
 
 }

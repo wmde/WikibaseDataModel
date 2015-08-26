@@ -53,11 +53,11 @@ class StatementGroupTest extends \PHPUnit_Framework_TestCase {
 		$statementGroup->addStatement( $statement );
 	}
 
-	public function testAddStatements() {
+	public function testAddStatements_validPropertyIds() {
 		$statementGroup = new StatementGroup( 42 );
 		$foo = new Statement( new PropertyValueSnak( 42, new StringValue( 'foo' ) ) );
-		$bar = new Statement( new PropertyValueSnak( 42, new StringValue( 'foo' ) ) );
-		$baz = new Statement( new PropertyValueSnak( 42, new StringValue( 'foo' ) ) );
+		$bar = new Statement( new PropertyValueSnak( 42, new StringValue( 'bar' ) ) );
+		$baz = new Statement( new PropertyValueSnak( 42, new StringValue( 'baz' ) ) );
 		$baz->setRank( Statement::RANK_PREFERRED );
 		$statementGroup->addStatements( array( $foo, $bar, $baz ) );
 
@@ -72,8 +72,8 @@ class StatementGroupTest extends \PHPUnit_Framework_TestCase {
 	public function testAddStatements_invalidPropertyIds() {
 		$statementGroup = new StatementGroup( 42 );
 		$foo = new Statement( new PropertyValueSnak( 42, new StringValue( 'foo' ) ) );
-		$bar = new Statement( new PropertyValueSnak( 42, new StringValue( 'foo' ) ) );
-		$baz = new Statement( new PropertyValueSnak( 12, new StringValue( 'foo' ) ) );
+		$bar = new Statement( new PropertyValueSnak( 42, new StringValue( 'bar' ) ) );
+		$baz = new Statement( new PropertyValueSnak( 12, new StringValue( 'baz' ) ) );
 		$statementGroup->addStatements( array( $foo, $bar, $baz ) );
 	}
 
@@ -92,6 +92,48 @@ class StatementGroupTest extends \PHPUnit_Framework_TestCase {
 	public function testAddStatements_noArray() {
 		$statementGroup = new StatementGroup( 42 );
 		$statementGroup->addStatements( 'foo' );
+	}
+
+	public function testToArray() {
+		$statementGroup = new StatementGroup( 42 );
+		$foo = new Statement( new PropertyValueSnak( 42, new StringValue( 'foo' ) ) );
+		$bar = new Statement( new PropertyValueSnak( 42, new StringValue( 'bar' ) ) );
+		$baz = new Statement( new PropertyValueSnak( 42, new StringValue( 'baz' ) ) );
+		$statementGroup->addStatements( array( $foo, $bar, $baz ) );
+
+		$this->assertEquals( array( $foo, $bar, $baz ), $statementGroup->toArray() );
+	}
+
+	public function testCount_emptyGroup() {
+		$statementGroup = new StatementGroup( 42 );
+
+		$this->assertEquals( 0, $statementGroup->count() );
+	}
+
+	public function testCount_filledGroup() {
+		$statementGroup = new StatementGroup( 42 );
+		$foo = new Statement( new PropertyValueSnak( 42, new StringValue( 'foo' ) ) );
+		$bar = new Statement( new PropertyValueSnak( 42, new StringValue( 'bar' ) ) );
+		$baz = new Statement( new PropertyValueSnak( 42, new StringValue( 'baz' ) ) );
+		$statementGroup->addStatements( array( $foo, $bar, $baz ) );
+
+		$this->assertEquals( 3, $statementGroup->count() );
+	}
+
+	public function testEmpty_emptyGroup() {
+		$statementGroup = new StatementGroup( 42 );
+
+		$this->assertTrue( $statementGroup->isEmpty() );
+	}
+
+	public function testEmpty_filledGroup() {
+		$statementGroup = new StatementGroup( 42 );
+		$foo = new Statement( new PropertyValueSnak( 42, new StringValue( 'foo' ) ) );
+		$bar = new Statement( new PropertyValueSnak( 42, new StringValue( 'bar' ) ) );
+		$baz = new Statement( new PropertyValueSnak( 42, new StringValue( 'baz' ) ) );
+		$statementGroup->addStatements( array( $foo, $bar, $baz ) );
+
+		$this->assertFalse( $statementGroup->isEmpty() );
 	}
 
 }
