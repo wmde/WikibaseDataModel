@@ -2,28 +2,34 @@
 
 namespace Wikibase\DataModel;
 
+use ArrayIterator;
+use Comparable;
+use Countable;
 use Hashable;
 use InvalidArgumentException;
+use IteratorAggregate;
 use Traversable;
 use Wikibase\DataModel\Snak\Snak;
 
 /**
  * List of Reference objects.
  *
- * Note that this implementation is based on SplObjectStorage and
- * is not enforcing the type of objects set via it's native methods.
- * Therefore one can add non-Reference-implementing objects when
- * not sticking to the methods of the References interface.
- *
  * @since 0.1
  * Does not implement References anymore since 2.0
+ * Does not extend SplObjectStorage since 4.0
  *
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author H. Snater < mediawiki@snater.com >
  * @author Thiemo Mättig
+ * @author Bene* < benestar.wikimedia@gmail.com >
  */
-class ReferenceList extends HashableObjectStorage {
+class ReferenceList implements Comparable, Hashable, IteratorAggregate, Countable {
+
+	/**
+	 * @var Reference[]
+	 */
+	private $references = array();
 
 	/**
 	 * @param Reference[]|Traversable $references
@@ -46,6 +52,7 @@ class ReferenceList extends HashableObjectStorage {
 
 	/**
 	 * Adds the provided reference to the list.
+	 * Empty references are ignored.
 	 *
 	 * @since 0.1
 	 *
@@ -55,27 +62,19 @@ class ReferenceList extends HashableObjectStorage {
 	 * @throws InvalidArgumentException
 	 */
 	public function addReference( Reference $reference, $index = null ) {
-		if ( !is_int( $index ) && $index !== null ) {
-			throw new InvalidArgumentException( '$index must be an integer or null' );
+		if ( $index !== null && ( !is_int( $index ) || $index < 0 ) ) {
+			throw new InvalidArgumentException( '$index must be a non-negative integer or null' );
 		}
 
-		if ( $index === null || $index >= count( $this ) ) {
+		if ( $reference->isEmpty() ) {
+			return;
+		}
+
+		if ( $index === null || $index >= count( $this->references ) ) {
 			// Append object to the end of the reference list.
-			$this->attach( $reference );
+			$this->references[] = $reference;
 		} else {
 			$this->insertReferenceAtIndex( $reference, $index );
-		}
-	}
-
-	/**
-	 * @see SplObjectStorage::attach
-	 *
-	 * @param Reference $reference
-	 * @param mixed $data Unused in the ReferenceList class.
-	 */
-	public function attach( $reference, $data = null ) {
-		if ( !$reference->isEmpty() ) {
-			parent::attach( $reference, $data );
 		}
 	}
 
@@ -100,26 +99,7 @@ class ReferenceList extends HashableObjectStorage {
 	 * @param int $index
 	 */
 	private function insertReferenceAtIndex( Reference $reference, $index ) {
-		$referencesToShift = array();
-		$i = 0;
-
-		// Determine the references that need to be shifted and detach them:
-		foreach( $this as $object ) {
-			if( $i++ >= $index ) {
-				$referencesToShift[] = $object;
-			}
-		}
-
-		foreach( $referencesToShift as $object ) {
-			$this->detach( $object );
-		}
-
-		// Attach the new reference and reattach the previously detached references:
-		$this->attach( $reference );
-
-		foreach( $referencesToShift as $object ) {
-			$this->attach( $object );
-		}
+		array_splice( $this->references, $index, 0, array( $reference ) );
 	}
 
 	/**
@@ -132,30 +112,7 @@ class ReferenceList extends HashableObjectStorage {
 	 * @return boolean
 	 */
 	public function hasReference( Reference $reference ) {
-		return $this->contains( $reference )
-			|| $this->hasReferenceHash( $reference->getHash() );
-	}
-
-	/**
-	 * Returns the index of a reference or false if the reference could not be found.
-	 *
-	 * @since 0.5
-	 *
-	 * @param Reference $reference
-	 *
-	 * @return int|boolean
-	 */
-	public function indexOf( Reference $reference ) {
-		$index = 0;
-
-		foreach( $this as $object ) {
-			if( $object === $reference ) {
-				return $index;
-			}
-			$index++;
-		}
-
-		return false;
+		return $this->hasReferenceHash( $reference->getHash() );
 	}
 
 	/**
@@ -190,15 +147,18 @@ class ReferenceList extends HashableObjectStorage {
 	 * @param string $referenceHash	`
 	 */
 	public function removeReferenceHash( $referenceHash ) {
-		$reference = $this->getReference( $referenceHash );
-
-		if ( $reference !== null ) {
-			$this->detach( $reference );
+		foreach ( $this->references as $index => $reference ) {
+			if ( $reference->getHash() === $referenceHash ) {
+				unset( $this->references[$index] );
+			}
 		}
+
+		$this->references = array_values( $this->references );
 	}
 
 	/**
-	 * Returns the reference with the provided hash, or null if there is no such reference in the list.
+	 * Returns the reference with the provided hash,
+	 * or null if there is no such reference in the list.
 	 *
 	 * @since 0.3
 	 *
@@ -207,12 +167,9 @@ class ReferenceList extends HashableObjectStorage {
 	 * @return Reference|null
 	 */
 	public function getReference( $referenceHash ) {
-		/**
-		 * @var Hashable $hashable
-		 */
-		foreach ( $this as $hashable ) {
-			if ( $hashable->getHash() === $referenceHash ) {
-				return $hashable;
+		foreach ( $this->references as $reference ) {
+			if ( $reference->getHash() === $referenceHash ) {
+				return $reference;
 			}
 		}
 
@@ -220,25 +177,94 @@ class ReferenceList extends HashableObjectStorage {
 	}
 
 	/**
-	 * @see Serializable::serialize
+	 * Returns the index of a reference or false if the reference could not be found.
 	 *
-	 * @since 2.1
+	 * @since 0.5
 	 *
-	 * @return string
+	 * @param Reference $reference
+	 *
+	 * @return int|boolean
 	 */
-	public function serialize() {
-		return serialize( iterator_to_array( $this ) );
+	public function indexOf( Reference $reference ) {
+		foreach ( $this->references as $index => $ref ) {
+			if ( $ref->equals( $reference ) ) {
+				return $index;
+			}
+		}
+
+		return false;
 	}
 
 	/**
-	 * @see Serializable::unserialize
+	 * @see IteratorAggregate::getIterator
 	 *
-	 * @since 2.1
+	 * @since 4.0
 	 *
-	 * @param string $data
+	 * @return Traversable
 	 */
-	public function unserialize( $data ) {
-		$this->__construct( unserialize( $data ) );
+	public function getIterator() {
+		return new ArrayIterator( $this->references );
+	}
+
+	/**
+	 * @since 4.0
+	 *
+	 * @return Reference[] Numerically indexed (non-sparse) array.
+	 */
+	public function toArray() {
+		return $this->references;
+	}
+
+	/**
+	 * @see Countable::count
+	 *
+	 * @since 4.0
+	 *
+	 * @return int
+	 */
+	public function count() {
+		return count( $this->references );
+	}
+
+	/**
+	 * The hash is purely value based, ignoring the order of the elements in the array.
+	 *
+	 * @see Hashable::getHash
+	 *
+	 * @since 4.0
+	 *
+	 * @return string
+	 */
+	public function getHash() {
+		$hashes = array();
+
+		foreach ( $this->references as $reference ) {
+			$hashes[] = $reference->getHash();
+		}
+
+		sort( $hashes );
+
+		return implode( '|', $hashes );
+	}
+
+	/**
+	 * The comparison is done purely value based, ignoring the order of the elements in the array.
+	 *
+	 * @see Comparable::equals
+	 *
+	 * @since 0.3
+	 *
+	 * @param mixed $target
+	 *
+	 * @return bool
+	 */
+	public function equals( $target ) {
+		if ( $this === $target ) {
+			return true;
+		}
+
+		return $target instanceof self
+			&& $this->getHash() === $target->getHash();
 	}
 
 }

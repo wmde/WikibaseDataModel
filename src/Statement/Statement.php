@@ -7,7 +7,6 @@ use Hashable;
 use InvalidArgumentException;
 use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\PropertyIdProvider;
-use Wikibase\DataModel\Reference;
 use Wikibase\DataModel\ReferenceList;
 use Wikibase\DataModel\Snak\Snak;
 use Wikibase\DataModel\Snak\SnakList;
@@ -231,7 +230,7 @@ class Statement implements Hashable, Comparable, PropertyIdProvider {
 			array(
 				sha1( $this->mainSnak->getHash() . $this->qualifiers->getHash() ),
 				$this->rank,
-				$this->references->getValueHash(),
+				$this->references->getHash(),
 			)
 		) );
 	}
