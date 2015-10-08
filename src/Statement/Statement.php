@@ -25,13 +25,19 @@ use Wikibase\DataModel\Snak\SnakList;
 class Statement implements Hashable, Comparable, PropertyIdProvider {
 
 	/**
-	 * Rank enum. Higher values are more preferred.
-	 *
-	 * @since 2.0
+	 * @deprecated since 4.4, use StatementRank::PREFERRED instead.
 	 */
-	const RANK_PREFERRED = 2;
-	const RANK_NORMAL = 1;
-	const RANK_DEPRECATED = 0;
+	const RANK_PREFERRED = StatementRank::PREFERRED;
+
+	/**
+	 * @deprecated since 4.4, use StatementRank::NORMAL instead.
+	 */
+	const RANK_NORMAL = StatementRank::NORMAL;
+
+	/**
+	 * @deprecated since 4.4, use StatementRank::DEPRECATED instead.
+	 */
+	const RANK_DEPRECATED = StatementRank::DEPRECATED;
 
 	/**
 	 * @var string|null
@@ -56,9 +62,9 @@ class Statement implements Hashable, Comparable, PropertyIdProvider {
 	private $references;
 
 	/**
-	 * @var integer, element of the Statement::RANK_ enum
+	 * @var int One of the StatementRank::... constants.
 	 */
-	private $rank = self::RANK_NORMAL;
+	private $rank = StatementRank::NORMAL;
 
 	/**
 	 * @since 2.0
@@ -190,19 +196,15 @@ class Statement implements Hashable, Comparable, PropertyIdProvider {
 
 	/**
 	 * Sets the rank of the statement.
-	 * The rank is an element of the Statement::RANK_ enum.
 	 *
 	 * @since 0.1
 	 *
-	 * @param integer $rank
+	 * @param int $rank One of the StatementRank::... constants.
+	 *
 	 * @throws InvalidArgumentException
 	 */
 	public function setRank( $rank ) {
-		$ranks = [ self::RANK_DEPRECATED, self::RANK_NORMAL, self::RANK_PREFERRED ];
-
-		if ( !in_array( $rank, $ranks, true ) ) {
-			throw new InvalidArgumentException( 'Invalid rank specified for statement: ' . var_export( $rank, true ) );
-		}
+		StatementRank::assertIsValid( $rank );
 
 		$this->rank = $rank;
 	}
