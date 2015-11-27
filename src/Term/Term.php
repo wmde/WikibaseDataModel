@@ -4,6 +4,9 @@ namespace Wikibase\DataModel\Term;
 
 use Comparable;
 use InvalidArgumentException;
+use Wikibase\DataModel\Facet\FacetContainer;
+use Wikibase\DataModel\Facet\NoSuchFacetException;
+use Wikibase\DataModel\Internal\FacetManager;
 
 /**
  * Immutable value object.
@@ -12,8 +15,9 @@ use InvalidArgumentException;
  *
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
+ * @author Daniel Kinzler
  */
-class Term implements Comparable {
+class Term implements Comparable, FacetContainer {
 
 	/**
 	 * @var string Language code identifying the language of the text, but note that there is
@@ -25,6 +29,11 @@ class Term implements Comparable {
 	 * @var string
 	 */
 	private $text;
+
+	/**
+	 * @var FacetManager
+	 */
+	private $facetManager;
 
 	/**
 	 * @param string $languageCode Language of the text.
@@ -75,6 +84,41 @@ class Term implements Comparable {
 			&& get_called_class() === get_class( $target )
 			&& $this->languageCode === $target->languageCode
 			&& $this->text === $target->text;
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return boolean
+	 */
+	public function hasFacet( $name ) {
+		return $this->facetManager && $this->facetManager->hasFacet( $name );
+	}
+
+	/**
+	 * @param string $name
+	 * @param string|null $type The desired type
+	 *
+	 * @return object
+	 */
+	public function getFacet( $name, $type = null ) {
+		if ( !$this->facetManager ) {
+			throw new NoSuchFacetException( $name );
+		}
+
+		return $this->facetManager->getFacet( $name, $type );
+	}
+
+	/**
+	 * @param string $name
+	 * @param object $facetObject
+	 */
+	public function addFacet( $name, $facetObject ) {
+		if ( !$this->facetManager ) {
+			$this->facetManager = new FacetManager();
+		}
+
+		$this->facetManager->addFacet( $name, $facetObject );
 	}
 
 }

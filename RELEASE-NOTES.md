@@ -1,7 +1,11 @@
 # Wikibase DataModel release notes
 
-## Version 4.4.0 (dev)
-
+## Version 5 (dev)
+* Added `FacetContainer` and `FacetManager`
+* Removed `TermFallback`
+* Added `TermFallbackInfo`
+* Removed `DerivedPropertyValueSnak`
+* Added `DerivedValues`
 * Added `ItemIdParser`
 * Added `ReferenceList::isEmpty`
 

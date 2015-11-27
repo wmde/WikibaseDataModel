@@ -6,6 +6,9 @@ use InvalidArgumentException;
 use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
+use Wikibase\DataModel\Facet\FacetContainer;
+use Wikibase\DataModel\Facet\NoSuchFacetException;
+use Wikibase\DataModel\Internal\FacetManager;
 
 /**
  * Base class for snaks.
@@ -15,8 +18,14 @@ use Wikibase\DataModel\Entity\PropertyId;
  *
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
+ * @author Daniel Kinzler
  */
-abstract class SnakObject implements Snak {
+abstract class SnakObject implements Snak, FacetContainer {
+
+	/**
+	 * @var FacetManager|null
+	 */
+	private $facetManager = null;
 
 	/**
 	 * @since 0.1
@@ -114,6 +123,41 @@ abstract class SnakObject implements Snak {
 	 */
 	public function unserialize( $serialized ) {
 		$this->propertyId = PropertyId::newFromNumber( unserialize( $serialized ) );
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return boolean
+	 */
+	public function hasFacet( $name ) {
+		return $this->facetManager && $this->facetManager->hasFacet( $name );
+	}
+
+	/**
+	 * @param string $name
+	 * @param string|null $type The desired type
+	 *
+	 * @return object
+	 */
+	public function getFacet( $name, $type = null ) {
+		if ( !$this->facetManager ) {
+			throw new NoSuchFacetException( $name );
+		}
+
+		return $this->facetManager->getFacet( $name, $type );
+	}
+
+	/**
+	 * @param string $name
+	 * @param object $facetObject
+	 */
+	public function addFacet( $name, $facetObject ) {
+		if ( !$this->facetManager ) {
+			$this->facetManager = new FacetManager();
+		}
+
+		$this->facetManager->addFacet( $name, $facetObject );
 	}
 
 }

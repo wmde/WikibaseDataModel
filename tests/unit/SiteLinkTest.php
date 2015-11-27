@@ -7,6 +7,7 @@ use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\ItemIdSet;
 use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\SiteLink;
+use Wikibase\DataModel\Tests\Facet\FacetContainerContractTester;
 
 /**
  * @covers Wikibase\DataModel\SiteLink
@@ -219,6 +220,27 @@ class SiteLinkTest extends \PHPUnit_Framework_TestCase {
 	public function testGivenNonItemIdCollectionForBadges_constructorThrowsException() {
 		$this->setExpectedException( 'InvalidArgumentException' );
 		new SiteLink( 'foo', 'bar', 42 );
+	}
+
+	public function testHasFacet() {
+		$tester = new FacetContainerContractTester();
+		$siteLink = new SiteLink( 'foo', 'bar' );
+
+		$tester->testHasFacet( $siteLink );
+	}
+
+	public function testGetFacet() {
+		$tester = new FacetContainerContractTester();
+		$siteLink = new SiteLink( 'foo', 'bar' );
+
+		$tester->testGetFacet( $siteLink );
+	}
+
+	public function testAddFacet() {
+		$tester = new FacetContainerContractTester();
+		$siteLink = new SiteLink( 'foo', 'bar' );
+
+		$tester->testAddFacet( $siteLink );
 	}
 
 }
