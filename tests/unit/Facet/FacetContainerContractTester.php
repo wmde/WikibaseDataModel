@@ -30,6 +30,15 @@ class FacetContainerContractTester {
 		PHPUnit_Framework_Assert::assertTrue( $container->hasFacet( 'foo' ) );
 	}
 
+	public function testListFacets( FacetContainer $container ) {
+		PHPUnit_Framework_Assert::assertEquals( array(), $container->listFacets() );
+
+		$facet = new stdClass();
+		$container->addFacet( 'foo', $facet );
+
+		PHPUnit_Framework_Assert::assertEquals( array( 'foo' ), $container->listFacets() );
+	}
+
 	public function testGetFacet( FacetContainer $container ) {
 		$facet = new stdClass();
 		$container->addFacet( 'foo', $facet );
@@ -41,14 +50,14 @@ class FacetContainerContractTester {
 			$container->getFacet( 'foo', 'Wikibase\DataModel\Snak' );
 			PHPUnit_Framework_Assert::fail( 'getFacet() should fail with a MismatchingFacetException' );
 		} catch ( MismatchingFacetException $ex ) {
-			// ok
+			PHPUnit_Framework_Assert::assertTrue( true ); // make phpcs happy
 		}
 
 		try {
 			$container->getFacet( 'xyzzy' );
 			PHPUnit_Framework_Assert::fail( 'getFacet() should fail with a NoSuchFacetException' );
 		} catch ( NoSuchFacetException $ex ) {
-			// ok
+			PHPUnit_Framework_Assert::assertTrue( true ); // make phpcs happy
 		}
 	}
 

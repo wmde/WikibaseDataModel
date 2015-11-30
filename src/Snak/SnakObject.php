@@ -135,6 +135,13 @@ abstract class SnakObject implements Snak, FacetContainer {
 	}
 
 	/**
+	 * @return string[]
+	 */
+	public function listFacets() {
+		return $this->facetManager ? $this->facetManager->listFacets() : array();
+	}
+
+	/**
 	 * @param string $name
 	 * @param string|null $type The desired type
 	 *

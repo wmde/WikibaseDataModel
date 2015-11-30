@@ -25,6 +25,13 @@ interface FacetContainer {
 	public function hasFacet( $name );
 
 	/**
+	 * Returns a list of supported facet names.
+	 *
+	 * @return string[]
+	 */
+	public function listFacets();
+
+	/**
 	 * Returns a facet object.
 	 *
 	 * @param string $name

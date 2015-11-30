@@ -71,6 +71,13 @@ class TermTest extends \PHPUnit_Framework_TestCase {
 		$tester->testHasFacet( $term );
 	}
 
+	public function testListFacets() {
+		$tester = new FacetContainerContractTester();
+		$term = new Term( 'foo', 'bar' );
+
+		$tester->testListFacets( $term );
+	}
+
 	public function testGetFacet() {
 		$tester = new FacetContainerContractTester();
 		$term = new Term( 'foo', 'bar' );

@@ -145,6 +145,13 @@ class SiteLink implements Comparable, FacetContainer {
 	}
 
 	/**
+	 * @return string[]
+	 */
+	public function listFacets() {
+		return $this->facetManager ? $this->facetManager->listFacets() : array();
+	}
+
+	/**
 	 * @param string $name
 	 * @param string|null $type The desired type
 	 *

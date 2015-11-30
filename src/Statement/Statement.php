@@ -317,6 +317,13 @@ class Statement implements Hashable, Comparable, PropertyIdProvider, FacetContai
 	}
 
 	/**
+	 * @return string[]
+	 */
+	public function listFacets() {
+		return $this->facetManager ? $this->facetManager->listFacets() : array();
+	}
+
+	/**
 	 * @param string $name
 	 * @param string|null $type The desired type
 	 *

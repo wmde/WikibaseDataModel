@@ -229,6 +229,13 @@ class SiteLinkTest extends \PHPUnit_Framework_TestCase {
 		$tester->testHasFacet( $siteLink );
 	}
 
+	public function testListFacets() {
+		$tester = new FacetContainerContractTester();
+		$siteLink = new SiteLink( 'foo', 'bar' );
+
+		$tester->testListFacets( $siteLink );
+	}
+
 	public function testGetFacet() {
 		$tester = new FacetContainerContractTester();
 		$siteLink = new SiteLink( 'foo', 'bar' );

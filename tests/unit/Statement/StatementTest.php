@@ -432,6 +432,16 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 	 * @dataProvider instanceProvider
 	 * @param Statement $statement
 	 */
+	public function testListFacets( Statement $statement ) {
+		$tester = new FacetContainerContractTester();
+
+		$tester->testListFacets( $statement );
+	}
+
+	/**
+	 * @dataProvider instanceProvider
+	 * @param Statement $statement
+	 */
 	public function testGetFacet( Statement $statement ) {
 		$tester = new FacetContainerContractTester();
 

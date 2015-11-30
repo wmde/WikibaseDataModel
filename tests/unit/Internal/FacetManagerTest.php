@@ -23,6 +23,13 @@ class FacetManagerTest extends \PHPUnit_Framework_TestCase {
 		$tester->testHasFacet( $container );
 	}
 
+	public function testListFacets() {
+		$tester = new FacetContainerContractTester();
+		$container = new FacetManager();
+
+		$tester->testListFacets( $container );
+	}
+
 	public function testGetFacet() {
 		$tester = new FacetContainerContractTester();
 		$container = new FacetManager();

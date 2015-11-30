@@ -24,6 +24,8 @@ class FacetManager implements FacetContainer {
 	private $facets = array();
 
 	/**
+	 * @see FacetContainer::hasFacet
+	 *
 	 * @param string $name
 	 *
 	 * @return boolean
@@ -33,6 +35,17 @@ class FacetManager implements FacetContainer {
 	}
 
 	/**
+	 * @see FacetContainer::listFacets
+	 *
+	 * @return string[]
+	 */
+	public function listFacets() {
+		return array_keys( $this->facets );
+	}
+
+	/**
+	 * @see FacetContainer::getFacet
+	 *
 	 * @param string $name
 	 * @param string|null $type The desired type
 	 *
@@ -55,6 +68,8 @@ class FacetManager implements FacetContainer {
 	}
 
 	/**
+	 * @see FacetContainer::addFacet
+	 *
 	 * @param string $name
 	 * @param object $facetObject
 	 */

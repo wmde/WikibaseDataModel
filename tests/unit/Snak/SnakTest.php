@@ -140,6 +140,16 @@ class SnakTest extends \PHPUnit_Framework_TestCase {
 	 * @dataProvider snakProvider
 	 * @param Snak $snak
 	 */
+	public function testListFacets( Snak $snak ) {
+		$tester = new FacetContainerContractTester();
+
+		$tester->testListFacets( $snak );
+	}
+
+	/**
+	 * @dataProvider snakProvider
+	 * @param Snak $snak
+	 */
 	public function testGetFacet( Snak $snak ) {
 		$tester = new FacetContainerContractTester();
 
