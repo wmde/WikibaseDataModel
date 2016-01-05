@@ -2,6 +2,7 @@
 
 namespace Wikibase\DataModel\Tests\Entity;
 
+use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\EntityRedirect;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
@@ -34,6 +35,23 @@ class EntityRedirectTest extends \PHPUnit_Framework_TestCase {
 		$targetId = new PropertyId( 'P345' );
 
 		new EntityRedirect( $entityId, $targetId );
+	}
+
+	/**
+	 * @dataProvider selfRedirectProvider
+	 */
+	public function testConstruction_selfRedirect( EntityId $entityId, EntityId $targetId ) {
+		$this->setExpectedException( 'InvalidArgumentException' );
+		new EntityRedirect( $entityId, $targetId );
+	}
+
+	public function selfRedirectProvider() {
+		$entityId = new ItemId( 'Q1' );
+
+		return array(
+			'same object' => array( $entityId, $entityId ),
+			'different objects' => array( $entityId, new ItemId( 'Q1' ) ),
+		);
 	}
 
 	public function equalsProvider() {
