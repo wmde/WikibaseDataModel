@@ -9,6 +9,7 @@ use Wikibase\DataModel\Snak\PropertyNoValueSnak;
 use Wikibase\DataModel\Snak\PropertySomeValueSnak;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
 use Wikibase\DataModel\Snak\Snak;
+use Wikibase\DataModel\Tests\Facet\FacetContainerContractTester;
 
 /**
  * @covers Wikibase\DataModel\Snak\PropertyNoValueSnak
@@ -123,6 +124,46 @@ class SnakTest extends \PHPUnit_Framework_TestCase {
 		$id43 = new PropertyId( 'p43' );
 
 		$this->assertFalse( $snak->equals( new PropertyNoValueSnak( $id43 ) ) );
+	}
+
+	/**
+	 * @dataProvider snakProvider
+	 * @param Snak $snak
+	 */
+	public function testHasFacet( Snak $snak ) {
+		$tester = new FacetContainerContractTester();
+
+		$tester->testHasFacet( $snak );
+	}
+
+	/**
+	 * @dataProvider snakProvider
+	 * @param Snak $snak
+	 */
+	public function testListFacets( Snak $snak ) {
+		$tester = new FacetContainerContractTester();
+
+		$tester->testListFacets( $snak );
+	}
+
+	/**
+	 * @dataProvider snakProvider
+	 * @param Snak $snak
+	 */
+	public function testGetFacet( Snak $snak ) {
+		$tester = new FacetContainerContractTester();
+
+		$tester->testGetFacet( $snak );
+	}
+
+	/**
+	 * @dataProvider snakProvider
+	 * @param Snak $snak
+	 */
+	public function testAddFacet( Snak $snak ) {
+		$tester = new FacetContainerContractTester();
+
+		$tester->testAddFacet( $snak );
 	}
 
 }

@@ -6,6 +6,9 @@ use Comparable;
 use InvalidArgumentException;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\ItemIdSet;
+use Wikibase\DataModel\Facet\FacetContainer;
+use Wikibase\DataModel\Facet\NoSuchFacetException;
+use Wikibase\DataModel\Internal\FacetManager;
 
 /**
  * Immutable value object representing a link to a page on another site.
@@ -19,8 +22,9 @@ use Wikibase\DataModel\Entity\ItemIdSet;
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author Michał Łazowik
  * @author Thiemo Mättig
+ * @author Daniel Kinzler
  */
-class SiteLink implements Comparable {
+class SiteLink implements Comparable, FacetContainer {
 
 	/**
 	 * @var string
@@ -36,6 +40,11 @@ class SiteLink implements Comparable {
 	 * @var ItemIdSet
 	 */
 	private $badges;
+
+	/**
+	 * @var FacetManager
+	 */
+	private $facetManager;
 
 	/**
 	 * @param string $siteId
@@ -124,6 +133,48 @@ class SiteLink implements Comparable {
 			&& $this->siteId === $target->siteId
 			&& $this->pageName === $target->pageName
 			&& $this->badges->equals( $target->badges );
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return boolean
+	 */
+	public function hasFacet( $name ) {
+		return $this->facetManager && $this->facetManager->hasFacet( $name );
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function listFacets() {
+		return $this->facetManager ? $this->facetManager->listFacets() : array();
+	}
+
+	/**
+	 * @param string $name
+	 * @param string|null $type The desired type
+	 *
+	 * @return object
+	 */
+	public function getFacet( $name, $type = null ) {
+		if ( !$this->facetManager ) {
+			throw new NoSuchFacetException( $name );
+		}
+
+		return $this->facetManager->getFacet( $name, $type );
+	}
+
+	/**
+	 * @param string $name
+	 * @param object $facetObject
+	 */
+	public function addFacet( $name, $facetObject ) {
+		if ( !$this->facetManager ) {
+			$this->facetManager = new FacetManager();
+		}
+
+		$this->facetManager->addFacet( $name, $facetObject );
 	}
 
 }

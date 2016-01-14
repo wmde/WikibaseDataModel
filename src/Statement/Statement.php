@@ -6,6 +6,9 @@ use Comparable;
 use Hashable;
 use InvalidArgumentException;
 use Wikibase\DataModel\Entity\PropertyId;
+use Wikibase\DataModel\Facet\FacetContainer;
+use Wikibase\DataModel\Facet\NoSuchFacetException;
+use Wikibase\DataModel\Internal\FacetManager;
 use Wikibase\DataModel\PropertyIdProvider;
 use Wikibase\DataModel\Reference;
 use Wikibase\DataModel\ReferenceList;
@@ -21,8 +24,9 @@ use Wikibase\DataModel\Snak\SnakList;
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author Bene* < benestar.wikimedia@gmail.com >
+ * @author Daniel Kinzler
  */
-class Statement implements Hashable, Comparable, PropertyIdProvider {
+class Statement implements Hashable, Comparable, PropertyIdProvider, FacetContainer {
 
 	/**
 	 * Rank enum. Higher values are more preferred.
@@ -59,6 +63,11 @@ class Statement implements Hashable, Comparable, PropertyIdProvider {
 	 * @var integer, element of the Statement::RANK_ enum
 	 */
 	private $rank = self::RANK_NORMAL;
+
+	/**
+	 * @var FacetManager
+	 */
+	private $facetManager;
 
 	/**
 	 * @since 2.0
@@ -296,6 +305,48 @@ class Statement implements Hashable, Comparable, PropertyIdProvider {
 			&& $this->mainSnak->equals( $target->mainSnak )
 			&& $this->qualifiers->equals( $target->qualifiers )
 			&& $this->references->equals( $target->references );
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return boolean
+	 */
+	public function hasFacet( $name ) {
+		return $this->facetManager && $this->facetManager->hasFacet( $name );
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function listFacets() {
+		return $this->facetManager ? $this->facetManager->listFacets() : array();
+	}
+
+	/**
+	 * @param string $name
+	 * @param string|null $type The desired type
+	 *
+	 * @return object
+	 */
+	public function getFacet( $name, $type = null ) {
+		if ( !$this->facetManager ) {
+			throw new NoSuchFacetException( $name );
+		}
+
+		return $this->facetManager->getFacet( $name, $type );
+	}
+
+	/**
+	 * @param string $name
+	 * @param object $facetObject
+	 */
+	public function addFacet( $name, $facetObject ) {
+		if ( !$this->facetManager ) {
+			$this->facetManager = new FacetManager();
+		}
+
+		$this->facetManager->addFacet( $name, $facetObject );
 	}
 
 }

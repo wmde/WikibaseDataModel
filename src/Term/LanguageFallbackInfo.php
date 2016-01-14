@@ -5,14 +5,16 @@ namespace Wikibase\DataModel\Term;
 use InvalidArgumentException;
 
 /**
- * Immutable value object.
+ * Value object representing information about the application of language fallback.
+ * Intended as a facet object to be attached to a Term object.
  *
- * @since 2.4.0
+ * @since 5.0
  *
  * @licence GNU GPL v2+
  * @author Jan Zerebecki < jan.wikimedia@zerebecki.de >
+ * @author Daniel Kinzler
  */
-class TermFallback extends Term {
+class LanguageFallbackInfo {
 
 	/**
 	 * @var string Actual language of the text.
@@ -25,17 +27,12 @@ class TermFallback extends Term {
 	private $sourceLanguageCode;
 
 	/**
-	 * @param string $requestedLanguageCode Requested language, not necessarily the language of the
-	 * text.
-	 * @param string $text
 	 * @param string $actualLanguageCode Actual language of the text.
 	 * @param string|null $sourceLanguageCode Source language if the text is a transliteration.
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct( $requestedLanguageCode, $text, $actualLanguageCode, $sourceLanguageCode ) {
-		parent::__construct( $requestedLanguageCode, $text );
-
+	public function __construct( $actualLanguageCode, $sourceLanguageCode ) {
 		if ( !is_string( $actualLanguageCode ) || $actualLanguageCode === '' ) {
 			throw new InvalidArgumentException( '$actualLanguageCode must be a non-empty string' );
 		}
@@ -62,24 +59,6 @@ class TermFallback extends Term {
 	 */
 	public function getSourceLanguageCode() {
 		return $this->sourceLanguageCode;
-	}
-
-	/**
-	 * @see Comparable::equals
-	 *
-	 * @param mixed $target
-	 *
-	 * @return bool
-	 */
-	public function equals( $target ) {
-		if ( $this === $target ) {
-			return true;
-		}
-
-		return $target instanceof self
-			&& parent::equals( $target )
-			&& $this->actualLanguageCode === $target->actualLanguageCode
-			&& $this->sourceLanguageCode === $target->sourceLanguageCode;
 	}
 
 }

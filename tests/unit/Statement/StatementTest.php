@@ -13,6 +13,7 @@ use Wikibase\DataModel\Snak\PropertyValueSnak;
 use Wikibase\DataModel\Snak\Snak;
 use Wikibase\DataModel\Snak\SnakList;
 use Wikibase\DataModel\Statement\Statement;
+use Wikibase\DataModel\Tests\Facet\FacetContainerContractTester;
 
 /**
  * @covers Wikibase\DataModel\Statement\Statement
@@ -415,6 +416,46 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 		$statement->setRank( Statement::RANK_NORMAL );
 
 		return $statement;
+	}
+
+	/**
+	 * @dataProvider instanceProvider
+	 * @param Statement $statement
+	 */
+	public function testHasFacet( Statement $statement ) {
+		$tester = new FacetContainerContractTester();
+
+		$tester->testHasFacet( $statement );
+	}
+
+	/**
+	 * @dataProvider instanceProvider
+	 * @param Statement $statement
+	 */
+	public function testListFacets( Statement $statement ) {
+		$tester = new FacetContainerContractTester();
+
+		$tester->testListFacets( $statement );
+	}
+
+	/**
+	 * @dataProvider instanceProvider
+	 * @param Statement $statement
+	 */
+	public function testGetFacet( Statement $statement ) {
+		$tester = new FacetContainerContractTester();
+
+		$tester->testGetFacet( $statement );
+	}
+
+	/**
+	 * @dataProvider instanceProvider
+	 * @param Statement $statement
+	 */
+	public function testAddFacet( Statement $statement ) {
+		$tester = new FacetContainerContractTester();
+
+		$tester->testAddFacet( $statement );
 	}
 
 }

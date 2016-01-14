@@ -4,7 +4,7 @@ namespace Wikibase\DataModel\Tests\Term;
 
 use InvalidArgumentException;
 use Wikibase\DataModel\Term\Term;
-use Wikibase\DataModel\Term\TermFallback;
+use Wikibase\DataModel\Tests\Facet\FacetContainerContractTester;
 
 /**
  * @covers Wikibase\DataModel\Term\Term
@@ -64,10 +64,32 @@ class TermTest extends \PHPUnit_Framework_TestCase {
 		$this->assertFalse( $term->equals( new Term( 'spam', 'spam' ) ) );
 	}
 
-	public function testGivenSimilarFallbackObject_equalsReturnsFalse() {
-		$term = new Term( 'de', 'foo' );
-		$termFallback = new TermFallback( 'de', 'foo', 'en', null );
-		$this->assertFalse( $term->equals( $termFallback ) );
+	public function testHasFacet() {
+		$tester = new FacetContainerContractTester();
+		$term = new Term( 'foo', 'bar' );
+
+		$tester->testHasFacet( $term );
+	}
+
+	public function testListFacets() {
+		$tester = new FacetContainerContractTester();
+		$term = new Term( 'foo', 'bar' );
+
+		$tester->testListFacets( $term );
+	}
+
+	public function testGetFacet() {
+		$tester = new FacetContainerContractTester();
+		$term = new Term( 'foo', 'bar' );
+
+		$tester->testGetFacet( $term );
+	}
+
+	public function testAddFacet() {
+		$tester = new FacetContainerContractTester();
+		$term = new Term( 'foo', 'bar' );
+
+		$tester->testAddFacet( $term );
 	}
 
 }
