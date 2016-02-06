@@ -162,34 +162,6 @@ abstract class Entity implements Comparable, FingerprintHolder, EntityDocument {
 	}
 
 	/**
-	 * Returns the descriptions of the entity in the provided languages.
-	 *
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
-	 *
-	 * @param string[]|null $languageCodes Note that an empty array gives
-	 * descriptions for no languages while a null pointer gives all
-	 *
-	 * @return string[] Found descriptions in given languages
-	 */
-	public function getDescriptions( array $languageCodes = null ) {
-		return $this->getMultilangTexts( 'description', $languageCodes );
-	}
-
-	/**
-	 * Returns the labels of the entity in the provided languages.
-	 *
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
-	 *
-	 * @param string[]|null $languageCodes Note that an empty array gives
-	 * labels for no languages while a null pointer gives all
-	 *
-	 * @return string[] Found labels in given languages
-	 */
-	public function getLabels( array $languageCodes = null ) {
-		return $this->getMultilangTexts( 'label', $languageCodes );
-	}
-
-	/**
 	 * Returns the description of the entity in the language with the provided code,
 	 * or false in cases there is none in this language.
 	 *
@@ -223,64 +195,6 @@ abstract class Entity implements Comparable, FingerprintHolder, EntityDocument {
 		}
 
 		return $this->getFingerprint()->getLabel( $languageCode )->getText();
-	}
-
-	/**
-	 * Get texts from an item with a field specifier.
-	 *
-	 * @param string $fieldKey
-	 * @param string[]|null $languageCodes
-	 *
-	 * @return string[]
-	 */
-	private function getMultilangTexts( $fieldKey, array $languageCodes = null ) {
-		if ( $fieldKey === 'label' ) {
-			$textList = $this->getFingerprint()->getLabels()->toTextArray();
-		} else {
-			$textList = $this->getFingerprint()->getDescriptions()->toTextArray();
-		}
-
-		if ( $languageCodes !== null ) {
-			$textList = array_intersect_key( $textList, array_flip( $languageCodes ) );
-		}
-
-		return $textList;
-	}
-
-	/**
-	 * Replaces the currently set labels with the provided ones.
-	 * The labels are provided as an associative array where the keys are
-	 * language codes pointing to the label in that language.
-	 *
-	 * @since 0.4
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
-	 *
-	 * @param string[] $labels
-	 */
-	public function setLabels( array $labels ) {
-		$this->getFingerprint()->setLabels( new TermList() );
-
-		foreach ( $labels as $languageCode => $labelText ) {
-			$this->setLabel( $languageCode, $labelText );
-		}
-	}
-
-	/**
-	 * Replaces the currently set descriptions with the provided ones.
-	 * The descriptions are provided as an associative array where the keys are
-	 * language codes pointing to the description in that language.
-	 *
-	 * @since 0.4
-	 * @deprecated since 0.7.3 - use getFingerprint and setFingerprint
-	 *
-	 * @param string[] $descriptions
-	 */
-	public function setDescriptions( array $descriptions ) {
-		$this->getFingerprint()->setDescriptions( new TermList() );
-
-		foreach ( $descriptions as $languageCode => $descriptionText ) {
-			$this->setDescription( $languageCode, $descriptionText );
-		}
 	}
 
 	/**

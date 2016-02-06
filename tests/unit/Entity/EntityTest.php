@@ -455,9 +455,7 @@ abstract class EntityTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	private function assertHasNoTerms( Entity $entity ) {
-		$this->assertEquals( array(), $entity->getLabels() );
-		$this->assertEquals( array(), $entity->getDescriptions() );
-		$this->assertEquals( array(), $entity->getAllAliases() );
+		$this->assertTrue( $entity->getFingerprint()->isEmpty() );
 	}
 
 	public function testGivenEmptyFingerprint_existingTermsAreRemoved() {
