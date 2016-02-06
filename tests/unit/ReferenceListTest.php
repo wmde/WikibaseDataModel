@@ -233,7 +233,7 @@ class ReferenceListTest extends \PHPUnit_Framework_TestCase {
 	 * @param ReferenceList $array
 	 */
 	public function testGetHashReturnsString( ReferenceList $array ) {
-		$this->assertInternalType( 'string', $array->getHash() );
+		$this->assertInternalType( 'string', $array->getValueHash() );
 	}
 
 	/**
@@ -242,7 +242,7 @@ class ReferenceListTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testGetHashValueIsTheSameForClone( ReferenceList $array ) {
 		$copy = unserialize( serialize( $array ) );
-		$this->assertEquals( $array->getHash(), $copy->getHash() );
+		$this->assertEquals( $array->getValueHash(), $copy->getValueHash() );
 	}
 
 	/**
