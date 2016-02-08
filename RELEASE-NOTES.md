@@ -9,6 +9,7 @@
 * Removed `ReferenceList::removeDuplicates`
 * `ReferenceList` no longer derives from `SplObjectStorage`, though still implements `Countable`
 * Removed `HashableObjectStorage`
+* Removed `getLabels`, `getDescriptions`, `setLabels` and `setDescriptions` from `Entity`
 
 #### Other changes
 
