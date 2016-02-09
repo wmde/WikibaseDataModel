@@ -7,7 +7,6 @@ use Comparable;
 use Countable;
 use InvalidArgumentException;
 use IteratorAggregate;
-use Serializable;
 use Traversable;
 use Wikibase\DataModel\Internal\MapValueHasher;
 use Wikibase\DataModel\Snak\Snak;
@@ -25,7 +24,7 @@ use Wikibase\DataModel\Snak\Snak;
  * @author Thiemo Mättig
  * @author Bene* < benestar.wikimedia@gmail.com >
  */
-class ReferenceList implements Comparable, Countable, IteratorAggregate, Serializable {
+class ReferenceList implements Comparable, Countable, IteratorAggregate {
 
 	/**
 	 * @var Reference[]
@@ -199,28 +198,6 @@ class ReferenceList implements Comparable, Countable, IteratorAggregate, Seriali
 		}
 
 		return null;
-	}
-
-	/**
-	 * @see Serializable::serialize
-	 *
-	 * @since 2.1
-	 *
-	 * @return string
-	 */
-	public function serialize() {
-		return serialize( $this->references );
-	}
-
-	/**
-	 * @see Serializable::unserialize
-	 *
-	 * @since 2.1
-	 *
-	 * @param string $data
-	 */
-	public function unserialize( $data ) {
-		$this->__construct( unserialize( $data ) );
 	}
 
 	/**
