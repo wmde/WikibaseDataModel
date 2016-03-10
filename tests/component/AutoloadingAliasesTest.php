@@ -21,9 +21,6 @@ class AutoloadingAliasesTest extends \PHPUnit_Framework_TestCase {
 	public function oldNameProvider() {
 		return array(
 			// Full qualified aliases go here.
-			array( 'Wikibase\DataModel\Claim\Claim' ),
-			array( 'Wikibase\DataModel\Claim\ClaimGuid' ),
-			array( 'Wikibase\DataModel\StatementListProvider' ),
 		);
 	}
 

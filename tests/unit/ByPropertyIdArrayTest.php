@@ -20,7 +20,6 @@ use Wikibase\DataModel\Statement\Statement;
  *
  * @group Wikibase
  * @group WikibaseDataModel
- * @group ByPropertyIdArrayTest
  *
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >

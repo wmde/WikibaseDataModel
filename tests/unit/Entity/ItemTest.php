@@ -20,9 +20,7 @@ use Wikibase\DataModel\Term\TermList;
  * @covers Wikibase\DataModel\Entity\Item
  *
  * @group Wikibase
- * @group WikibaseItem
  * @group WikibaseDataModel
- * @group WikibaseItemTest
  *
  * @licence GNU GPL v2+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
