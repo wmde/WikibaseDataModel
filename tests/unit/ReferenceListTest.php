@@ -373,15 +373,13 @@ class ReferenceListTest extends PHPUnit_Framework_TestCase {
 		$this->assertTrue( $references->isEmpty() );
 	}
 
-	public function testRemoveReferenceHashDoesNotRemoveCopies() {
+	public function testRemoveReferenceHashRemovesCopies() {
 		$reference = new Reference( array( new PropertyNoValueSnak( 1 ) ) );
 		$references = new ReferenceList( array( $reference, clone $reference ) );
 
 		$references->removeReferenceHash( $reference->getHash() );
 
-		$this->assertFalse( $references->isEmpty() );
-		$this->assertTrue( $references->hasReference( $reference ) );
-		$this->assertNotSame( $reference, $references->getReference( $reference->getHash() ) );
+		$this->assertTrue( $references->isEmpty() );
 	}
 
 	public function testRemoveReferenceHashUpdatesIndexes() {
