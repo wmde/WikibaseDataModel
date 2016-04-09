@@ -72,7 +72,7 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 	public function testSetAndGetDataTypeId() {
 		$property = Property::newFromType( 'string' );
 
-		foreach ( array( 'string', 'foobar', 'nyan', 'string' ) as $typeId ) {
+		foreach ( [ 'string', 'foobar', 'nyan', 'string' ] as $typeId ) {
 			$property->setDataTypeId( $typeId );
 			$this->assertEquals( $typeId, $property->getDataTypeId() );
 		}
@@ -108,7 +108,7 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 
 	public function testPropertyWithFingerprintIsNotEmpty() {
 		$property = Property::newFromType( 'string' );
-		$property->getFingerprint()->setAliasGroup( 'en', array( 'foo' ) );
+		$property->getFingerprint()->setAliasGroup( 'en', [ 'foo' ] );
 		$this->assertFalse( $property->isEmpty() );
 	}
 
@@ -148,12 +148,12 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 		$differentId = $secondPropertyWithId->copy();
 		$differentId->setId( 43 );
 
-		return array(
-			array( Property::newFromType( 'string' ), Property::newFromType( 'string' ) ),
-			array( $firstProperty, $secondProperty ),
-			array( $secondProperty, $secondPropertyWithId ),
-			array( $secondPropertyWithId, $differentId ),
-		);
+		return [
+			[ Property::newFromType( 'string' ), Property::newFromType( 'string' ) ],
+			[ $firstProperty, $secondProperty ],
+			[ $secondProperty, $secondPropertyWithId ],
+			[ $secondPropertyWithId, $differentId ],
+		];
 	}
 
 	/**
@@ -170,7 +170,7 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 		$property->setId( 42 );
 		$property->getFingerprint()->setLabel( 'en', 'Same' );
 		$property->getFingerprint()->setDescription( 'en', 'Same' );
-		$property->getFingerprint()->setAliasGroup( 'en', array( 'Same' ) );
+		$property->getFingerprint()->setAliasGroup( 'en', [ 'Same' ] );
 		$property->setStatements( $this->newNonEmptyStatementList() );
 
 		return $property;
@@ -184,21 +184,21 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 		$differentDescription->getFingerprint()->setDescription( 'en', 'Different' );
 
 		$differentAlias = $this->getBaseProperty();
-		$differentAlias->getFingerprint()->setAliasGroup( 'en', array( 'Different' ) );
+		$differentAlias->getFingerprint()->setAliasGroup( 'en', [ 'Different' ] );
 
 		$differentStatement = $this->getBaseProperty();
 		$differentStatement->setStatements( new StatementList() );
 
 		$property = $this->getBaseProperty();
 
-		return array(
-			'empty' => array( $property, Property::newFromType( 'string' ) ),
-			'label' => array( $property, $differentLabel ),
-			'description' => array( $property, $differentDescription ),
-			'alias' => array( $property, $differentAlias ),
-			'dataType' => array( Property::newFromType( 'string' ), Property::newFromType( 'foo' ) ),
-			'statement' => array( $property, $differentStatement ),
-		);
+		return [
+			'empty' => [ $property, Property::newFromType( 'string' ) ],
+			'label' => [ $property, $differentLabel ],
+			'description' => [ $property, $differentDescription ],
+			'alias' => [ $property, $differentAlias ],
+			'dataType' => [ Property::newFromType( 'string' ), Property::newFromType( 'foo' ) ],
+			'statement' => [ $property, $differentStatement ],
+		];
 	}
 
 	/**
@@ -221,10 +221,10 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 		$property->setLabel( 'en', 'original' );
 		$property->getStatements()->addNewStatement( new PropertyNoValueSnak( 1 ) );
 
-		return array(
-			'copy' => array( $property, $property->copy() ),
-			'native clone' => array( $property, clone $property ),
-		);
+		return [
+			'copy' => [ $property, $property->copy() ],
+			'native clone' => [ $property, clone $property ],
+		];
 	}
 
 	/**
@@ -257,7 +257,7 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 
 		$clone->setLabel( 'en', 'clone' );
 		$clone->setDescription( 'en', 'clone' );
-		$clone->setAliases( 'en', array( 'clone' ) );
+		$clone->setAliases( 'en', [ 'clone' ] );
 		$clonedStatement->setGuid( 'clone' );
 		$clonedStatement->setMainSnak( new PropertySomeValueSnak( 666 ) );
 		$clonedStatement->setRank( Statement::RANK_DEPRECATED );
@@ -277,11 +277,11 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 	// Below are tests copied from EntityTest
 
 	public function labelProvider() {
-		return array(
-			array( 'en', 'spam' ),
-			array( 'en', 'spam', 'spam' ),
-			array( 'de', 'foo bar baz' ),
-		);
+		return [
+			[ 'en', 'spam' ],
+			[ 'en', 'spam', 'spam' ],
+			[ 'de', 'foo bar baz' ],
+		];
 	}
 
 	/**
@@ -303,11 +303,11 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function descriptionProvider() {
-		return array(
-			array( 'en', 'spam' ),
-			array( 'en', 'spam', 'spam' ),
-			array( 'de', 'foo bar baz' ),
-		);
+		return [
+			[ 'en', 'spam' ],
+			[ 'en', 'spam', 'spam' ],
+			[ 'de', 'foo bar baz' ],
+		];
 	}
 
 	/**
@@ -329,28 +329,28 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function aliasesProvider() {
-		return array(
-			array( array(
-				       'en' => array( array( 'spam' ) )
-			       ) ),
-			array( array(
-				       'en' => array( array( 'foo', 'bar', 'baz' ) )
-			       ) ),
-			array( array(
-				       'en' => array( array( 'foo', 'bar' ), array( 'baz', 'spam' ) )
-			       ) ),
-			array( array(
-				       'en' => array( array( 'foo', 'bar', 'baz' ) ),
-				       'de' => array( array( 'foobar' ), array( 'baz' ) ),
-			       ) ),
+		return [
+			[ [
+				       'en' => [ [ 'spam' ] ]
+			       ] ],
+			[ [
+				       'en' => [ [ 'foo', 'bar', 'baz' ] ]
+			       ] ],
+			[ [
+				       'en' => [ [ 'foo', 'bar' ], [ 'baz', 'spam' ] ]
+			       ] ],
+			[ [
+				       'en' => [ [ 'foo', 'bar', 'baz' ] ],
+				       'de' => [ [ 'foobar' ], [ 'baz' ] ],
+			       ] ],
 			// with duplicates
-			array( array(
-				       'en' => array( array( 'spam', 'ham', 'ham' ) )
-			       ) ),
-			array( array(
-				       'en' => array( array( 'foo', 'bar' ), array( 'bar', 'spam' ) )
-			       ) ),
-		);
+			[ [
+				       'en' => [ [ 'spam', 'ham', 'ham' ] ]
+			       ] ],
+			[ [
+				       'en' => [ [ 'foo', 'bar' ], [ 'bar', 'spam' ] ]
+			       ] ],
+		];
 	}
 
 	/**
@@ -387,8 +387,8 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 				$entity->setAliases( $langCode, $aliases );
 			}
 		}
-		$entity->setAliases( 'zh', array( 'wind', 'air', '', 'fire' ) );
-		$entity->setAliases( 'zu', array( '', '' ) );
+		$entity->setAliases( 'zh', [ 'wind', 'air', '', 'fire' ] );
+		$entity->setAliases( 'zu', [ '', '' ] );
 
 		foreach ( $aliasesLists as $langCode => $aliasesList ) {
 			$expected = array_values( array_unique( array_pop( $aliasesList ) ) );
@@ -402,7 +402,7 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function instanceProvider() {
-		$entities = array();
+		$entities = [];
 
 		// empty
 		$entity = $this->getNewEmpty();
@@ -416,7 +416,7 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 
 		// with labels and stuff
 		$entity = $this->getNewEmpty();
-		$entity->setAliases( 'en', array( 'o', 'noez' ) );
+		$entity->setAliases( 'en', [ 'o', 'noez' ] );
 		$entity->setLabel( 'de', 'spam' );
 		$entity->setDescription( 'en', 'foo bar baz' );
 
@@ -428,10 +428,10 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 
 		$entities[] = $entity;
 
-		$argLists = array();
+		$argLists = [];
 
 		foreach ( $entities as $entity ) {
-			$argLists[] = array( $entity );
+			$argLists[] = [ $entity ];
 		}
 
 		return $argLists;
@@ -495,10 +495,10 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			new Fingerprint(
-				new TermList( array(
+				new TermList( [
 					new Term( 'en', 'foo' ),
 					new Term( 'de', 'bar' ),
-				) )
+				] )
 			),
 			$entity->getFingerprint()
 		);
@@ -509,19 +509,19 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 
 		$entity->setLabel( 'en', 'foo' );
 		$entity->setDescription( 'en', 'foo bar' );
-		$entity->setAliases( 'en', array( 'foo', 'bar' ) );
+		$entity->setAliases( 'en', [ 'foo', 'bar' ] );
 
 		$this->assertEquals(
 			new Fingerprint(
-				new TermList( array(
+				new TermList( [
 					new Term( 'en', 'foo' ),
-				) ),
-				new TermList( array(
+				] ),
+				new TermList( [
 					new Term( 'en', 'foo bar' )
-				) ),
-				new AliasGroupList( array(
-					new AliasGroup( 'en', array( 'foo', 'bar' ) )
-				) )
+				] ),
+				new AliasGroupList( [
+					new AliasGroup( 'en', [ 'foo', 'bar' ] )
+				] )
 			),
 			$entity->getFingerprint()
 		);
@@ -539,7 +539,7 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 
 		$entity->setLabel( 'en', 'foo' );
 		$entity->setDescription( 'en', 'foo bar' );
-		$entity->setAliases( 'en', array( 'foo', 'bar' ) );
+		$entity->setAliases( 'en', [ 'foo', 'bar' ] );
 
 		$entity->setFingerprint( new Fingerprint() );
 
@@ -548,15 +548,15 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 
 	public function testWhenSettingFingerprint_getFingerprintReturnsIt() {
 		$fingerprint = new Fingerprint(
-			new TermList( array(
+			new TermList( [
 				new Term( 'en', 'english label' ),
-			) ),
-			new TermList( array(
+			] ),
+			new TermList( [
 				new Term( 'en', 'english description' )
-			) ),
-			new AliasGroupList( array(
-				new AliasGroup( 'en', array( 'first en alias', 'second en alias' ) )
-			) )
+			] ),
+			new AliasGroupList( [
+				new AliasGroup( 'en', [ 'first en alias', 'second en alias' ] )
+			] )
 		);
 
 		$entity = $this->getNewEmpty();
@@ -571,9 +571,9 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 		$property->setLabel( 'en', 'foo' );
 
 		$this->assertEquals(
-			new TermList( array(
+			new TermList( [
 				new Term( 'en', 'foo' )
-			) ),
+			] ),
 			$property->getLabels()
 		);
 	}
@@ -583,21 +583,21 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 		$property->setDescription( 'en', 'foo bar' );
 
 		$this->assertEquals(
-			new TermList( array(
+			new TermList( [
 				new Term( 'en', 'foo bar' )
-			) ),
+			] ),
 			$property->getDescriptions()
 		);
 	}
 
 	public function testGetAliasGroups() {
 		$property = Property::newFromType( 'string' );
-		$property->setAliases( 'en', array( 'foo', 'bar' ) );
+		$property->setAliases( 'en', [ 'foo', 'bar' ] );
 
 		$this->assertEquals(
-			new AliasGroupList( array(
-				new AliasGroup( 'en', array( 'foo', 'bar' ) )
-			) ),
+			new AliasGroupList( [
+				new AliasGroup( 'en', [ 'foo', 'bar' ] )
+			] ),
 			$property->getAliasGroups()
 		);
 	}
