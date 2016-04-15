@@ -31,15 +31,15 @@ class ItemIdTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function idSerializationProvider() {
-		return array(
-			array( 'q1' ),
-			array( 'q100' ),
-			array( 'q1337' ),
-			array( 'q31337' ),
-			array( 'Q31337' ),
-			array( 'Q42' ),
-			array( 'Q2147483648' ),
-		);
+		return [
+			[ 'q1' ],
+			[ 'q100' ],
+			[ 'q1337' ],
+			[ 'q31337' ],
+			[ 'Q31337' ],
+			[ 'Q42' ],
+			[ 'Q2147483648' ],
+		];
 	}
 
 	/**
@@ -51,22 +51,22 @@ class ItemIdTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function invalidIdSerializationProvider() {
-		return array(
-			array( 'q' ),
-			array( 'p1' ),
-			array( 'qq1' ),
-			array( '1q' ),
-			array( 'q01' ),
-			array( 'q 1' ),
-			array( ' q1' ),
-			array( 'q1 ' ),
-			array( '1' ),
-			array( ' ' ),
-			array( '' ),
-			array( '0' ),
-			array( 0 ),
-			array( 1 ),
-		);
+		return [
+			[ 'q' ],
+			[ 'p1' ],
+			[ 'qq1' ],
+			[ '1q' ],
+			[ 'q01' ],
+			[ 'q 1' ],
+			[ ' q1' ],
+			[ 'q1 ' ],
+			[ '1' ],
+			[ ' ' ],
+			[ '' ],
+			[ '0' ],
+			[ 0 ],
+			[ 1 ],
+		];
 	}
 
 	public function testGetNumericId() {
@@ -94,17 +94,17 @@ class ItemIdTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function serializationProvider() {
-		return array(
-			array( '["item","Q2"]', 'Q2' ),
+		return [
+			[ '["item","Q2"]', 'Q2' ],
 
 			// All these cases are kind of an injection vector and allow constructing invalid ids.
-			array( '["string","Q2"]', 'Q2' ),
-			array( '["","string"]', 'string' ),
-			array( '["",""]', '' ),
-			array( '["",2]', 2 ),
-			array( '["",null]', null ),
-			array( '', null ),
-		);
+			[ '["string","Q2"]', 'Q2' ],
+			[ '["","string"]', 'string' ],
+			[ '["",""]', '' ],
+			[ '["",2]', 2 ],
+			[ '["",null]', null ],
+			[ '', null ],
+		];
 	}
 
 	/**
@@ -116,14 +116,14 @@ class ItemIdTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function numericIdProvider() {
-		return array(
-			array( 42 ),
-			array( '42' ),
-			array( 42.0 ),
+		return [
+			[ 42 ],
+			[ '42' ],
+			[ 42.0 ],
 			// Check for 32-bit integer overflow on 32-bit PHP systems.
-			array( 2147483648 ),
-			array( '2147483648' ),
-		);
+			[ 2147483648 ],
+			[ '2147483648' ],
+		];
 	}
 
 	/**
@@ -135,12 +135,12 @@ class ItemIdTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function invalidNumericIdProvider() {
-		return array(
-			array( 'Q1' ),
-			array( '42.1' ),
-			array( 42.1 ),
-			array( 2147483648.1 ),
-		);
+		return [
+			[ 'Q1' ],
+			[ '42.1' ],
+			[ 42.1 ],
+			[ 2147483648.1 ],
+		];
 	}
 
 }

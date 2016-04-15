@@ -57,7 +57,7 @@ class PropertyId extends EntityId {
 	 * @return string
 	 */
 	public function serialize() {
-		return json_encode( array( 'property', $this->serialization ) );
+		return json_encode( [ 'property', $this->serialization ] );
 	}
 
 	/**

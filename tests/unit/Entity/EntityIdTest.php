@@ -22,13 +22,13 @@ use Wikibase\DataModel\Entity\PropertyId;
 class EntityIdTest extends \PHPUnit_Framework_TestCase {
 
 	public function instanceProvider() {
-		$ids = array();
+		$ids = [];
 
-		$ids[] = array( new ItemId( 'Q1' ) );
-		$ids[] = array( new ItemId( 'Q42' ) );
-		$ids[] = array( new ItemId( 'Q31337' ) );
-		$ids[] = array( new ItemId( 'Q2147483648' ) );
-		$ids[] = array( new PropertyId( 'P101010' ) );
+		$ids[] = [ new ItemId( 'Q1' ) ];
+		$ids[] = [ new ItemId( 'Q42' ) ];
+		$ids[] = [ new ItemId( 'Q31337' ) ];
+		$ids[] = [ new ItemId( 'Q2147483648' ) ];
+		$ids[] = [ new PropertyId( 'P101010' ) ];
 
 		return $ids;
 	}

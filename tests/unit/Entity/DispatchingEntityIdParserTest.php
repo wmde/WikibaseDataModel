@@ -32,12 +32,12 @@ class DispatchingEntityIdParserTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function entityIdProvider() {
-		return array(
-			array( 'q42', new ItemId( 'q42' ) ),
-			array( 'Q1337', new ItemId( 'Q1337' ) ),
-			array( 'p1', new PropertyId( 'p1' ) ),
-			array( 'P100000', new PropertyId( 'P100000' ) ),
-		);
+		return [
+			[ 'q42', new ItemId( 'q42' ) ],
+			[ 'Q1337', new ItemId( 'Q1337' ) ],
+			[ 'p1', new PropertyId( 'p1' ) ],
+			[ 'P100000', new PropertyId( 'P100000' ) ],
+		];
 	}
 
 	/**
@@ -51,19 +51,19 @@ class DispatchingEntityIdParserTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function invalidIdSerializationProvider() {
-		return array(
-			array( 'FOO' ),
-			array( null ),
-			array( 42 ),
-			array( array() ),
-			array( '' ),
-			array( 'q0' ),
-			array( '1p' ),
-		);
+		return [
+			[ 'FOO' ],
+			[ null ],
+			[ 42 ],
+			[ [] ],
+			[ '' ],
+			[ 'q0' ],
+			[ '1p' ],
+		];
 	}
 
 	public function testCannotParseWithoutBuilders() {
-		$parser = new DispatchingEntityIdParser( array() );
+		$parser = new DispatchingEntityIdParser( [] );
 
 		$this->setExpectedException( 'Wikibase\DataModel\Entity\EntityIdParsingException' );
 		$parser->parse( 'Q1' );

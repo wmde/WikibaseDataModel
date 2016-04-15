@@ -57,7 +57,7 @@ class ItemId extends EntityId {
 	 * @return string
 	 */
 	public function serialize() {
-		return json_encode( array( 'item', $this->serialization ) );
+		return json_encode( [ 'item', $this->serialization ] );
 	}
 
 	/**
