@@ -130,6 +130,7 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 	 * The last occurrences are retained.
 	 *
 	 * @since 1.0
+	 * @deprecated since 6.1, use getMainSnaks instead
 	 *
 	 * @return self
 	 */
