@@ -12,8 +12,16 @@ use Wikibase\DataModel\LegacyIdInterpreter;
  *
  * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
+ * @author Thiemo Mättig
  */
 class EntityIdValue extends DataValueObject {
+
+	/**
+	 * @since 6.1
+	 *
+	 * @var EntityIdParser|null
+	 */
+	private static $idParser;
 
 	private $entityId;
 
@@ -43,7 +51,7 @@ class EntityIdValue extends DataValueObject {
 	 *
 	 * @return float Numeric id as a whole number. Can not be int because of 32-bit PHP.
 	 */
-	protected function getNumericId() {
+	private function getNumericId() {
 		return floatval( substr( $this->entityId->getSerialization(), 1 ) );
 	}
 
@@ -121,7 +129,17 @@ class EntityIdValue extends DataValueObject {
 		return array(
 			'entity-type' => $this->entityId->getEntityType(),
 			'numeric-id' => $this->getNumericId(),
+			'id' => $this->entityId->getSerialization(),
 		);
+	}
+
+	/**
+	 * @since 6.1
+	 *
+	 * @param EntityIdParser $idParser
+	 */
+	public static function setEntityIdParser( EntityIdParser $idParser ) {
+		self::$idParser = $idParser;
 	}
 
 	/**
@@ -138,27 +156,45 @@ class EntityIdValue extends DataValueObject {
 	 */
 	public static function newFromArray( $data ) {
 		if ( !is_array( $data ) ) {
-			throw new IllegalValueException( '$data must be an array; got ' . gettype( $data ) );
+			throw new IllegalValueException( '$data must be an array' );
 		}
 
-		if ( !array_key_exists( 'entity-type', $data ) ) {
-			throw new IllegalValueException( "'entity-type' field required" );
+		if ( array_key_exists( 'id', $data ) ) {
+			return self::newFromIdSerialization( $data['id'] );
+		} elseif ( array_key_exists( 'entity-type', $data ) && array_key_exists( 'numeric-id', $data ) ) {
+			return self::newFromNumericId( $data['entity-type'], $data['numeric-id'] );
+		} else {
+			throw new IllegalValueException( "Either 'id' or 'entity-type' and 'numeric-id' fields required" );
 		}
+	}
 
-		if ( !array_key_exists( 'numeric-id', $data ) ) {
-			throw new IllegalValueException( "'numeric-id' field required" );
-		}
-
+	/**
+	 * @param string $idSerialization
+	 *
+	 * @throws IllegalValueException
+	 * @return self
+	 */
+	private static function newFromIdSerialization( $idSerialization ) {
 		try {
-			$id = LegacyIdInterpreter::newIdFromTypeAndNumber(
-				$data['entity-type'],
-				$data['numeric-id']
-			);
+			return new self( self::$idParser->parse( $idSerialization ) );
+		} catch ( EntityIdParsingException $ex ) {
+			throw new IllegalValueException( $ex->getMessage(), 0, $ex );
+		}
+	}
+
+	/**
+	 * @param string $entityType
+	 * @param int|float|string $numericId
+	 *
+	 * @throws IllegalValueException
+	 * @return self
+	 */
+	private static function newFromNumericId( $entityType, $numericId ) {
+		try {
+			return new self( LegacyIdInterpreter::newIdFromTypeAndNumber( $entityType, $numericId ) );
 		} catch ( InvalidArgumentException $ex ) {
 			throw new IllegalValueException( $ex->getMessage(), 0, $ex );
 		}
-
-		return new static( $id );
 	}
 
 }

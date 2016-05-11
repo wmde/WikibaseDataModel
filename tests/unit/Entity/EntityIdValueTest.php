@@ -2,6 +2,8 @@
 
 namespace Wikibase\DataModel\Tests\Entity;
 
+use PHPUnit_Framework_TestCase;
+use Wikibase\DataModel\Entity\BasicEntityIdParser;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
@@ -15,8 +17,13 @@ use Wikibase\DataModel\Entity\PropertyId;
  *
  * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
+ * @author Thiemo Mättig
  */
-class EntityIdValueTest extends \PHPUnit_Framework_TestCase {
+class EntityIdValueTest extends PHPUnit_Framework_TestCase {
+
+	protected function setUp() {
+		EntityIdValue::setEntityIdParser( new BasicEntityIdParser() );
+	}
 
 	public function testCanConstruct() {
 		$entityId = new ItemId( 'Q123' );
@@ -102,28 +109,44 @@ class EntityIdValueTest extends \PHPUnit_Framework_TestCase {
 	public function testGetArrayValueCompatibility() {
 		$id = new EntityIdValue( new ItemId( 'Q31337' ) );
 
-		$this->assertEquals(
-			// This is the serialization format from when the EntityIdValue was still together with EntityId.
+		$this->assertSame(
 			array(
 				'entity-type' => 'item',
-				'numeric-id' => 31337,
+				'numeric-id' => (float)31337,
+				'id' => 'Q31337',
 			),
 			$id->getArrayValue()
 		);
 	}
 
-	public function testNewFromArrayCompatibility() {
+	/**
+	 * @dataProvider validArrayProvider
+	 */
+	public function testNewFromArrayCompatibility( array $array ) {
 		$id = new EntityIdValue( new ItemId( 'Q31337' ) );
 
-		$this->assertEquals(
-			$id,
-			EntityIdValue::newFromArray(
-				// This is the serialization format from when the EntityIdValue was still together with EntityId.
-				array(
-					'entity-type' => 'item',
-					'numeric-id' => 31337,
-				)
-			)
+		$this->assertEquals( $id, EntityIdValue::newFromArray( $array ) );
+	}
+
+	public function validArrayProvider() {
+		return array(
+			'Legacy format' => array( array(
+				'entity-type' => 'item',
+				'numeric-id' => 31337,
+			) ),
+			'Maximum compatibility' => array( array(
+				'entity-type' => 'item',
+				'numeric-id' => 31337,
+				'id' => 'Q31337',
+			) ),
+			'Ignore legacy fields' => array( array(
+				'id' => 'Q31337',
+				'entity-type' => null,
+				'numeric-id' => null,
+			) ),
+			'New format' => array( array(
+				'id' => 'Q31337',
+			) ),
 		);
 	}
 
@@ -143,6 +166,14 @@ class EntityIdValueTest extends \PHPUnit_Framework_TestCase {
 			array( 'foo' ),
 
 			array( array() ),
+
+			'Serialization is not a string' => array( array(
+				'id' => 42,
+			) ),
+
+			'Serialization from unknown entity type' => array( array(
+				'id' => 'unknown',
+			) ),
 
 			array( array(
 				'entity-type' => 'item',
