@@ -10,7 +10,7 @@ use InvalidArgumentException;
  * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
-class ItemId extends EntityId {
+class ItemId extends EntityId implements NumericEntityId {
 
 	/**
 	 * @since 0.5
@@ -38,6 +38,8 @@ class ItemId extends EntityId {
 	}
 
 	/**
+	 * @since 0.5
+	 *
 	 * @return int
 	 */
 	public function getNumericId() {
