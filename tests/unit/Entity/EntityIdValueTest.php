@@ -146,10 +146,6 @@ class EntityIdValueTest extends PHPUnit_Framework_TestCase {
 
 	public function invalidArrayProvider() {
 		return [
-			[ null ],
-
-			[ 'foo' ],
-
 			[ [] ],
 
 			'newFromArray can not deserialize' => [ [
