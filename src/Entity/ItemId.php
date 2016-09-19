@@ -3,6 +3,7 @@
 namespace Wikibase\DataModel\Entity;
 
 use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * @since 0.5
@@ -23,8 +24,12 @@ class ItemId extends EntityId implements Int32EntityId {
 	 * @throws InvalidArgumentException
 	 */
 	public function __construct( $idSerialization ) {
-		$this->assertValidIdFormat( $idSerialization );
-		$this->serialization = strtoupper( $idSerialization );
+		$serializationParts = self::splitSerialization( $idSerialization );
+		$localId = strtoupper( $serializationParts[2] );
+		$this->assertValidIdFormat( $localId );
+		parent::__construct( self::joinSerialization(
+			array( $serializationParts[0], $serializationParts[1], $localId ) )
+		);
 	}
 
 	private function assertValidIdFormat( $idSerialization ) {
@@ -46,9 +51,15 @@ class ItemId extends EntityId implements Int32EntityId {
 
 	/**
 	 * @return int
+	 *
+	 * @throws RuntimeException if called on a foreign ID.
 	 */
 	public function getNumericId() {
-		return (int)substr( $this->serialization, 1 );
+		if ( $this->isForeign() ) {
+			throw new RuntimeException( 'getNumericId must not be called on foreign ItemIds' );
+		}
+
+		return (int)substr( $this->getSerialization(), 1 );
 	}
 
 	/**
@@ -64,7 +75,7 @@ class ItemId extends EntityId implements Int32EntityId {
 	 * @return string
 	 */
 	public function serialize() {
-		return json_encode( array( 'item', $this->serialization ) );
+		return json_encode( array( 'item', $this->getSerialization() ) );
 	}
 
 	/**
