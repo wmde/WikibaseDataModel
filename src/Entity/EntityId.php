@@ -3,7 +3,6 @@
 namespace Wikibase\DataModel\Entity;
 
 use Comparable;
-use InvalidArgumentException;
 use Serializable;
 
 /**
@@ -17,30 +16,7 @@ use Serializable;
 abstract class EntityId implements Comparable, Serializable {
 
 	protected $serialization;
-
-	const PATTERN = '/^:?(\w+:)*[^:]+\z/';
-
-	/**
-	 * @param string $serialization
-	 */
-	public function __construct( $serialization ) {
-		self::assertValidSerialization( $serialization );
-		$this->serialization = self::normalizeIdSerialization( $serialization );
-	}
-
-	private static function assertValidSerialization( $serialization ) {
-		if ( !is_string( $serialization ) ) {
-			throw new InvalidArgumentException( '$serialization must be a string' );
-		}
-
-		if ( $serialization === '' ) {
-			throw new InvalidArgumentException( '$serialization must not be an empty string' );
-		}
-
-		if ( !preg_match( self::PATTERN, $serialization ) ) {
-			throw new InvalidArgumentException( '$serialization must match ' . self::PATTERN );
-		}
-	}
+	protected $repositoryName;
 
 	/**
 	 * @return string
@@ -51,52 +27,20 @@ abstract class EntityId implements Comparable, Serializable {
 	 * @return string
 	 */
 	public function getSerialization() {
+		if ( $this->isForeign() ) {
+			return $this->repositoryName . ':' . $this->serialization;
+		}
+
 		return $this->serialization;
 	}
 
 	/**
-	 * Returns an array with 3 elements: the foreign repository name as the first element, the local ID as the last
-	 * element and everything that is in between as the second element.
+	 * Returns the serialization without the first repository prefix.
 	 *
-	 * EntityId::joinSerialization can be used to restore the original serialization from the parts returned.
-	 *
-	 * @param string $serialization
-	 * @return string[] Array containing the serialization split into 3 parts.
-	 */
-	public static function splitSerialization( $serialization ) {
-		self::assertValidSerialization( $serialization );
-
-		$parts = explode( ':', self::normalizeIdSerialization( $serialization ) );
-		$localPart = array_pop( $parts );
-		$repoName = array_shift( $parts );
-		$prefixRemainder = implode( ':', $parts );
-
-		return array(
-			is_string( $repoName ) ? $repoName : '',
-			$prefixRemainder,
-			$localPart
-		);
-	}
-
-	/**
-	 * Builds an ID serialization from the parts returned by EntityId::splitSerialization.
-	 *
-	 * @param string[] $parts
 	 * @return string
-	 *
-	 * @throws InvalidArgumentException
 	 */
-	public static function joinSerialization( array $parts ) {
-		if ( end( $parts ) === '' ) {
-			throw new InvalidArgumentException( 'The last element of $parts must not be empty.' );
-		}
-
-		return implode(
-			':',
-			array_filter( $parts, function( $part ) {
-				return $part !== '';
-			} )
-		);
+	public function getLocalPart() {
+		return $this->serialization;
 	}
 
 	/**
@@ -106,38 +50,14 @@ abstract class EntityId implements Comparable, Serializable {
 	 * @return string
 	 */
 	public function getRepoName() {
-		$parts = self::splitSerialization( $this->serialization );
-
-		return $parts[0];
+		return $this->repositoryName;
 	}
 
 	/**
-	 * Returns the serialization without the first repository prefix.
-	 *
-	 * @return string
-	 */
-	public function getLocalPart() {
-		$parts = self::splitSerialization( $this->serialization );
-
-		return self::joinSerialization( array( '', $parts[1], $parts[2] ) );
-	}
-
-	/**
-	 * Returns true iff EntityId::getRepoName returns a non-empty string.
-	 *
 	 * @return bool
 	 */
 	public function isForeign() {
-		// not actually using EntityId::getRepoName for performance reasons
-		return strpos( $this->serialization, ':' ) > 0;
-	}
-
-	/**
-	 * @param string $id
-	 * @return string
-	 */
-	private static function normalizeIdSerialization( $id ) {
-		return ltrim( $id, ':' );
+		return $this->repositoryName !== '';
 	}
 
 	/**
@@ -148,7 +68,7 @@ abstract class EntityId implements Comparable, Serializable {
 	 * @return string
 	 */
 	public function __toString() {
-		return $this->serialization;
+		return $this->getSerialization();
 	}
 
 	/**
@@ -166,7 +86,8 @@ abstract class EntityId implements Comparable, Serializable {
 		}
 
 		return $target instanceof self
-			&& $target->serialization === $this->serialization;
+			&& $target->serialization === $this->serialization
+			&& $target->repositoryName === $this->repositoryName;
 	}
 
 }

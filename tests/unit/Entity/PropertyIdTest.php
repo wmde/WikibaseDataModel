@@ -38,9 +38,6 @@ class PropertyIdTest extends PHPUnit_Framework_TestCase {
 			array( 'p31337', 'P31337' ),
 			array( 'P31337', 'P31337' ),
 			array( 'P42', 'P42' ),
-			array( ':P42', 'P42' ),
-			array( 'foo:P42', 'foo:P42' ),
-			array( 'foo:bar:p42', 'foo:bar:P42' ),
 			array( 'P2147483647', 'P2147483647' ),
 		);
 	}
@@ -109,7 +106,6 @@ class PropertyIdTest extends PHPUnit_Framework_TestCase {
 			array( '["",""]', '' ),
 			array( '["",2]', 2 ),
 			array( '["",null]', null ),
-			array( '', null ),
 		);
 	}
 
@@ -152,7 +148,7 @@ class PropertyIdTest extends PHPUnit_Framework_TestCase {
 
 	public function testGetNumericIdThrowsExceptionOnForeignIds() {
 		$this->setExpectedException( 'RuntimeException' );
-		( new PropertyId( 'foo:P42' ) )->getNumericId();
+		( new PropertyId( 'P42', 'foo' ) )->getNumericId();
 	}
 
 }

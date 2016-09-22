@@ -29,10 +29,10 @@ class EntityIdTest extends \PHPUnit_Framework_TestCase {
 		$ids[] = array( new ItemId( 'Q42' ), '' );
 		$ids[] = array( new ItemId( 'Q31337' ), '' );
 		$ids[] = array( new ItemId( 'Q2147483647' ), '' );
-		$ids[] = array( new ItemId( ':Q2147483647' ), '' );
-		$ids[] = array( new ItemId( 'foo:Q2147483647' ), 'foo' );
+		$ids[] = array( new ItemId( 'Q2147483647' ), '' );
+		$ids[] = array( new ItemId( 'Q2147483647', 'foo' ), 'foo' );
 		$ids[] = array( new PropertyId( 'P101010' ), '' );
-		$ids[] = array( new PropertyId( 'foo:bar:P101010' ), 'foo' );
+		$ids[] = array( new PropertyId( 'bar:P101010', 'foo' ), 'foo' );
 
 		return $ids;
 	}
@@ -88,9 +88,10 @@ class EntityIdTest extends \PHPUnit_Framework_TestCase {
 	public function testIsForeign() {
 		$this->assertFalse( ( new ItemId( 'Q42' ) )->isForeign() );
 		$this->assertFalse( ( new ItemId( ':Q42' ) )->isForeign() );
-		$this->assertTrue( ( new ItemId( 'foo:Q42' ) )->isForeign() );
 		$this->assertFalse( ( new PropertyId( ':P42' ) )->isForeign() );
-		$this->assertTrue( ( new PropertyId( 'foo:P42' ) )->isForeign() );
+
+		$this->assertTrue( ( new ItemId( 'Q42', 'foo' ) )->isForeign() );
+		$this->assertTrue( ( new PropertyId( 'P42', 'foo' ) )->isForeign() );
 	}
 
 	/**
@@ -109,36 +110,6 @@ class EntityIdTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
-	/**
-	 * @dataProvider serializationSplitProvider
-	 */
-	public function testSplitSerialization( $serialization, $split ) {
-		$this->assertSame( $split, EntityId::splitSerialization( $serialization ) );
-	}
-
-	/**
-	 * @dataProvider invalidSerializationProvider
-	 */
-	public function testSplitSerializationFails_GivenInvalidSerialization( $serialization ) {
-		$this->setExpectedException( 'InvalidArgumentException' );
-		EntityId::splitSerialization( $serialization );
-	}
-
-	/**
-	 * @dataProvider serializationSplitProvider
-	 */
-	public function testJoinSerialization( $serialization, $split ) {
-		$this->assertSame( $serialization, EntityId::joinSerialization( $split ) );
-	}
-
-	/**
-	 * @dataProvider invalidJoinSerializationDataProvider
-	 */
-	public function testJoinSerializationFails_GivenEmptyId( $parts ) {
-		$this->setExpectedException( 'InvalidArgumentException' );
-		EntityId::joinSerialization( $parts );
-	}
-
 	public function invalidJoinSerializationDataProvider() {
 		return array(
 			array( array( 'Q42', '', '' ) ),
@@ -147,51 +118,19 @@ class EntityIdTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
-	public function testGivenNotNormalizedSerialization_splitSerializationReturnsNormalizedParts() {
-		$this->assertSame( array( '', '', 'Q42' ), EntityId::splitSerialization( ':Q42' ) );
-		$this->assertSame( array( 'foo', 'bar', 'Q42' ), EntityId::splitSerialization( ':foo:bar:Q42' ) );
+	/**
+	 * @dataProvider localPartDataProvider
+	 */
+	public function testGetLocalPart( EntityId $id, $localPart ) {
+		$this->assertSame( $localPart, $id->getLocalPart() );
 	}
 
 	public function localPartDataProvider() {
 		return array(
-			array( 'Q42', 'Q42' ),
-			array( ':Q42', 'Q42' ),
-			array( 'foo:Q42', 'Q42' ),
-			array( 'foo:bar:Q42', 'bar:Q42' ),
+			array( new ItemId( 'Q42' ), 'Q42' ),
+			array( new ItemId( 'Q42', 'foo' ), 'Q42' ),
+			array( new ItemId( 'bar:Q42', 'foo' ), 'bar:Q42' ),
 		);
-	}
-
-	/**
-	 * @dataProvider localPartDataProvider
-	 */
-	public function testGetLocalPart( $serialization, $localPart ) {
-		$id = new ItemId( $serialization );
-		$this->assertSame( $localPart, $id->getLocalPart() );
-	}
-
-	public function invalidSerializationProvider() {
-		return array(
-			array( 's p a c e s:Q42' ),
-			array( '::Q42' ),
-			array( '' ),
-			array( ':' ),
-			array( 42 ),
-			array( null ),
-		);
-	}
-
-	/**
-	 * @dataProvider invalidSerializationProvider
-	 */
-	public function testConstructor( $serialization ) {
-		$this->setExpectedException( 'InvalidArgumentException' );
-
-		$mock = $this->getMockBuilder( EntityId::class )
-			->disableOriginalConstructor()
-			->getMockForAbstractClass();
-
-		$constructor = ( new ReflectionClass( EntityId::class ) )->getConstructor();
-		$constructor->invoke( $mock, $serialization );
 	}
 
 }

@@ -20,29 +20,31 @@ class PropertyId extends EntityId implements Int32EntityId {
 
 	/**
 	 * @param string $idSerialization
+	 * @param string $repositoryName
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct( $idSerialization ) {
-		$serializationParts = self::splitSerialization( $idSerialization );
-		$localId = strtoupper( $serializationParts[2] );
-		$this->assertValidIdFormat( $localId );
-		parent::__construct( self::joinSerialization(
-			array( $serializationParts[0], $serializationParts[1], $localId ) )
-		);
-	}
-
-	private function assertValidIdFormat( $idSerialization ) {
+	public function __construct( $idSerialization, $repositoryName = '' ) {
 		if ( !is_string( $idSerialization ) ) {
 			throw new InvalidArgumentException( '$idSerialization must be a string' );
 		}
 
-		if ( !preg_match( self::PATTERN, $idSerialization ) ) {
+		$parts = explode( ':', $idSerialization );
+		$localId = end( $parts );
+		$this->assertValidIdFormat( $localId );
+		$parts[count( $parts ) - 1] = strtoupper( $parts[count( $parts ) - 1] );
+
+		$this->serialization = implode( ':', $parts );
+		$this->repositoryName = $repositoryName;
+	}
+
+	private function assertValidIdFormat( $localId ) {
+		if ( !preg_match( self::PATTERN, $localId ) ) {
 			throw new InvalidArgumentException( '$idSerialization must match ' . self::PATTERN );
 		}
 
-		if ( strlen( $idSerialization ) > 10
-			&& substr( $idSerialization, 1 ) > Int32EntityId::MAX
+		if ( strlen( $localId ) > 10
+			&& substr( $localId, 1 ) > Int32EntityId::MAX
 		) {
 			throw new InvalidArgumentException( '$idSerialization can not exceed '
 				. Int32EntityId::MAX );
@@ -75,7 +77,13 @@ class PropertyId extends EntityId implements Int32EntityId {
 	 * @return string
 	 */
 	public function serialize() {
-		return json_encode( array( 'property', $this->getSerialization() ) );
+		$data = [ 'property', $this->serialization ];
+
+		if ( $this->isForeign() ) {
+			$data[] = $this->repositoryName;
+		}
+
+		return json_encode( $data );
 	}
 
 	/**
@@ -84,7 +92,7 @@ class PropertyId extends EntityId implements Int32EntityId {
 	 * @param string $serialized
 	 */
 	public function unserialize( $serialized ) {
-		list( , $this->serialization ) = json_decode( $serialized );
+		list( , $this->serialization, $this->repositoryName ) = array_merge( json_decode( $serialized ), [ '' ] );
 	}
 
 	/**

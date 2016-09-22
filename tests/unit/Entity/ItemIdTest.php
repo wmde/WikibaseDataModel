@@ -38,10 +38,6 @@ class ItemIdTest extends PHPUnit_Framework_TestCase {
 			array( 'q31337', 'Q31337' ),
 			array( 'Q31337', 'Q31337' ),
 			array( 'Q42', 'Q42' ),
-			array( ':Q42', 'Q42' ),
-			array( 'foo:Q42', 'foo:Q42' ),
-			array( 'foo:bar:q42', 'foo:bar:Q42' ),
-			array( 'Q42', 'Q42' ),
 			array( 'Q2147483647', 'Q2147483647' ),
 		);
 	}
@@ -110,7 +106,6 @@ class ItemIdTest extends PHPUnit_Framework_TestCase {
 			array( '["",""]', '' ),
 			array( '["",2]', 2 ),
 			array( '["",null]', null ),
-			array( '', null ),
 		);
 	}
 
@@ -153,7 +148,12 @@ class ItemIdTest extends PHPUnit_Framework_TestCase {
 
 	public function testGetNumericIdThrowsExceptionOnForeignIds() {
 		$this->setExpectedException( 'RuntimeException' );
-		( new ItemId( 'foo:Q42' ) )->getNumericId();
+		( new ItemId( 'Q42', 'foo' ) )->getNumericId();
+	}
+
+	public function testIsEqual() {
+		$this->assertTrue( ( new ItemId( 'Q1' ) )->equals( new ItemId( 'Q1' ) ) );
+		$this->assertFalse( ( new ItemId( 'Q1' ) )->equals( new ItemId( 'Q2' ) ) );
 	}
 
 }
