@@ -21,24 +21,24 @@ class PropertyIdTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider idSerializationProvider
 	 */
-	public function testCanConstructId( $idSerialization ) {
+	public function testCanConstructId( $idSerialization, $normalizedIdSerialization ) {
 		$id = new PropertyId( $idSerialization );
 
 		$this->assertEquals(
-			strtoupper( $idSerialization ),
+			$normalizedIdSerialization,
 			$id->getSerialization()
 		);
 	}
 
 	public function idSerializationProvider() {
 		return array(
-			array( 'p1' ),
-			array( 'p100' ),
-			array( 'p1337' ),
-			array( 'p31337' ),
-			array( 'P31337' ),
-			array( 'P42' ),
-			array( 'P2147483647' ),
+			array( 'p1', 'P1' ),
+			array( 'p100', 'P100' ),
+			array( 'p1337', 'P1337' ),
+			array( 'p31337', 'P31337' ),
+			array( 'P31337', 'P31337' ),
+			array( 'P42', 'P42' ),
+			array( 'P2147483647', 'P2147483647' ),
 		);
 	}
 
@@ -106,7 +106,6 @@ class PropertyIdTest extends PHPUnit_Framework_TestCase {
 			array( '["",""]', '' ),
 			array( '["",2]', 2 ),
 			array( '["",null]', null ),
-			array( '', null ),
 		);
 	}
 
@@ -145,6 +144,11 @@ class PropertyIdTest extends PHPUnit_Framework_TestCase {
 			array( 2147483648 ),
 			array( '2147483648' ),
 		);
+	}
+
+	public function testGetNumericIdThrowsExceptionOnForeignIds() {
+		$this->setExpectedException( 'RuntimeException' );
+		( new PropertyId( 'P42', 'foo' ) )->getNumericId();
 	}
 
 }

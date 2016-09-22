@@ -21,24 +21,24 @@ class ItemIdTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider idSerializationProvider
 	 */
-	public function testCanConstructId( $idSerialization ) {
+	public function testCanConstructId( $idSerialization, $normalizedIdSerialization ) {
 		$id = new ItemId( $idSerialization );
 
 		$this->assertEquals(
-			strtoupper( $idSerialization ),
+			$normalizedIdSerialization,
 			$id->getSerialization()
 		);
 	}
 
 	public function idSerializationProvider() {
 		return array(
-			array( 'q1' ),
-			array( 'q100' ),
-			array( 'q1337' ),
-			array( 'q31337' ),
-			array( 'Q31337' ),
-			array( 'Q42' ),
-			array( 'Q2147483647' ),
+			array( 'q1', 'Q1' ),
+			array( 'q100', 'Q100' ),
+			array( 'q1337', 'Q1337' ),
+			array( 'q31337', 'Q31337' ),
+			array( 'Q31337', 'Q31337' ),
+			array( 'Q42', 'Q42' ),
+			array( 'Q2147483647', 'Q2147483647' ),
 		);
 	}
 
@@ -106,7 +106,6 @@ class ItemIdTest extends PHPUnit_Framework_TestCase {
 			array( '["",""]', '' ),
 			array( '["",2]', 2 ),
 			array( '["",null]', null ),
-			array( '', null ),
 		);
 	}
 
@@ -145,6 +144,16 @@ class ItemIdTest extends PHPUnit_Framework_TestCase {
 			array( 2147483648 ),
 			array( '2147483648' ),
 		);
+	}
+
+	public function testGetNumericIdThrowsExceptionOnForeignIds() {
+		$this->setExpectedException( 'RuntimeException' );
+		( new ItemId( 'Q42', 'foo' ) )->getNumericId();
+	}
+
+	public function testIsEqual() {
+		$this->assertTrue( ( new ItemId( 'Q1' ) )->equals( new ItemId( 'Q1' ) ) );
+		$this->assertFalse( ( new ItemId( 'Q1' ) )->equals( new ItemId( 'Q2' ) ) );
 	}
 
 }

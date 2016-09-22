@@ -16,6 +16,7 @@ use Serializable;
 abstract class EntityId implements Comparable, Serializable {
 
 	protected $serialization;
+	protected $repositoryName;
 
 	/**
 	 * @return string
@@ -26,7 +27,37 @@ abstract class EntityId implements Comparable, Serializable {
 	 * @return string
 	 */
 	public function getSerialization() {
+		if ( $this->isForeign() ) {
+			return $this->repositoryName . ':' . $this->serialization;
+		}
+
 		return $this->serialization;
+	}
+
+	/**
+	 * Returns the serialization without the first repository prefix.
+	 *
+	 * @return string
+	 */
+	public function getLocalPart() {
+		return $this->serialization;
+	}
+
+	/**
+	 * Returns '' for local IDs and the foreign repository name for foreign IDs. For chained IDs (e.g. foo:bar:Q42) it
+	 * will return only the first part.
+	 *
+	 * @return string
+	 */
+	public function getRepoName() {
+		return $this->repositoryName;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isForeign() {
+		return $this->repositoryName !== '';
 	}
 
 	/**
@@ -37,7 +68,7 @@ abstract class EntityId implements Comparable, Serializable {
 	 * @return string
 	 */
 	public function __toString() {
-		return $this->serialization;
+		return $this->getSerialization();
 	}
 
 	/**
@@ -55,7 +86,8 @@ abstract class EntityId implements Comparable, Serializable {
 		}
 
 		return $target instanceof self
-			&& $target->serialization === $this->serialization;
+			&& $target->serialization === $this->serialization
+			&& $target->repositoryName === $this->repositoryName;
 	}
 
 }
