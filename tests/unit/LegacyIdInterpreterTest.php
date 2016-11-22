@@ -34,6 +34,14 @@ class LegacyIdInterpreterTest extends \PHPUnit_Framework_TestCase {
 		];
 	}
 
+	public function testNewIdFromTypeAndNumberWithRepositoryName() {
+		$fooItemId = LegacyIdInterpreter::newIdFromTypeAndNumber( 'item', 42, 'foo' );
+		$fooPropertyId = LegacyIdInterpreter::newIdFromTypeAndNumber( 'property', 42, 'foo' );
+
+		$this->assertEquals( new ItemId( 'foo:Q42' ), $fooItemId );
+		$this->assertEquals( new PropertyId( 'foo:P42' ), $fooPropertyId );
+	}
+
 	/**
 	 * @dataProvider invalidInputProvider
 	 */

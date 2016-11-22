@@ -24,15 +24,16 @@ class LegacyIdInterpreter {
 	/**
 	 * @param string $entityType
 	 * @param int|float|string $numericId
+	 * @param string $repositoryName, defaults to an empty string (local repository)
 	 *
 	 * @return EntityId
 	 * @throws InvalidArgumentException
 	 */
-	public static function newIdFromTypeAndNumber( $entityType, $numericId ) {
+	public static function newIdFromTypeAndNumber( $entityType, $numericId, $repositoryName = '' ) {
 		if ( $entityType === 'item' ) {
-			return ItemId::newFromNumber( $numericId );
+			return ItemId::newFromNumber( $numericId, $repositoryName );
 		} elseif ( $entityType === 'property' ) {
-			return PropertyId::newFromNumber( $numericId );
+			return PropertyId::newFromNumber( $numericId, $repositoryName );
 		}
 
 		throw new InvalidArgumentException( 'Invalid entityType ' . $entityType );
