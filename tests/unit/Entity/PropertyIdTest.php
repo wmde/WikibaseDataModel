@@ -6,6 +6,7 @@ use PHPUnit_Framework_TestCase;
 use Wikibase\DataModel\Entity\PropertyId;
 use InvalidArgumentException;
 use RuntimeException;
+use Wikimedia\Assert\ParameterAssertionException;
 
 /**
  * @covers Wikibase\DataModel\Entity\PropertyId
@@ -133,6 +134,11 @@ class PropertyIdTest extends PHPUnit_Framework_TestCase {
 		];
 	}
 
+	public function testNewFromNumberWithRepositoryName() {
+		$id = PropertyId::newFromNumber( 123, 'foo' );
+		$this->assertEquals( 'foo:P123', $id->getSerialization() );
+	}
+
 	/**
 	 * @dataProvider invalidNumericIdProvider
 	 */
@@ -148,6 +154,24 @@ class PropertyIdTest extends PHPUnit_Framework_TestCase {
 			[ 42.1 ],
 			[ 2147483648 ],
 			[ '2147483648' ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideInvalidRepositoryNames
+	 */
+	public function testNewFromNumberThrowsExceptionOnInvalidRepositoryName( $repositoryName ) {
+		$this->setExpectedException( ParameterAssertionException::class );
+		PropertyId::newFromNumber( 123, $repositoryName );
+	}
+
+	public function provideInvalidRepositoryNames() {
+		return [
+			[ 'fo:o' ],
+			[ ':' ],
+			[ 100 ],
+			[ false ],
+			[ null ],
 		];
 	}
 

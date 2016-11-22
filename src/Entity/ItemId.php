@@ -4,6 +4,7 @@ namespace Wikibase\DataModel\Entity;
 
 use InvalidArgumentException;
 use RuntimeException;
+use Wikibase\DataModel\Assert\RepositoryNameAssert;
 
 /**
  * @since 0.5
@@ -95,16 +96,18 @@ class ItemId extends EntityId implements Int32EntityId {
 	 * serialization. Not doing so in new code requires special justification.
 	 *
 	 * @param int|float|string $numericId
+	 * @param string $repositoryName, defaults to an empty string (local repository)
 	 *
 	 * @return self
 	 * @throws InvalidArgumentException
 	 */
-	public static function newFromNumber( $numericId ) {
+	public static function newFromNumber( $numericId, $repositoryName = '' ) {
 		if ( !is_numeric( $numericId ) ) {
 			throw new InvalidArgumentException( '$numericId must be numeric' );
 		}
+		RepositoryNameAssert::assertParameterIsValidRepositoryName( $repositoryName, '$repositoryName' );
 
-		return new self( 'Q' . $numericId );
+		return new self( EntityId::joinSerialization( [ $repositoryName, '', 'Q' . $numericId ] ) );
 	}
 
 }
