@@ -1,5 +1,9 @@
 # Wikibase DataModel release notes
 
+## Version 6.3.1 (2016-11-29)
+
+* Fixed `ItemId` and `PropertyId` to allow calling getNumericId on foreign entity ids.
+
 ## Version 6.3.0 (2016-11-03)
 
 * Added `RepositoryNameAssert` class
