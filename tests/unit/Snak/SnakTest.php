@@ -25,13 +25,13 @@ use Wikibase\DataModel\Snak\Snak;
  * @group WikibaseDataModel
  * @group WikibaseSnak
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class SnakTest extends \PHPUnit_Framework_TestCase {
 
 	public function snakProvider() {
-		$snaks = array();
+		$snaks = [];
 
 		$id42 = new PropertyId( 'p42' );
 
@@ -39,7 +39,7 @@ class SnakTest extends \PHPUnit_Framework_TestCase {
 
 		$snaks[] = new PropertySomeValueSnak( $id42 );
 
-		$values = array();
+		$values = [];
 
 		$values[] = new StringValue( 'Ohi there!' );
 		$values[] = new NumberValue( 42 );
@@ -48,10 +48,10 @@ class SnakTest extends \PHPUnit_Framework_TestCase {
 			$snaks[] = new PropertyValueSnak( $id42, $value );
 		}
 
-		$argLists = array();
+		$argLists = [];
 
 		foreach ( $snaks as $snak ) {
-			$argLists[] = array( $snak );
+			$argLists[] = [ $snak ];
 		}
 
 		return $argLists;

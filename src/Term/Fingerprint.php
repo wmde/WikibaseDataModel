@@ -13,7 +13,7 @@ use OutOfBoundsException;
  *
  * @since 0.7.3
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author Thiemo Mättig
  */
@@ -284,10 +284,10 @@ class Fingerprint implements Comparable, LabelsProvider, DescriptionsProvider, A
 	 * @since 5.1
 	 */
 	public function __clone() {
-		// TermList is mutable, but Term is not. No deeper cloning necesarry.
+		// TermList is mutable, but Term is not. No deeper cloning necessary.
 		$this->labels = clone $this->labels;
 		$this->descriptions = clone $this->descriptions;
-		// AliasGroupList is mutable, but AliasGroup is not. No deeper cloning necesarry.
+		// AliasGroupList is mutable, but AliasGroup is not. No deeper cloning necessary.
 		$this->aliasGroups = clone $this->aliasGroups;
 	}
 

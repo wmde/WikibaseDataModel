@@ -9,7 +9,7 @@ use Wikibase\DataModel\Entity\ItemIdParser;
 /**
  * @covers Wikibase\DataModel\Entity\ItemIdParser
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Thiemo Mättig
  */
 class ItemIdParserTest extends PHPUnit_Framework_TestCase {
@@ -25,10 +25,10 @@ class ItemIdParserTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function entityIdProvider() {
-		return array(
-			array( 'q42', new ItemId( 'Q42' ) ),
-			array( 'Q1337', new ItemId( 'Q1337' ) ),
-		);
+		return [
+			[ 'q42', new ItemId( 'Q42' ) ],
+			[ 'Q1337', new ItemId( 'Q1337' ) ],
+		];
 	}
 
 	/**
@@ -42,17 +42,17 @@ class ItemIdParserTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function invalidIdSerializationProvider() {
-		return array(
-			array( 'FOO' ),
-			array( null ),
-			array( 42 ),
-			array( array() ),
-			array( '' ),
-			array( 'q0' ),
-			array( '1p' ),
-			array( 'p1' ),
-			array( 'P100000' ),
-		);
+		return [
+			[ 'FOO' ],
+			[ null ],
+			[ 42 ],
+			[ [] ],
+			[ '' ],
+			[ 'q0' ],
+			[ '1p' ],
+			[ 'p1' ],
+			[ 'P100000' ],
+		];
 	}
 
 }

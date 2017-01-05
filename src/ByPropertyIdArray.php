@@ -3,6 +3,7 @@
 namespace Wikibase\DataModel;
 
 use ArrayObject;
+use InvalidArgumentException;
 use OutOfBoundsException;
 use RuntimeException;
 use Traversable;
@@ -40,7 +41,7 @@ use Wikibase\DataModel\Entity\PropertyId;
  * @since 0.2
  * @deprecated since 5.0, use a DataModel Service instead
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author H. Snater < mediawiki@snater.com >
  */
 class ByPropertyIdArray extends ArrayObject {
@@ -51,11 +52,18 @@ class ByPropertyIdArray extends ArrayObject {
 	private $byId = null;
 
 	/**
+	 * @deprecated since 5.0, use a DataModel Service instead
 	 * @see ArrayObject::__construct
 	 *
 	 * @param PropertyIdProvider[]|Traversable|null $input
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	public function __construct( $input = null ) {
+		if ( is_object( $input ) && !( $input instanceof Traversable ) ) {
+			throw new InvalidArgumentException( '$input must be an array, Traversable or null' );
+		}
+
 		parent::__construct( (array)$input );
 	}
 
@@ -65,14 +73,14 @@ class ByPropertyIdArray extends ArrayObject {
 	 * @since 0.2
 	 */
 	public function buildIndex() {
-		$this->byId = array();
+		$this->byId = [];
 
 		/** @var PropertyIdProvider $object */
 		foreach ( $this as $object ) {
 			$propertyId = $object->getPropertyId()->getSerialization();
 
 			if ( !array_key_exists( $propertyId, $this->byId ) ) {
-				$this->byId[$propertyId] = array();
+				$this->byId[$propertyId] = [];
 			}
 
 			$this->byId[$propertyId][] = $object;
@@ -162,7 +170,7 @@ class ByPropertyIdArray extends ArrayObject {
 	public function toFlatArray() {
 		$this->assertIndexIsBuild();
 
-		$array = array();
+		$array = [];
 		foreach ( $this->byId as $objects ) {
 			$array = array_merge( $array, $objects );
 		}
@@ -180,7 +188,7 @@ class ByPropertyIdArray extends ArrayObject {
 	private function getFlatArrayIndices( PropertyId $propertyId ) {
 		$this->assertIndexIsBuild();
 
-		$propertyIndices = array();
+		$propertyIndices = [];
 		$i = 0;
 
 		foreach ( $this->byId as $serializedPropertyId => $objects ) {
@@ -247,7 +255,7 @@ class ByPropertyIdArray extends ArrayObject {
 
 		$propertyGroup = in_array( $propertyIdSerialization, $this->getPropertyIds() )
 			? $this->getByPropertyId( $propertyId )
-			: array();
+			: [];
 
 		$propertyGroup[] = $object;
 		$this->byId[$propertyIdSerialization] = $propertyGroup;
@@ -278,7 +286,7 @@ class ByPropertyIdArray extends ArrayObject {
 
 		$this->exchangeArray( array_merge(
 			array_slice( $flatArray, 0, $index ),
-			array( $object ),
+			[ $object ],
 			array_slice( $flatArray, $index )
 		) );
 
@@ -318,7 +326,7 @@ class ByPropertyIdArray extends ArrayObject {
 		}
 
 		$serializedPropertyId = $propertyId->getSerialization();
-		$this->byId = array();
+		$this->byId = [];
 
 		foreach ( $byIdClone as $serializedPId => $objects ) {
 			$pId = new PropertyId( $serializedPId );
@@ -411,6 +419,7 @@ class ByPropertyIdArray extends ArrayObject {
 	 * @param PropertyIdProvider $object
 	 * @param int|null $index Absolute index where to place the new object.
 	 *
+	 * @throws OutOfBoundsException
 	 * @throws RuntimeException
 	 */
 	public function addObjectAtIndex( $object, $index = null ) {

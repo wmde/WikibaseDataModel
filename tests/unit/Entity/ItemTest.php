@@ -22,7 +22,7 @@ use Wikibase\DataModel\Term\TermList;
  * @group Wikibase
  * @group WikibaseDataModel
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author John Erling Blad < jeblad@gmail.com >
  * @author Michał Łazowik
@@ -75,43 +75,43 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function simpleSiteLinkProvider() {
-		$argLists = array();
+		$argLists = [];
 
-		$argLists[] = array(
+		$argLists[] = [
 			new SiteLink(
 				'enwiki',
 				'Wikidata',
-				array(
+				[
 					new ItemId( 'Q42' )
-				)
+				]
 			)
-		);
-		$argLists[] = array(
+		];
+		$argLists[] = [
 			new SiteLink(
 				'nlwiki',
 				'Wikidata'
 			)
-		);
-		$argLists[] = array(
+		];
+		$argLists[] = [
 			new SiteLink(
 				'enwiki',
 				'Nyan!',
-				array(
+				[
 					new ItemId( 'Q42' ),
 					new ItemId( 'Q149' )
-				)
+				]
 			)
-		);
-		$argLists[] = array(
+		];
+		$argLists[] = [
 			new SiteLink(
 				'foo bar',
 				'baz bah',
-				array(
+				[
 					new ItemId( 'Q3' ),
 					new ItemId( 'Q7' )
-				)
+				]
 			)
-		);
+		];
 
 		return $argLists;
 	}
@@ -132,29 +132,29 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function simpleSiteLinksProvider() {
-		$argLists = array();
+		$argLists = [];
 
-		$argLists[] = array();
+		$argLists[] = [];
 
-		$argLists[] = array( new SiteLink( 'enwiki', 'Wikidata', array( new ItemId( 'Q42' ) ) ) );
+		$argLists[] = [ new SiteLink( 'enwiki', 'Wikidata', [ new ItemId( 'Q42' ) ] ) ];
 
-		$argLists[] = array(
+		$argLists[] = [
 			new SiteLink( 'enwiki', 'Wikidata' ),
-			new SiteLink( 'nlwiki', 'Wikidata', array( new ItemId( 'Q3' ) ) )
-		);
+			new SiteLink( 'nlwiki', 'Wikidata', [ new ItemId( 'Q3' ) ] )
+		];
 
-		$argLists[] = array(
+		$argLists[] = [
 			new SiteLink( 'enwiki', 'Wikidata' ),
 			new SiteLink( 'nlwiki', 'Wikidata' ),
-			new SiteLink( 'foo bar', 'baz bah', array( new ItemId( 'Q2' ) ) )
-		);
+			new SiteLink( 'foo bar', 'baz bah', [ new ItemId( 'Q2' ) ] )
+		];
 
 		return $argLists;
 	}
 
 	public function testHasLinkToSiteForFalse() {
 		$item = new Item();
-		$item->getSiteLinkList()->addNewSiteLink( 'ENWIKI', 'Wikidata', array( new ItemId( 'Q42' ) ) );
+		$item->getSiteLinkList()->addNewSiteLink( 'ENWIKI', 'Wikidata', [ new ItemId( 'Q42' ) ] );
 
 		$this->assertFalse( $item->getSiteLinkList()->hasLinkWithSiteId( 'enwiki' ) );
 		$this->assertFalse( $item->getSiteLinkList()->hasLinkWithSiteId( 'dewiki' ) );
@@ -163,7 +163,7 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 
 	public function testHasLinkToSiteForTrue() {
 		$item = new Item();
-		$item->getSiteLinkList()->addNewSiteLink( 'enwiki', 'Wikidata', array( new ItemId( 'Q42' ) ) );
+		$item->getSiteLinkList()->addNewSiteLink( 'enwiki', 'Wikidata', [ new ItemId( 'Q42' ) ] );
 		$item->getSiteLinkList()->addNewSiteLink( 'dewiki', 'Wikidata' );
 		$item->getSiteLinkList()->addNewSiteLink( 'foo bar', 'Wikidata' );
 
@@ -200,7 +200,7 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 
 	public function testItemWithStuffIsNotEmpty() {
 		$item = new Item();
-		$item->getFingerprint()->setAliasGroup( 'en', array( 'foo' ) );
+		$item->getFingerprint()->setAliasGroup( 'en', [ 'foo' ] );
 		$this->assertFalse( $item->isEmpty() );
 
 		$item = new Item();
@@ -276,12 +276,12 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 		$differentId = $secondItemWithId->copy();
 		$differentId->setId( 43 );
 
-		return array(
-			array( new Item(), new Item() ),
-			array( $firstItem, $secondItem ),
-			array( $secondItem, $secondItemWithId ),
-			array( $secondItemWithId, $differentId ),
-		);
+		return [
+			[ new Item(), new Item() ],
+			[ $firstItem, $secondItem ],
+			[ $secondItem, $secondItemWithId ],
+			[ $secondItemWithId, $differentId ],
+		];
 	}
 
 	/**
@@ -296,7 +296,7 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 		$item = new Item( new ItemId( 'Q42' ) );
 		$item->getFingerprint()->setLabel( 'en', 'Same' );
 		$item->getFingerprint()->setDescription( 'en', 'Same' );
-		$item->getFingerprint()->setAliasGroup( 'en', array( 'Same' ) );
+		$item->getFingerprint()->setAliasGroup( 'en', [ 'Same' ] );
 		$item->getSiteLinkList()->addNewSiteLink( 'enwiki', 'Same' );
 		$item->getStatements()->addNewStatement( new PropertyNoValueSnak( 42 ) );
 
@@ -311,7 +311,7 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 		$differentDescription->getFingerprint()->setDescription( 'en', 'Different' );
 
 		$differentAlias = $this->getBaseItem();
-		$differentAlias->getFingerprint()->setAliasGroup( 'en', array( 'Different' ) );
+		$differentAlias->getFingerprint()->setAliasGroup( 'en', [ 'Different' ] );
 
 		$differentSiteLink = $this->getBaseItem();
 		$differentSiteLink->getSiteLinkList()->removeLinkWithSiteId( 'enwiki' );
@@ -323,14 +323,14 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 
 		$item = $this->getBaseItem();
 
-		return array(
-			'empty' => array( $item, new Item() ),
-			'label' => array( $item, $differentLabel ),
-			'description' => array( $item, $differentDescription ),
-			'alias' => array( $item, $differentAlias ),
-			'siteLink' => array( $item, $differentSiteLink ),
-			'statement' => array( $item, $differentStatement ),
-		);
+		return [
+			'empty' => [ $item, new Item() ],
+			'label' => [ $item, $differentLabel ],
+			'description' => [ $item, $differentDescription ],
+			'alias' => [ $item, $differentAlias ],
+			'siteLink' => [ $item, $differentSiteLink ],
+			'statement' => [ $item, $differentStatement ],
+		];
 	}
 
 	/**
@@ -347,10 +347,10 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 		$item->getStatements()->addNewStatement( new PropertyNoValueSnak( 1 ) );
 		$item->getSiteLinkList()->addNewSiteLink( 'enwiki', 'Original' );
 
-		return array(
-			'copy' => array( $item, $item->copy() ),
-			'native clone' => array( $item, clone $item ),
-		);
+		return [
+			'copy' => [ $item, $item->copy() ],
+			'native clone' => [ $item, clone $item ],
+		];
 	}
 
 	/**
@@ -389,7 +389,7 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 
 		$clone->setLabel( 'en', 'clone' );
 		$clone->setDescription( 'en', 'clone' );
-		$clone->setAliases( 'en', array( 'clone' ) );
+		$clone->setAliases( 'en', [ 'clone' ] );
 		$clonedStatement->setGuid( 'clone' );
 		$clonedStatement->setMainSnak( new PropertySomeValueSnak( 666 ) );
 		$clonedStatement->setRank( Statement::RANK_DEPRECATED );
@@ -411,11 +411,11 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 	// Below are tests copied from EntityTest
 
 	public function labelProvider() {
-		return array(
-			array( 'en', 'spam' ),
-			array( 'en', 'spam', 'spam' ),
-			array( 'de', 'foo bar baz' ),
-		);
+		return [
+			[ 'en', 'spam' ],
+			[ 'en', 'spam', 'spam' ],
+			[ 'de', 'foo bar baz' ],
+		];
 	}
 
 	/**
@@ -437,11 +437,11 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function descriptionProvider() {
-		return array(
-			array( 'en', 'spam' ),
-			array( 'en', 'spam', 'spam' ),
-			array( 'de', 'foo bar baz' ),
-		);
+		return [
+			[ 'en', 'spam' ],
+			[ 'en', 'spam', 'spam' ],
+			[ 'de', 'foo bar baz' ],
+		];
 	}
 
 	/**
@@ -463,28 +463,28 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function aliasesProvider() {
-		return array(
-			array( array(
-				       'en' => array( array( 'spam' ) )
-			       ) ),
-			array( array(
-				       'en' => array( array( 'foo', 'bar', 'baz' ) )
-			       ) ),
-			array( array(
-				       'en' => array( array( 'foo', 'bar' ), array( 'baz', 'spam' ) )
-			       ) ),
-			array( array(
-				       'en' => array( array( 'foo', 'bar', 'baz' ) ),
-				       'de' => array( array( 'foobar' ), array( 'baz' ) ),
-			       ) ),
+		return [
+			[ [
+				       'en' => [ [ 'spam' ] ]
+			       ] ],
+			[ [
+				       'en' => [ [ 'foo', 'bar', 'baz' ] ]
+			       ] ],
+			[ [
+				       'en' => [ [ 'foo', 'bar' ], [ 'baz', 'spam' ] ]
+			       ] ],
+			[ [
+				       'en' => [ [ 'foo', 'bar', 'baz' ] ],
+				       'de' => [ [ 'foobar' ], [ 'baz' ] ],
+			       ] ],
 			// with duplicates
-			array( array(
-				       'en' => array( array( 'spam', 'ham', 'ham' ) )
-			       ) ),
-			array( array(
-				       'en' => array( array( 'foo', 'bar' ), array( 'bar', 'spam' ) )
-			       ) ),
-		);
+			[ [
+				       'en' => [ [ 'spam', 'ham', 'ham' ] ]
+			       ] ],
+			[ [
+				       'en' => [ [ 'foo', 'bar' ], [ 'bar', 'spam' ] ]
+			       ] ],
+		];
 	}
 
 	/**
@@ -521,8 +521,8 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 				$entity->setAliases( $langCode, $aliases );
 			}
 		}
-		$entity->setAliases( 'zh', array( 'wind', 'air', '', 'fire' ) );
-		$entity->setAliases( 'zu', array( '', '' ) );
+		$entity->setAliases( 'zh', [ 'wind', 'air', '', 'fire' ] );
+		$entity->setAliases( 'zu', [ '', '' ] );
 
 		foreach ( $aliasesLists as $langCode => $aliasesList ) {
 			$expected = array_values( array_unique( array_pop( $aliasesList ) ) );
@@ -536,7 +536,7 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function instanceProvider() {
-		$entities = array();
+		$entities = [];
 
 		// empty
 		$entity = $this->getNewEmpty();
@@ -550,7 +550,7 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 
 		// with labels and stuff
 		$entity = $this->getNewEmpty();
-		$entity->setAliases( 'en', array( 'o', 'noez' ) );
+		$entity->setAliases( 'en', [ 'o', 'noez' ] );
 		$entity->setLabel( 'de', 'spam' );
 		$entity->setDescription( 'en', 'foo bar baz' );
 
@@ -562,10 +562,10 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 
 		$entities[] = $entity;
 
-		$argLists = array();
+		$argLists = [];
 
 		foreach ( $entities as $entity ) {
-			$argLists[] = array( $entity );
+			$argLists[] = [ $entity ];
 		}
 
 		return $argLists;
@@ -629,10 +629,10 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			new Fingerprint(
-				new TermList( array(
+				new TermList( [
 					new Term( 'en', 'foo' ),
 					new Term( 'de', 'bar' ),
-				) )
+				] )
 			),
 			$entity->getFingerprint()
 		);
@@ -643,19 +643,19 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 
 		$entity->setLabel( 'en', 'foo' );
 		$entity->setDescription( 'en', 'foo bar' );
-		$entity->setAliases( 'en', array( 'foo', 'bar' ) );
+		$entity->setAliases( 'en', [ 'foo', 'bar' ] );
 
 		$this->assertEquals(
 			new Fingerprint(
-				new TermList( array(
+				new TermList( [
 					new Term( 'en', 'foo' ),
-				) ),
-				new TermList( array(
+				] ),
+				new TermList( [
 					new Term( 'en', 'foo bar' )
-				) ),
-				new AliasGroupList( array(
-					new AliasGroup( 'en', array( 'foo', 'bar' ) )
-				) )
+				] ),
+				new AliasGroupList( [
+					new AliasGroup( 'en', [ 'foo', 'bar' ] )
+				] )
 			),
 			$entity->getFingerprint()
 		);
@@ -673,7 +673,7 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 
 		$entity->setLabel( 'en', 'foo' );
 		$entity->setDescription( 'en', 'foo bar' );
-		$entity->setAliases( 'en', array( 'foo', 'bar' ) );
+		$entity->setAliases( 'en', [ 'foo', 'bar' ] );
 
 		$entity->setFingerprint( new Fingerprint() );
 
@@ -682,15 +682,15 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 
 	public function testWhenSettingFingerprint_getFingerprintReturnsIt() {
 		$fingerprint = new Fingerprint(
-			new TermList( array(
+			new TermList( [
 				new Term( 'en', 'english label' ),
-			) ),
-			new TermList( array(
+			] ),
+			new TermList( [
 				new Term( 'en', 'english description' )
-			) ),
-			new AliasGroupList( array(
-				new AliasGroup( 'en', array( 'first en alias', 'second en alias' ) )
-			) )
+			] ),
+			new AliasGroupList( [
+				new AliasGroup( 'en', [ 'first en alias', 'second en alias' ] )
+			] )
 		);
 
 		$entity = $this->getNewEmpty();
@@ -705,9 +705,9 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 		$item->setLabel( 'en', 'foo' );
 
 		$this->assertEquals(
-			new TermList( array(
+			new TermList( [
 				new Term( 'en', 'foo' )
-			) ),
+			] ),
 			$item->getLabels()
 		);
 	}
@@ -717,21 +717,21 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 		$item->setDescription( 'en', 'foo bar' );
 
 		$this->assertEquals(
-			new TermList( array(
+			new TermList( [
 				new Term( 'en', 'foo bar' )
-			) ),
+			] ),
 			$item->getDescriptions()
 		);
 	}
 
 	public function testGetAliasGroups() {
 		$item = new Item();
-		$item->setAliases( 'en', array( 'foo', 'bar' ) );
+		$item->setAliases( 'en', [ 'foo', 'bar' ] );
 
 		$this->assertEquals(
-			new AliasGroupList( array(
-				new AliasGroup( 'en', array( 'foo', 'bar' ) )
-			) ),
+			new AliasGroupList( [
+				new AliasGroup( 'en', [ 'foo', 'bar' ] )
+			] ),
 			$item->getAliasGroups()
 		);
 	}

@@ -8,7 +8,7 @@ namespace Wikibase\DataModel\Statement;
  *
  * @since 4.1
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class ReferencedStatementFilter implements StatementFilter {
@@ -21,10 +21,10 @@ class ReferencedStatementFilter implements StatementFilter {
 	/**
 	 * @param Statement $statement
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function statementMatches( Statement $statement ) {
-		return count( $statement->getReferences() ) !== 0;
+		return !$statement->getReferences()->isEmpty();
 	}
 
 }

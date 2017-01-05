@@ -4,6 +4,8 @@ namespace Wikibase\DataModel\Tests\Entity;
 
 use PHPUnit_Framework_TestCase;
 use Wikibase\DataModel\Entity\PropertyId;
+use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * @covers Wikibase\DataModel\Entity\PropertyId
@@ -11,9 +13,8 @@ use Wikibase\DataModel\Entity\PropertyId;
  *
  * @group Wikibase
  * @group WikibaseDataModel
- * @group EntityIdTest
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class PropertyIdTest extends PHPUnit_Framework_TestCase {
@@ -21,56 +22,67 @@ class PropertyIdTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider idSerializationProvider
 	 */
-	public function testCanConstructId( $idSerialization ) {
+	public function testCanConstructId( $idSerialization, $normalizedIdSerialization ) {
 		$id = new PropertyId( $idSerialization );
 
 		$this->assertEquals(
-			strtoupper( $idSerialization ),
+			$normalizedIdSerialization,
 			$id->getSerialization()
 		);
 	}
 
 	public function idSerializationProvider() {
-		return array(
-			array( 'p1' ),
-			array( 'p100' ),
-			array( 'p1337' ),
-			array( 'p31337' ),
-			array( 'P31337' ),
-			array( 'P42' ),
-			array( 'P2147483648' ),
-		);
+		return [
+			[ 'p1', 'P1' ],
+			[ 'p100', 'P100' ],
+			[ 'p1337', 'P1337' ],
+			[ 'p31337', 'P31337' ],
+			[ 'P31337', 'P31337' ],
+			[ 'P42', 'P42' ],
+			[ ':P42', 'P42' ],
+			[ 'foo:P42', 'foo:P42' ],
+			[ 'foo:bar:p42', 'foo:bar:P42' ],
+			[ 'P2147483647', 'P2147483647' ],
+		];
 	}
 
 	/**
 	 * @dataProvider invalidIdSerializationProvider
 	 */
 	public function testCannotConstructWithInvalidSerialization( $invalidSerialization ) {
-		$this->setExpectedException( 'InvalidArgumentException' );
+		$this->setExpectedException( InvalidArgumentException::class );
 		new PropertyId( $invalidSerialization );
 	}
 
 	public function invalidIdSerializationProvider() {
-		return array(
-			array( 'p' ),
-			array( 'q1' ),
-			array( 'pp1' ),
-			array( '1p' ),
-			array( 'p01' ),
-			array( 'p 1' ),
-			array( ' p1' ),
-			array( 'p1 ' ),
-			array( '1' ),
-			array( ' ' ),
-			array( '' ),
-			array( '0' ),
-			array( 0 ),
-			array( 1 ),
-		);
+		return [
+			[ "P1\n" ],
+			[ 'p' ],
+			[ 'q1' ],
+			[ 'pp1' ],
+			[ '1p' ],
+			[ 'p01' ],
+			[ 'p 1' ],
+			[ ' p1' ],
+			[ 'p1 ' ],
+			[ '1' ],
+			[ ' ' ],
+			[ '' ],
+			[ '0' ],
+			[ 0 ],
+			[ 1 ],
+			[ 'P2147483648' ],
+			[ 'P99999999999' ],
+		];
 	}
 
 	public function testGetNumericId() {
 		$id = new PropertyId( 'P1' );
+		$this->assertSame( 1, $id->getNumericId() );
+	}
+
+	public function testGetNumericId_foreignId() {
+		$id = new PropertyId( 'foo:P1' );
 		$this->assertSame( 1, $id->getNumericId() );
 	}
 
@@ -94,17 +106,17 @@ class PropertyIdTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function serializationProvider() {
-		return array(
-			array( '["property","P2"]', 'P2' ),
+		return [
+			[ '["property","P2"]', 'P2' ],
 
 			// All these cases are kind of an injection vector and allow constructing invalid ids.
-			array( '["string","P2"]', 'P2' ),
-			array( '["","string"]', 'string' ),
-			array( '["",""]', '' ),
-			array( '["",2]', 2 ),
-			array( '["",null]', null ),
-			array( '', null ),
-		);
+			[ '["string","P2"]', 'P2' ],
+			[ '["","string"]', 'string' ],
+			[ '["",""]', '' ],
+			[ '["",2]', 2 ],
+			[ '["",null]', null ],
+			[ '', null ],
+		];
 	}
 
 	/**
@@ -116,31 +128,32 @@ class PropertyIdTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function numericIdProvider() {
-		return array(
-			array( 42 ),
-			array( '42' ),
-			array( 42.0 ),
+		return [
+			[ 42 ],
+			[ '42' ],
+			[ 42.0 ],
 			// Check for 32-bit integer overflow on 32-bit PHP systems.
-			array( 2147483648 ),
-			array( '2147483648' ),
-		);
+			[ 2147483647 ],
+			[ '2147483647' ],
+		];
 	}
 
 	/**
 	 * @dataProvider invalidNumericIdProvider
 	 */
 	public function testNewFromNumberWithInvalidNumericId( $number ) {
-		$this->setExpectedException( 'InvalidArgumentException' );
+		$this->setExpectedException( InvalidArgumentException::class );
 		PropertyId::newFromNumber( $number );
 	}
 
 	public function invalidNumericIdProvider() {
-		return array(
-			array( 'P1' ),
-			array( '42.1' ),
-			array( 42.1 ),
-			array( 2147483648.1 ),
-		);
+		return [
+			[ 'P1' ],
+			[ '42.1' ],
+			[ 42.1 ],
+			[ 2147483648 ],
+			[ '2147483648' ],
+		];
 	}
 
 }

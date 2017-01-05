@@ -17,7 +17,7 @@ use Traversable;
  *
  * @since 3.0
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author Kai Nissen < kai.nissen@wikimedia.de >
  */
@@ -26,12 +26,12 @@ class StatementByGuidMap implements IteratorAggregate, Countable {
 	/**
 	 * @var Statement[]
 	 */
-	private $statements = array();
+	private $statements = [];
 
 	/**
 	 * @param Statement[]|Traversable $statements
 	 */
-	public function __construct( $statements = array() ) {
+	public function __construct( $statements = [] ) {
 		foreach ( $statements as $statement ) {
 			$this->addStatement( $statement );
 		}

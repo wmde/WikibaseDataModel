@@ -3,19 +3,19 @@
 namespace Wikibase\DataModel\Entity;
 
 use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * @since 0.5
  *
- * @licence GNU GPL v2+
- * @author Jeroen De Dauw < jeroendedauw@gmail.com >
+ * @license GPL-2.0+
  */
-class PropertyId extends EntityId {
+class PropertyId extends EntityId implements Int32EntityId {
 
 	/**
 	 * @since 0.5
 	 */
-	const PATTERN = '/^P[1-9]\d*$/i';
+	const PATTERN = '/^P[1-9]\d{0,9}\z/i';
 
 	/**
 	 * @param string $idSerialization
@@ -23,25 +23,39 @@ class PropertyId extends EntityId {
 	 * @throws InvalidArgumentException
 	 */
 	public function __construct( $idSerialization ) {
-		$this->assertValidIdFormat( $idSerialization );
-		$this->serialization = strtoupper( $idSerialization );
+		$serializationParts = self::splitSerialization( $idSerialization );
+		$localId = strtoupper( $serializationParts[2] );
+		$this->assertValidIdFormat( $localId );
+		parent::__construct( self::joinSerialization(
+			[ $serializationParts[0], $serializationParts[1], $localId ] )
+		);
 	}
 
 	private function assertValidIdFormat( $idSerialization ) {
 		if ( !is_string( $idSerialization ) ) {
-			throw new InvalidArgumentException( '$idSerialization must be a string; got ' . gettype( $idSerialization ) );
+			throw new InvalidArgumentException( '$idSerialization must be a string' );
 		}
 
 		if ( !preg_match( self::PATTERN, $idSerialization ) ) {
 			throw new InvalidArgumentException( '$idSerialization must match ' . self::PATTERN );
 		}
+
+		if ( strlen( $idSerialization ) > 10
+			&& substr( $idSerialization, 1 ) > Int32EntityId::MAX
+		) {
+			throw new InvalidArgumentException( '$idSerialization can not exceed '
+				. Int32EntityId::MAX );
+		}
 	}
 
 	/**
-	 * @return int
+	 * @see Int32EntityId::getNumericId
+	 *
+	 * @return int Guaranteed to be a distinct integer in the range [1..2147483647].
 	 */
 	public function getNumericId() {
-		return (int)substr( $this->serialization, 1 );
+		$serializationParts = self::splitSerialization( $this->serialization );
+		return (int)substr( $serializationParts[2], 1 );
 	}
 
 	/**
@@ -57,7 +71,7 @@ class PropertyId extends EntityId {
 	 * @return string
 	 */
 	public function serialize() {
-		return json_encode( array( 'property', $this->serialization ) );
+		return json_encode( [ 'property', $this->serialization ] );
 	}
 
 	/**

@@ -5,7 +5,7 @@ namespace Wikibase\DataModel\Fixtures;
 use Hashable;
 
 /**
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class HashArrayElement implements Hashable {
@@ -21,15 +21,15 @@ class HashArrayElement implements Hashable {
 	}
 
 	public static function getInstances() {
-		$stuff = array(
+		$stuff = [
 			'foo',
 			'bar',
 			'baz',
 			'bah',
 			'~=[,,_,,]:3',
-		);
+		];
 
-		$instances = array();
+		$instances = [];
 
 		foreach ( $stuff as $thinghy ) {
 			$instances[] = new static( $thinghy );

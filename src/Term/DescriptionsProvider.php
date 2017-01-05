@@ -3,15 +3,19 @@
 namespace Wikibase\DataModel\Term;
 
 /**
+ * Common interface for classes (typically Entities) that contain a TermList, representing
+ * descriptions. Implementations must guarantee this returns the original, mutable object by
+ * reference.
+ *
  * @since 4.1
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Bene* < benestar.wikimedia@gmail.com >
  */
 interface DescriptionsProvider {
 
 	/**
-	 * It is not guaranteed that this method returns the original object.
+	 * This is guaranteed to return the original, mutable object by reference.
 	 *
 	 * @return TermList
 	 */

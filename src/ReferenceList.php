@@ -19,7 +19,7 @@ use Wikibase\DataModel\Snak\Snak;
  * Does not implement References anymore since 2.0
  * Does not extend SplObjectStorage since 5.0
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author H. Snater < mediawiki@snater.com >
  * @author Thiemo Mättig
@@ -30,14 +30,14 @@ class ReferenceList implements Comparable, Countable, IteratorAggregate, Seriali
 	/**
 	 * @var Reference[] Ordered list or references, indexed by SPL object hash.
 	 */
-	private $references = array();
+	private $references = [];
 
 	/**
 	 * @param Reference[]|Traversable $references
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct( $references = array() ) {
+	public function __construct( $references = [] ) {
 		if ( !is_array( $references ) && !( $references instanceof Traversable ) ) {
 			throw new InvalidArgumentException( '$references must be an array or an instance of Traversable' );
 		}
@@ -58,7 +58,7 @@ class ReferenceList implements Comparable, Countable, IteratorAggregate, Seriali
 	 * @since 0.1
 	 *
 	 * @param Reference $reference
-	 * @param int|null $index
+	 * @param int|null $index New position of the added reference, or null to append.
 	 *
 	 * @throws InvalidArgumentException
 	 */
@@ -87,7 +87,7 @@ class ReferenceList implements Comparable, Countable, IteratorAggregate, Seriali
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function addNewReference( $snaks = array() /*...*/ ) {
+	public function addNewReference( $snaks = [] /*...*/ ) {
 		if ( $snaks instanceof Snak ) {
 			$snaks = func_get_args();
 		}
@@ -102,7 +102,7 @@ class ReferenceList implements Comparable, Countable, IteratorAggregate, Seriali
 	private function insertReferenceAtIndex( Reference $reference, $index ) {
 		$this->references = array_merge(
 			array_slice( $this->references, 0, $index ),
-			array( spl_object_hash( $reference ) => $reference ),
+			[ spl_object_hash( $reference ) => $reference ],
 			array_slice( $this->references, $index )
 		);
 	}

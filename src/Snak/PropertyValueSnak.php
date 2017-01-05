@@ -12,7 +12,7 @@ use Wikibase\DataModel\Entity\PropertyId;
  *
  * @since 0.1
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author Daniel Kinzler
  */
@@ -53,7 +53,7 @@ class PropertyValueSnak extends SnakObject {
 	 * @return string
 	 */
 	public function serialize() {
-		return serialize( array( $this->propertyId->getNumericId(), $this->dataValue ) );
+		return serialize( [ $this->propertyId->getNumericId(), $this->dataValue ] );
 	}
 
 	/**

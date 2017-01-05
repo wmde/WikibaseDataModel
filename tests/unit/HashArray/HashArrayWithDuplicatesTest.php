@@ -14,16 +14,16 @@ use Wikibase\DataModel\HashArray;
  * @group WikibaseDataModel
  * @group HashArray
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class HashArrayWithDuplicatesTest extends HashArrayTest {
 
 	public function constructorProvider() {
-		$argLists = array();
+		$argLists = [];
 
-		$argLists[] = array( HashArrayElement::getInstances() );
-		$argLists[] = array( array_merge( HashArrayElement::getInstances(), HashArrayElement::getInstances() ) );
+		$argLists[] = [ HashArrayElement::getInstances() ];
+		$argLists[] = [ array_merge( HashArrayElement::getInstances(), HashArrayElement::getInstances() ) ];
 
 		return $argLists;
 	}
@@ -35,7 +35,7 @@ class HashArrayWithDuplicatesTest extends HashArrayTest {
 	public function elementInstancesProvider() {
 		return $this->arrayWrap( array_merge(
 			$this->arrayWrap( HashArrayElement::getInstances() ),
-			array( HashArrayElement::getInstances() )
+			[ HashArrayElement::getInstances() ]
 		) );
 	}
 
@@ -66,7 +66,7 @@ class HashArrayWithDuplicatesTest extends HashArrayTest {
 	public function testRemoveDuplicates( HashArray $array ) {
 		$count = count( $array );
 		$duplicateCount = 0;
-		$hashes = array();
+		$hashes = [];
 
 		/**
 		 * @var Hashable $hashable

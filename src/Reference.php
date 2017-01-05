@@ -16,7 +16,7 @@ use Wikibase\DataModel\Snak\SnakList;
  *
  * @since 0.1, instantiable since 0.4
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class Reference implements Hashable, Comparable, Immutable, Countable {
@@ -32,7 +32,7 @@ class Reference implements Hashable, Comparable, Immutable, Countable {
 	 * @param Snak[]|SnakList $snaks
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct( $snaks = array() ) {
+	public function __construct( $snaks = [] ) {
 		if ( is_array( $snaks ) ) {
 			$snaks = new SnakList( $snaks );
 		}

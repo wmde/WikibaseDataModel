@@ -3,7 +3,7 @@
 namespace Wikibase\DataModel\Tests;
 
 /**
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class AutoloadingAliasesTest extends \PHPUnit_Framework_TestCase {
@@ -21,9 +21,9 @@ class AutoloadingAliasesTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function oldNameProvider() {
-		return array(
+		return [
 			// Full qualified aliases go here.
-		);
+		];
 	}
 
 }
