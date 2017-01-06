@@ -259,7 +259,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 	 * @dataProvider instanceProvider
 	 */
 	public function testGetPropertyId( Statement $statement ) {
-		$this->assertEquals(
+		$this->assertSame(
 			$statement->getMainSnak()->getPropertyId(),
 			$statement->getPropertyId()
 		);
