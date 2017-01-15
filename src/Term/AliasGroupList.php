@@ -18,7 +18,7 @@ use Traversable;
  *
  * @since 0.7.3
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class AliasGroupList implements Countable, IteratorAggregate {
@@ -26,13 +26,13 @@ class AliasGroupList implements Countable, IteratorAggregate {
 	/**
 	 * @var AliasGroup[]
 	 */
-	private $groups = array();
+	private $groups = [];
 
 	/**
 	 * @param AliasGroup[] $aliasGroups
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct( array $aliasGroups = array() ) {
+	public function __construct( array $aliasGroups = [] ) {
 		foreach ( $aliasGroups as $aliasGroup ) {
 			if ( !( $aliasGroup instanceof AliasGroup ) ) {
 				throw new InvalidArgumentException( 'Every element in $aliasGroups must be an instance of AliasGroup' );
@@ -73,12 +73,9 @@ class AliasGroupList implements Countable, IteratorAggregate {
 	 * @param string $languageCode
 	 *
 	 * @return AliasGroup
-	 * @throws InvalidArgumentException
 	 * @throws OutOfBoundsException
 	 */
 	public function getByLanguage( $languageCode ) {
-		$this->assertIsLanguageCode( $languageCode );
-
 		if ( !array_key_exists( $languageCode, $this->groups ) ) {
 			throw new OutOfBoundsException( 'AliasGroup with languageCode "' . $languageCode . '" not found' );
 		}
@@ -91,7 +88,7 @@ class AliasGroupList implements Countable, IteratorAggregate {
 	 *
 	 * @param string[] $languageCodes
 	 *
-	 * @return AliasGroupList
+	 * @return self
 	 */
 	public function getWithLanguages( array $languageCodes ) {
 		return new self( array_intersect_key( $this->groups, array_flip( $languageCodes ) ) );
@@ -99,17 +96,9 @@ class AliasGroupList implements Countable, IteratorAggregate {
 
 	/**
 	 * @param string $languageCode
-	 * @throws InvalidArgumentException
 	 */
 	public function removeByLanguage( $languageCode ) {
-		$this->assertIsLanguageCode( $languageCode );
 		unset( $this->groups[$languageCode] );
-	}
-
-	private function assertIsLanguageCode( $languageCode ) {
-		if ( !is_string( $languageCode ) || $languageCode === '' ) {
-			throw new InvalidArgumentException( '$languageCode must be a non-empty string' );
-		}
 	}
 
 	/**
@@ -185,7 +174,6 @@ class AliasGroupList implements Countable, IteratorAggregate {
 	 * @return boolean
 	 */
 	public function hasGroupForLanguage( $languageCode ) {
-		$this->assertIsLanguageCode( $languageCode );
 		return array_key_exists( $languageCode, $this->groups );
 	}
 
@@ -207,7 +195,7 @@ class AliasGroupList implements Countable, IteratorAggregate {
 	 * @return array[]
 	 */
 	public function toTextArray() {
-		$array = array();
+		$array = [];
 
 		foreach ( $this->groups as $group ) {
 			$array[$group->getLanguageCode()] = $group->getAliases();

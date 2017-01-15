@@ -4,6 +4,7 @@ namespace Wikibase\DataModel\Tests\Entity;
 
 use PHPUnit_Framework_TestCase;
 use Wikibase\DataModel\Entity\ItemId;
+use InvalidArgumentException;
 
 /**
  * @covers Wikibase\DataModel\Entity\ItemId
@@ -11,9 +12,8 @@ use Wikibase\DataModel\Entity\ItemId;
  *
  * @group Wikibase
  * @group WikibaseDataModel
- * @group EntityIdTest
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class ItemIdTest extends PHPUnit_Framework_TestCase {
@@ -21,56 +21,67 @@ class ItemIdTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider idSerializationProvider
 	 */
-	public function testCanConstructId( $idSerialization ) {
+	public function testCanConstructId( $idSerialization, $normalizedIdSerialization ) {
 		$id = new ItemId( $idSerialization );
 
 		$this->assertEquals(
-			strtoupper( $idSerialization ),
+			$normalizedIdSerialization,
 			$id->getSerialization()
 		);
 	}
 
 	public function idSerializationProvider() {
-		return array(
-			array( 'q1' ),
-			array( 'q100' ),
-			array( 'q1337' ),
-			array( 'q31337' ),
-			array( 'Q31337' ),
-			array( 'Q42' ),
-			array( 'Q2147483648' ),
-		);
+		return [
+			[ 'q1', 'Q1' ],
+			[ 'q100', 'Q100' ],
+			[ 'q1337', 'Q1337' ],
+			[ 'q31337', 'Q31337' ],
+			[ 'Q31337', 'Q31337' ],
+			[ 'Q42', 'Q42' ],
+			[ ':Q42', 'Q42' ],
+			[ 'foo:Q42', 'foo:Q42' ],
+			[ 'foo:bar:q42', 'foo:bar:Q42' ],
+			[ 'Q2147483647', 'Q2147483647' ],
+		];
 	}
 
 	/**
 	 * @dataProvider invalidIdSerializationProvider
 	 */
 	public function testCannotConstructWithInvalidSerialization( $invalidSerialization ) {
-		$this->setExpectedException( 'InvalidArgumentException' );
+		$this->setExpectedException( InvalidArgumentException::class );
 		new ItemId( $invalidSerialization );
 	}
 
 	public function invalidIdSerializationProvider() {
-		return array(
-			array( 'q' ),
-			array( 'p1' ),
-			array( 'qq1' ),
-			array( '1q' ),
-			array( 'q01' ),
-			array( 'q 1' ),
-			array( ' q1' ),
-			array( 'q1 ' ),
-			array( '1' ),
-			array( ' ' ),
-			array( '' ),
-			array( '0' ),
-			array( 0 ),
-			array( 1 ),
-		);
+		return [
+			[ "Q1\n" ],
+			[ 'q' ],
+			[ 'p1' ],
+			[ 'qq1' ],
+			[ '1q' ],
+			[ 'q01' ],
+			[ 'q 1' ],
+			[ ' q1' ],
+			[ 'q1 ' ],
+			[ '1' ],
+			[ ' ' ],
+			[ '' ],
+			[ '0' ],
+			[ 0 ],
+			[ 1 ],
+			[ 'Q2147483648' ],
+			[ 'Q99999999999' ],
+		];
 	}
 
 	public function testGetNumericId() {
 		$id = new ItemId( 'Q1' );
+		$this->assertSame( 1, $id->getNumericId() );
+	}
+
+	public function testGetNumericId_foreignId() {
+		$id = new ItemId( 'foo:Q1' );
 		$this->assertSame( 1, $id->getNumericId() );
 	}
 
@@ -94,17 +105,17 @@ class ItemIdTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function serializationProvider() {
-		return array(
-			array( '["item","Q2"]', 'Q2' ),
+		return [
+			[ '["item","Q2"]', 'Q2' ],
 
 			// All these cases are kind of an injection vector and allow constructing invalid ids.
-			array( '["string","Q2"]', 'Q2' ),
-			array( '["","string"]', 'string' ),
-			array( '["",""]', '' ),
-			array( '["",2]', 2 ),
-			array( '["",null]', null ),
-			array( '', null ),
-		);
+			[ '["string","Q2"]', 'Q2' ],
+			[ '["","string"]', 'string' ],
+			[ '["",""]', '' ],
+			[ '["",2]', 2 ],
+			[ '["",null]', null ],
+			[ '', null ],
+		];
 	}
 
 	/**
@@ -116,31 +127,32 @@ class ItemIdTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function numericIdProvider() {
-		return array(
-			array( 42 ),
-			array( '42' ),
-			array( 42.0 ),
+		return [
+			[ 42 ],
+			[ '42' ],
+			[ 42.0 ],
 			// Check for 32-bit integer overflow on 32-bit PHP systems.
-			array( 2147483648 ),
-			array( '2147483648' ),
-		);
+			[ 2147483647 ],
+			[ '2147483647' ],
+		];
 	}
 
 	/**
 	 * @dataProvider invalidNumericIdProvider
 	 */
 	public function testNewFromNumberWithInvalidNumericId( $number ) {
-		$this->setExpectedException( 'InvalidArgumentException' );
+		$this->setExpectedException( InvalidArgumentException::class );
 		ItemId::newFromNumber( $number );
 	}
 
 	public function invalidNumericIdProvider() {
-		return array(
-			array( 'Q1' ),
-			array( '42.1' ),
-			array( 42.1 ),
-			array( 2147483648.1 ),
-		);
+		return [
+			[ 'Q1' ],
+			[ '42.1' ],
+			[ 42.1 ],
+			[ 2147483648 ],
+			[ '2147483648' ],
+		];
 	}
 
 }

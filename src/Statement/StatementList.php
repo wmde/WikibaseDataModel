@@ -23,16 +23,17 @@ use Wikibase\DataModel\Snak\SnakList;
  *
  * @since 1.0
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author Bene* < benestar.wikimedia@gmail.com >
+ * @author Thiemo Mättig
  */
 class StatementList implements IteratorAggregate, Comparable, Countable {
 
 	/**
 	 * @var Statement[]
 	 */
-	private $statements = array();
+	private $statements = [];
 
 	/**
 	 * @param Statement[]|Traversable|Statement $statements
@@ -40,7 +41,7 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct( $statements = array() /*...*/ ) {
+	public function __construct( $statements = [] /*...*/ ) {
 		if ( $statements instanceof Statement ) {
 			$statements = func_get_args();
 		}
@@ -65,7 +66,7 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 	 * @return PropertyId[] Array indexed by property id serialization.
 	 */
 	public function getPropertyIds() {
-		$propertyIds = array();
+		$propertyIds = [];
 
 		foreach ( $this->statements as $statement ) {
 			$propertyIds[$statement->getPropertyId()->getSerialization()] = $statement->getPropertyId();
@@ -74,8 +75,23 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 		return $propertyIds;
 	}
 
-	public function addStatement( Statement $statement ) {
-		$this->statements[] = $statement;
+	/**
+	 * @since 1.0, setting an index is supported since 6.1
+	 * @see ReferenceList::addReference
+	 *
+	 * @param Statement $statement
+	 * @param int|null $index New position of the added statement, or null to append.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function addStatement( Statement $statement, $index = null ) {
+		if ( $index === null ) {
+			$this->statements[] = $statement;
+		} elseif ( is_int( $index ) && $index >= 0 ) {
+			array_splice( $this->statements, $index, 0, [ $statement ] );
+		} else {
+			throw new InvalidArgumentException( '$index must be a non-negative integer or null' );
+		}
 	}
 
 	/**
@@ -91,7 +107,7 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 		$statement = new Statement( $mainSnak, $qualifiers, $references );
 		$statement->setGuid( $guid );
 
-		$this->addStatement( $statement );
+		$this->statements[] = $statement;
 	}
 
 	/**
@@ -118,7 +134,7 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 	 * @return self
 	 */
 	public function getWithUniqueMainSnaks() {
-		$statements = array();
+		$statements = [];
 
 		foreach ( $this->statements as $statement ) {
 			$statements[$statement->getMainSnak()->getHash()] = $statement;
@@ -139,7 +155,7 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 
 		foreach ( $this->statements as $statement ) {
 			if ( $statement->getPropertyId()->equals( $id ) ) {
-				$statementList->addStatement( $statement );
+				$statementList->statements[] = $statement;
 			}
 		}
 
@@ -159,7 +175,7 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 
 		foreach ( $this->statements as $statement ) {
 			if ( array_key_exists( $statement->getRank(), $acceptableRanks ) ) {
-				$statementList->addStatement( $statement );
+				$statementList->statements[] = $statement;
 			}
 		}
 
@@ -187,7 +203,7 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 
 	/**
 	 * Returns a list of all Snaks on this StatementList. This includes at least the main snaks of
-	 * Claims, the snaks from Claim qualifiers, and the snaks from Statement References.
+	 * all statements, the snaks from qualifiers, and the snaks from references.
 	 *
 	 * This is a convenience method for use in code that needs to operate on all snaks, e.g.
 	 * to find all referenced Entities.
@@ -197,7 +213,7 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 	 * @return Snak[] Numerically indexed (non-sparse) array.
 	 */
 	public function getAllSnaks() {
-		$snaks = array();
+		$snaks = [];
 
 		foreach ( $this->statements as $statement ) {
 			foreach ( $statement->getAllSnaks() as $snak ) {
@@ -214,7 +230,7 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 	 * @return Snak[] Numerically indexed (non-sparse) array.
 	 */
 	public function getMainSnaks() {
-		$snaks = array();
+		$snaks = [];
 
 		foreach ( $this->statements as $statement ) {
 			$snaks[] = $statement->getMainSnak();
@@ -318,11 +334,22 @@ class StatementList implements IteratorAggregate, Comparable, Countable {
 
 		foreach ( $this->statements as $statement ) {
 			if ( $filter->statementMatches( $statement ) ) {
-				$statementList->addStatement( $statement );
+				$statementList->statements[] = $statement;
 			}
 		}
 
 		return $statementList;
+	}
+
+	/**
+	 * @see http://php.net/manual/en/language.oop5.cloning.php
+	 *
+	 * @since 5.1
+	 */
+	public function __clone() {
+		foreach ( $this->statements as &$statement ) {
+			$statement = clone $statement;
+		}
 	}
 
 }

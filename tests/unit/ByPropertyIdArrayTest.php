@@ -4,8 +4,10 @@ namespace Wikibase\DataModel\Tests;
 
 use ArrayObject;
 use DataValues\StringValue;
+use PHPUnit_Framework_TestCase;
 use ReflectionClass;
 use ReflectionMethod;
+use stdClass;
 use Wikibase\DataModel\ByPropertyIdArray;
 use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\PropertyIdProvider;
@@ -20,13 +22,26 @@ use Wikibase\DataModel\Statement\Statement;
  *
  * @group Wikibase
  * @group WikibaseDataModel
- * @group ByPropertyIdArrayTest
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author H. Snater < mediawiki@snater.com >
  */
-class ByPropertyIdArrayTest extends \PHPUnit_Framework_TestCase {
+class ByPropertyIdArrayTest extends PHPUnit_Framework_TestCase {
+
+	public function testGivenNull_constructorAssumesEmptyArray() {
+		$indexedArray = new ByPropertyIdArray( null );
+
+		$this->assertSame( 0, $indexedArray->count() );
+	}
+
+	public function testGivenNonTraversableObject_constructorDoesNotCastObjectToArray() {
+		$object = new stdClass();
+		$object->property = true;
+
+		$this->setExpectedException( 'InvalidArgumentException' );
+		new ByPropertyIdArray( $object );
+	}
 
 	public function testArrayObjectNotConstructedFromObject() {
 		$statement1 = new Statement( new PropertyNoValueSnak( 1 ) );
@@ -59,15 +74,15 @@ class ByPropertyIdArrayTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function listProvider() {
-		$lists = array();
+		$lists = [];
 
-		$snaks = array(
+		$snaks = [
 			new PropertyNoValueSnak( new PropertyId( 'P42' ) ),
 			new PropertySomeValueSnak( new PropertyId( 'P42' ) ),
 			new PropertySomeValueSnak( new PropertyId( 'P10' ) ),
 			new PropertyValueSnak( new PropertyId( 'P10' ), new StringValue( 'ohi' ) ),
 			new PropertySomeValueSnak( new PropertyId( 'P1' ) ),
-		);
+		];
 
 		$lists[] = $snaks;
 
@@ -78,10 +93,10 @@ class ByPropertyIdArrayTest extends \PHPUnit_Framework_TestCase {
 			$snaks
 		);
 
-		$argLists = array();
+		$argLists = [];
 
 		foreach ( $lists as $list ) {
-			$argLists[] = array( $list );
+			$argLists[] = [ $list ];
 		}
 
 		return $argLists;
@@ -91,14 +106,14 @@ class ByPropertyIdArrayTest extends \PHPUnit_Framework_TestCase {
 	 * @return Statement[]
 	 */
 	protected function statementsProvider() {
-		$snaks = array(
+		$snaks = [
 			new PropertyNoValueSnak( new PropertyId( 'P1' ) ),
 			new PropertySomeValueSnak( new PropertyId( 'P1' ) ),
 			new PropertyValueSnak( new PropertyId( 'P2' ), new StringValue( 'a' ) ),
 			new PropertyValueSnak( new PropertyId( 'P2' ), new StringValue( 'b' ) ),
 			new PropertyValueSnak( new PropertyId( 'P2' ), new StringValue( 'c' ) ),
 			new PropertySomeValueSnak( new PropertyId( 'P3' ) ),
-		);
+		];
 
 		return array_map(
 			function( Snak $snak ) {
@@ -115,7 +130,7 @@ class ByPropertyIdArrayTest extends \PHPUnit_Framework_TestCase {
 	public function testGetIds( array $objects ) {
 		$indexedArray = new ByPropertyIdArray( $objects );
 
-		$expected = array();
+		$expected = [];
 
 		foreach ( $objects as $object ) {
 			$expected[] = $object->getPropertyId();
@@ -138,7 +153,7 @@ class ByPropertyIdArrayTest extends \PHPUnit_Framework_TestCase {
 	public function testGetById( array $objects ) {
 		$indexedArray = new ByPropertyIdArray( $objects );
 
-		$ids = array();
+		$ids = [];
 
 		foreach ( $objects as $object ) {
 			$ids[] = $object->getPropertyId();
@@ -148,7 +163,7 @@ class ByPropertyIdArrayTest extends \PHPUnit_Framework_TestCase {
 
 		$indexedArray->buildIndex();
 
-		$allObtainedObjects = array();
+		$allObtainedObjects = [];
 
 		foreach ( $ids as $id ) {
 			foreach ( $indexedArray->getByPropertyId( $id ) as $obtainedObject ) {
@@ -174,8 +189,8 @@ class ByPropertyIdArrayTest extends \PHPUnit_Framework_TestCase {
 
 		$removeObject = self::getMethod( 'removeObject' );
 
-		$removeObject->invokeArgs( $indexedArray, array( $objects[0] ) );
-		$removeObject->invokeArgs( $indexedArray, array( $objects[$lastIndex] ) );
+		$removeObject->invokeArgs( $indexedArray, [ $objects[0] ] );
+		$removeObject->invokeArgs( $indexedArray, [ $objects[$lastIndex] ] );
 
 		$this->assertFalse(
 			in_array( $objects[0], $indexedArray->getByPropertyId( $objects[0]->getPropertyId() ) )
@@ -196,14 +211,14 @@ class ByPropertyIdArrayTest extends \PHPUnit_Framework_TestCase {
 
 		$this->setExpectedException( 'OutOfBoundsException' );
 
-		$indexedArray->getByPropertyId( PropertyId::newFromNumber( 9000 ) );
+		$indexedArray->getByPropertyId( new PropertyId( 'P9000' ) );
 	}
 
 	public function testNotBuildExceptionIsThrownForByPropertyId() {
 		$indexedArray = new ByPropertyIdArray();
 
 		$this->setExpectedException( 'RuntimeException' );
-		$indexedArray->getByPropertyId( PropertyId::newFromNumber( 9000 ) );
+		$indexedArray->getByPropertyId( new PropertyId( 'P9000' ) );
 	}
 
 	public function testNotBuildExceptionIsThrownForGetPropertyIds() {
@@ -220,8 +235,8 @@ class ByPropertyIdArrayTest extends \PHPUnit_Framework_TestCase {
 		$indexedArray = new ByPropertyIdArray( $objects );
 		$indexedArray->buildIndex();
 
-		$indicesSource = array();
-		$indicesDestination = array();
+		$indicesSource = [];
+		$indicesDestination = [];
 
 		$i = 0;
 		foreach ( $objects as $object ) {
@@ -244,69 +259,65 @@ class ByPropertyIdArrayTest extends \PHPUnit_Framework_TestCase {
 
 	public function moveProvider() {
 		$c = $this->statementsProvider();
-		$argLists = array();
+		$argLists = [];
 
-		$argLists[] = array( $c, $c[0], 0, $c );
-		$argLists[] = array( $c, $c[0], 1, array( $c[1], $c[0], $c[2], $c[3], $c[4], $c[5] ) );
-		$argLists[] = array( $c, $c[0], 2, array( $c[1], $c[0], $c[2], $c[3], $c[4], $c[5] ) );
-		$argLists[] = array( $c, $c[0], 3, array( $c[2], $c[3], $c[4], $c[1], $c[0], $c[5] ) );
-		$argLists[] = array( $c, $c[0], 4, array( $c[2], $c[3], $c[4], $c[1], $c[0], $c[5] ) );
-		$argLists[] = array( $c, $c[0], 5, array( $c[2], $c[3], $c[4], $c[1], $c[0], $c[5] ) );
-		$argLists[] = array( $c, $c[0], 6, array( $c[2], $c[3], $c[4], $c[5], $c[1], $c[0] ) );
+		$argLists[] = [ $c, $c[0], 0, $c ];
+		$argLists[] = [ $c, $c[0], 1, [ $c[1], $c[0], $c[2], $c[3], $c[4], $c[5] ] ];
+		$argLists[] = [ $c, $c[0], 2, [ $c[1], $c[0], $c[2], $c[3], $c[4], $c[5] ] ];
+		$argLists[] = [ $c, $c[0], 3, [ $c[2], $c[3], $c[4], $c[1], $c[0], $c[5] ] ];
+		$argLists[] = [ $c, $c[0], 4, [ $c[2], $c[3], $c[4], $c[1], $c[0], $c[5] ] ];
+		$argLists[] = [ $c, $c[0], 5, [ $c[2], $c[3], $c[4], $c[1], $c[0], $c[5] ] ];
+		$argLists[] = [ $c, $c[0], 6, [ $c[2], $c[3], $c[4], $c[5], $c[1], $c[0] ] ];
 
-		$argLists[] = array( $c, $c[1], 0, array( $c[1], $c[0], $c[2], $c[3], $c[4], $c[5] ) );
-		$argLists[] = array( $c, $c[1], 1, $c );
-		$argLists[] = array( $c, $c[1], 2, $c );
-		$argLists[] = array( $c, $c[1], 3, array( $c[2], $c[3], $c[4], $c[0], $c[1], $c[5] ) );
-		$argLists[] = array( $c, $c[1], 4, array( $c[2], $c[3], $c[4], $c[0], $c[1], $c[5] ) );
-		$argLists[] = array( $c, $c[1], 5, array( $c[2], $c[3], $c[4], $c[0], $c[1], $c[5] ) );
-		$argLists[] = array( $c, $c[1], 6, array( $c[2], $c[3], $c[4], $c[5], $c[0], $c[1] ) );
+		$argLists[] = [ $c, $c[1], 0, [ $c[1], $c[0], $c[2], $c[3], $c[4], $c[5] ] ];
+		$argLists[] = [ $c, $c[1], 1, $c ];
+		$argLists[] = [ $c, $c[1], 2, $c ];
+		$argLists[] = [ $c, $c[1], 3, [ $c[2], $c[3], $c[4], $c[0], $c[1], $c[5] ] ];
+		$argLists[] = [ $c, $c[1], 4, [ $c[2], $c[3], $c[4], $c[0], $c[1], $c[5] ] ];
+		$argLists[] = [ $c, $c[1], 5, [ $c[2], $c[3], $c[4], $c[0], $c[1], $c[5] ] ];
+		$argLists[] = [ $c, $c[1], 6, [ $c[2], $c[3], $c[4], $c[5], $c[0], $c[1] ] ];
 
-		$argLists[] = array( $c, $c[2], 0, array( $c[2], $c[3], $c[4], $c[0], $c[1], $c[5] ) );
-		$argLists[] = array( $c, $c[2], 1, $c );
-		$argLists[] = array( $c, $c[2], 2, $c );
-		$argLists[] = array( $c, $c[2], 3, array( $c[0], $c[1], $c[3], $c[2], $c[4], $c[5] ) );
-		$argLists[] = array( $c, $c[2], 4, array( $c[0], $c[1], $c[3], $c[4], $c[2], $c[5] ) );
-		$argLists[] = array( $c, $c[2], 5, array( $c[0], $c[1], $c[3], $c[4], $c[2], $c[5] ) );
-		$argLists[] = array( $c, $c[2], 6, array( $c[0], $c[1], $c[5], $c[3], $c[4], $c[2] ) );
+		$argLists[] = [ $c, $c[2], 0, [ $c[2], $c[3], $c[4], $c[0], $c[1], $c[5] ] ];
+		$argLists[] = [ $c, $c[2], 1, $c ];
+		$argLists[] = [ $c, $c[2], 2, $c ];
+		$argLists[] = [ $c, $c[2], 3, [ $c[0], $c[1], $c[3], $c[2], $c[4], $c[5] ] ];
+		$argLists[] = [ $c, $c[2], 4, [ $c[0], $c[1], $c[3], $c[4], $c[2], $c[5] ] ];
+		$argLists[] = [ $c, $c[2], 5, [ $c[0], $c[1], $c[3], $c[4], $c[2], $c[5] ] ];
+		$argLists[] = [ $c, $c[2], 6, [ $c[0], $c[1], $c[5], $c[3], $c[4], $c[2] ] ];
 
-		$argLists[] = array( $c, $c[3], 0, array( $c[3], $c[2], $c[4], $c[0], $c[1], $c[5] ) );
-		$argLists[] = array( $c, $c[3], 1, array( $c[0], $c[1], $c[3], $c[2], $c[4], $c[5] ) );
-		$argLists[] = array( $c, $c[3], 2, array( $c[0], $c[1], $c[3], $c[2], $c[4], $c[5] ) );
-		$argLists[] = array( $c, $c[3], 3, $c );
-		$argLists[] = array( $c, $c[3], 4, array( $c[0], $c[1], $c[2], $c[4], $c[3], $c[5] ) );
-		$argLists[] = array( $c, $c[3], 5, array( $c[0], $c[1], $c[2], $c[4], $c[3], $c[5] ) );
-		$argLists[] = array( $c, $c[3], 6, array( $c[0], $c[1], $c[5], $c[2], $c[4], $c[3] ) );
+		$argLists[] = [ $c, $c[3], 0, [ $c[3], $c[2], $c[4], $c[0], $c[1], $c[5] ] ];
+		$argLists[] = [ $c, $c[3], 1, [ $c[0], $c[1], $c[3], $c[2], $c[4], $c[5] ] ];
+		$argLists[] = [ $c, $c[3], 2, [ $c[0], $c[1], $c[3], $c[2], $c[4], $c[5] ] ];
+		$argLists[] = [ $c, $c[3], 3, $c ];
+		$argLists[] = [ $c, $c[3], 4, [ $c[0], $c[1], $c[2], $c[4], $c[3], $c[5] ] ];
+		$argLists[] = [ $c, $c[3], 5, [ $c[0], $c[1], $c[2], $c[4], $c[3], $c[5] ] ];
+		$argLists[] = [ $c, $c[3], 6, [ $c[0], $c[1], $c[5], $c[2], $c[4], $c[3] ] ];
 
-		$argLists[] = array( $c, $c[4], 0, array( $c[4], $c[2], $c[3], $c[0], $c[1], $c[5] ) );
-		$argLists[] = array( $c, $c[4], 1, array( $c[0], $c[1], $c[4], $c[2], $c[3], $c[5] ) );
-		$argLists[] = array( $c, $c[4], 2, array( $c[0], $c[1], $c[4], $c[2], $c[3], $c[5] ) );
-		$argLists[] = array( $c, $c[4], 3, array( $c[0], $c[1], $c[2], $c[4], $c[3], $c[5] ) );
-		$argLists[] = array( $c, $c[4], 4, $c );
-		$argLists[] = array( $c, $c[4], 5, $c );
-		$argLists[] = array( $c, $c[4], 6, array( $c[0], $c[1], $c[5], $c[2], $c[3], $c[4] ) );
+		$argLists[] = [ $c, $c[4], 0, [ $c[4], $c[2], $c[3], $c[0], $c[1], $c[5] ] ];
+		$argLists[] = [ $c, $c[4], 1, [ $c[0], $c[1], $c[4], $c[2], $c[3], $c[5] ] ];
+		$argLists[] = [ $c, $c[4], 2, [ $c[0], $c[1], $c[4], $c[2], $c[3], $c[5] ] ];
+		$argLists[] = [ $c, $c[4], 3, [ $c[0], $c[1], $c[2], $c[4], $c[3], $c[5] ] ];
+		$argLists[] = [ $c, $c[4], 4, $c ];
+		$argLists[] = [ $c, $c[4], 5, $c ];
+		$argLists[] = [ $c, $c[4], 6, [ $c[0], $c[1], $c[5], $c[2], $c[3], $c[4] ] ];
 
-		$argLists[] = array( $c, $c[5], 0, array( $c[5], $c[0], $c[1], $c[2], $c[3], $c[4] ) );
-		$argLists[] = array( $c, $c[5], 1, array( $c[0], $c[1], $c[5], $c[2], $c[3], $c[4] ) );
-		$argLists[] = array( $c, $c[5], 2, array( $c[0], $c[1], $c[5], $c[2], $c[3], $c[4] ) );
-		$argLists[] = array( $c, $c[5], 3, $c );
-		$argLists[] = array( $c, $c[5], 4, $c );
-		$argLists[] = array( $c, $c[5], 5, $c );
-		$argLists[] = array( $c, $c[5], 6, $c );
+		$argLists[] = [ $c, $c[5], 0, [ $c[5], $c[0], $c[1], $c[2], $c[3], $c[4] ] ];
+		$argLists[] = [ $c, $c[5], 1, [ $c[0], $c[1], $c[5], $c[2], $c[3], $c[4] ] ];
+		$argLists[] = [ $c, $c[5], 2, [ $c[0], $c[1], $c[5], $c[2], $c[3], $c[4] ] ];
+		$argLists[] = [ $c, $c[5], 3, $c ];
+		$argLists[] = [ $c, $c[5], 4, $c ];
+		$argLists[] = [ $c, $c[5], 5, $c ];
+		$argLists[] = [ $c, $c[5], 6, $c ];
 
 		return $argLists;
 	}
 
 	/**
 	 * @dataProvider moveProvider
-	 * @param object[] $objectsSource
-	 * @param object $object
-	 * @param int $toIndex
-	 * @param object[] $objectsDestination
 	 */
 	public function testMoveObjectToIndex(
 		array $objectsSource,
-		$object,
+		PropertyIdProvider $object,
 		$toIndex,
 		array $objectsDestination
 	) {
@@ -317,7 +328,7 @@ class ByPropertyIdArrayTest extends \PHPUnit_Framework_TestCase {
 
 		// Not using $indexedArray->toFlatArray() here to test whether native array has been
 		// exchanged:
-		$reindexedArray = array();
+		$reindexedArray = [];
 		foreach ( $indexedArray as $o ) {
 			$reindexedArray[] = $o;
 		}
@@ -348,44 +359,40 @@ class ByPropertyIdArrayTest extends \PHPUnit_Framework_TestCase {
 	public function addProvider() {
 		$c = $this->statementsProvider();
 
-		$argLists = array();
+		$argLists = [];
 
-		$argLists[] = array( array(), $c[0], null, array( $c[0] ) );
-		$argLists[] = array( array(), $c[0], 1, array( $c[0] ) );
-		$argLists[] = array( array( $c[0] ), $c[2], 0, array( $c[2], $c[0] ) );
-		$argLists[] = array( array( $c[2], $c[1] ), $c[0], 0, array( $c[0], $c[1], $c[2] ) );
-		$argLists[] = array(
-			array( $c[0], $c[1], $c[3] ),
+		$argLists[] = [ [], $c[0], null, [ $c[0] ] ];
+		$argLists[] = [ [], $c[0], 1, [ $c[0] ] ];
+		$argLists[] = [ [ $c[0] ], $c[2], 0, [ $c[2], $c[0] ] ];
+		$argLists[] = [ [ $c[2], $c[1] ], $c[0], 0, [ $c[0], $c[1], $c[2] ] ];
+		$argLists[] = [
+			[ $c[0], $c[1], $c[3] ],
 			$c[5],
 			1,
-			array( $c[0], $c[1], $c[5], $c[3] )
-		);
-		$argLists[] = array(
-			array( $c[0], $c[1], $c[5], $c[3] ),
+			[ $c[0], $c[1], $c[5], $c[3] ]
+		];
+		$argLists[] = [
+			[ $c[0], $c[1], $c[5], $c[3] ],
 			$c[2],
 			2,
-			array( $c[0], $c[1], $c[2], $c[3], $c[5] )
-		);
-		$argLists[] = array(
-			array( $c[0], $c[1], $c[2], $c[3], $c[5] ),
+			[ $c[0], $c[1], $c[2], $c[3], $c[5] ]
+		];
+		$argLists[] = [
+			[ $c[0], $c[1], $c[2], $c[3], $c[5] ],
 			$c[4],
 			null,
-			array( $c[0], $c[1], $c[2], $c[3], $c[4], $c[5] )
-		);
+			[ $c[0], $c[1], $c[2], $c[3], $c[4], $c[5] ]
+		];
 
 		return $argLists;
 	}
 
 	/**
 	 * @dataProvider addProvider
-	 * @param object[] $objectsSource
-	 * @param object $object
-	 * @param int|null $index
-	 * @param object[] $objectsDestination
 	 */
 	public function testAddObjectAtIndex(
 		array $objectsSource,
-		$object,
+		PropertyIdProvider $object,
 		$index,
 		array $objectsDestination
 	) {

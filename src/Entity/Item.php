@@ -4,13 +4,17 @@ namespace Wikibase\DataModel\Entity;
 
 use InvalidArgumentException;
 use OutOfBoundsException;
-use Wikibase\DataModel\Claim\Claims;
 use Wikibase\DataModel\SiteLink;
 use Wikibase\DataModel\SiteLinkList;
-use Wikibase\DataModel\Statement\Statement;
 use Wikibase\DataModel\Statement\StatementList;
 use Wikibase\DataModel\Statement\StatementListHolder;
+use Wikibase\DataModel\Term\AliasesProvider;
+use Wikibase\DataModel\Term\AliasGroupList;
+use Wikibase\DataModel\Term\DescriptionsProvider;
 use Wikibase\DataModel\Term\Fingerprint;
+use Wikibase\DataModel\Term\FingerprintProvider;
+use Wikibase\DataModel\Term\LabelsProvider;
+use Wikibase\DataModel\Term\TermList;
 
 /**
  * Represents a single Wikibase item.
@@ -18,10 +22,12 @@ use Wikibase\DataModel\Term\Fingerprint;
  *
  * @since 0.1
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
+ * @author Bene* < benestar.wikimedia@gmail.com >
  */
-class Item extends Entity implements StatementListHolder {
+class Item implements EntityDocument, FingerprintProvider, StatementListHolder,
+	LabelsProvider, DescriptionsProvider, AliasesProvider {
 
 	const ENTITY_TYPE = 'item';
 
@@ -112,6 +118,39 @@ class Item extends Entity implements StatementListHolder {
 	 */
 	public function setFingerprint( Fingerprint $fingerprint ) {
 		$this->fingerprint = $fingerprint;
+	}
+
+	/**
+	 * @see LabelsProvider::getLabels
+	 *
+	 * @since 6.0
+	 *
+	 * @return TermList
+	 */
+	public function getLabels() {
+		return $this->fingerprint->getLabels();
+	}
+
+	/**
+	 * @see DescriptionsProvider::getDescriptions
+	 *
+	 * @since 6.0
+	 *
+	 * @return TermList
+	 */
+	public function getDescriptions() {
+		return $this->fingerprint->getDescriptions();
+	}
+
+	/**
+	 * @see AliasesProvider::getAliasGroups
+	 *
+	 * @since 6.0
+	 *
+	 * @return AliasGroupList
+	 */
+	public function getAliasGroups() {
+		return $this->fingerprint->getAliasGroups();
 	}
 
 	/**
@@ -240,7 +279,7 @@ class Item extends Entity implements StatementListHolder {
 	/**
 	 * @deprecated since 2.5, use new Item() instead.
 	 *
-	 * @return Item
+	 * @return self
 	 */
 	public static function newEmpty() {
 		return new self();
@@ -272,18 +311,6 @@ class Item extends Entity implements StatementListHolder {
 	}
 
 	/**
-	 * Removes all content from the Item.
-	 * The id is not part of the content.
-	 *
-	 * @since 0.1
-	 */
-	public function clear() {
-		$this->fingerprint = new Fingerprint();
-		$this->siteLinks = new SiteLinkList();
-		$this->statements = new StatementList();
-	}
-
-	/**
 	 * @since 1.0
 	 *
 	 * @return StatementList
@@ -302,30 +329,7 @@ class Item extends Entity implements StatementListHolder {
 	}
 
 	/**
-	 * @deprecated since 1.0, use getStatements()->toArray() instead.
-	 *
-	 * @return Statement[]
-	 */
-	public function getClaims() {
-		return $this->statements->toArray();
-	}
-
-	/**
-	 * @deprecated since 1.0, use setStatements instead
-	 *
-	 * @param Claims $claims
-	 */
-	public function setClaims( Claims $claims ) {
-		$this->statements = new StatementList( iterator_to_array( $claims ) );
-	}
-
-	/**
-	 * @see Comparable::equals
-	 *
-	 * Two items are considered equal if they are of the same
-	 * type and have the same value. The value does not include
-	 * the id, so entities with the same value but different id
-	 * are considered equal.
+	 * @see EntityDocument::equals
 	 *
 	 * @since 0.1
 	 *
@@ -342,6 +346,29 @@ class Item extends Entity implements StatementListHolder {
 			&& $this->fingerprint->equals( $target->fingerprint )
 			&& $this->siteLinks->equals( $target->siteLinks )
 			&& $this->statements->equals( $target->statements );
+	}
+
+	/**
+	 * @see EntityDocument::copy
+	 *
+	 * @since 0.1
+	 *
+	 * @return self
+	 */
+	public function copy() {
+		return clone $this;
+	}
+
+	/**
+	 * @see http://php.net/manual/en/language.oop5.cloning.php
+	 *
+	 * @since 5.1
+	 */
+	public function __clone() {
+		$this->fingerprint = clone $this->fingerprint;
+		// SiteLinkList is mutable, but SiteLink is not. No deeper cloning necessary.
+		$this->siteLinks = clone $this->siteLinks;
+		$this->statements = clone $this->statements;
 	}
 
 }

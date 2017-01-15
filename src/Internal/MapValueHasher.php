@@ -11,7 +11,7 @@ use Traversable;
  *
  * @since 0.1
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class MapValueHasher {
@@ -37,7 +37,7 @@ class MapValueHasher {
 			throw new InvalidArgumentException( '$map must be an array or an instance of Traversable' );
 		}
 
-		$hashes = array();
+		$hashes = [];
 
 		/**
 		 * @var Hashable $hashable

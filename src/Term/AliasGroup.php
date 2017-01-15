@@ -13,7 +13,7 @@ use InvalidArgumentException;
  *
  * @since 0.7.3
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class AliasGroup implements Comparable, Countable {
@@ -35,7 +35,7 @@ class AliasGroup implements Comparable, Countable {
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct( $languageCode, array $aliases = array() ) {
+	public function __construct( $languageCode, array $aliases = [] ) {
 		if ( !is_string( $languageCode ) || $languageCode === '' ) {
 			throw new InvalidArgumentException( '$languageCode must be a non-empty string' );
 		}

@@ -7,12 +7,14 @@ use InvalidArgumentException;
 /**
  * @since 0.5
  *
- * @licence GNU GPL v2+
- * @author Jeroen De Dauw < jeroendedauw@gmail.com >
+ * @license GPL-2.0+
  */
-class ItemId extends EntityId {
+class ItemId extends EntityId implements Int32EntityId {
 
-	const PATTERN = '/^Q[1-9]\d*$/i';
+	/**
+	 * @since 0.5
+	 */
+	const PATTERN = '/^Q[1-9]\d{0,9}\z/i';
 
 	/**
 	 * @param string $idSerialization
@@ -20,25 +22,39 @@ class ItemId extends EntityId {
 	 * @throws InvalidArgumentException
 	 */
 	public function __construct( $idSerialization ) {
-		$this->assertValidIdFormat( $idSerialization );
-		$this->serialization = strtoupper( $idSerialization );
+		$serializationParts = self::splitSerialization( $idSerialization );
+		$localId = strtoupper( $serializationParts[2] );
+		$this->assertValidIdFormat( $localId );
+		parent::__construct( self::joinSerialization(
+			[ $serializationParts[0], $serializationParts[1], $localId ] )
+		);
 	}
 
 	private function assertValidIdFormat( $idSerialization ) {
 		if ( !is_string( $idSerialization ) ) {
-			throw new InvalidArgumentException( '$idSerialization must be a string; got ' . gettype( $idSerialization ) );
+			throw new InvalidArgumentException( '$idSerialization must be a string' );
 		}
 
 		if ( !preg_match( self::PATTERN, $idSerialization ) ) {
 			throw new InvalidArgumentException( '$idSerialization must match ' . self::PATTERN );
 		}
+
+		if ( strlen( $idSerialization ) > 10
+			&& substr( $idSerialization, 1 ) > Int32EntityId::MAX
+		) {
+			throw new InvalidArgumentException( '$idSerialization can not exceed '
+				. Int32EntityId::MAX );
+		}
 	}
 
 	/**
-	 * @return int
+	 * @see Int32EntityId::getNumericId
+	 *
+	 * @return int Guaranteed to be a distinct integer in the range [1..2147483647].
 	 */
 	public function getNumericId() {
-		return (int)substr( $this->serialization, 1 );
+		$serializationParts = self::splitSerialization( $this->serialization );
+		return (int)substr( $serializationParts[2], 1 );
 	}
 
 	/**
@@ -54,16 +70,16 @@ class ItemId extends EntityId {
 	 * @return string
 	 */
 	public function serialize() {
-		return json_encode( array( 'item', $this->serialization ) );
+		return json_encode( [ 'item', $this->serialization ] );
 	}
 
 	/**
 	 * @see Serializable::unserialize
 	 *
-	 * @param string $value
+	 * @param string $serialized
 	 */
-	public function unserialize( $value ) {
-		list( , $this->serialization ) = json_decode( $value );
+	public function unserialize( $serialized ) {
+		list( , $this->serialization ) = json_decode( $serialized );
 	}
 
 	/**
@@ -75,7 +91,7 @@ class ItemId extends EntityId {
 	 *
 	 * @param int|float|string $numericId
 	 *
-	 * @return ItemId
+	 * @return self
 	 * @throws InvalidArgumentException
 	 */
 	public static function newFromNumber( $numericId ) {

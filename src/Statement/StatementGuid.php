@@ -13,7 +13,7 @@ use Wikibase\DataModel\Entity\EntityId;
  *
  * @since 3.0
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Addshore
  */
 class StatementGuid implements Comparable {
@@ -66,7 +66,7 @@ class StatementGuid implements Comparable {
 	}
 
 	/**
-	 * @param StatementGuid $target
+	 * @param mixed $target
 	 *
 	 * @return bool
 	 */

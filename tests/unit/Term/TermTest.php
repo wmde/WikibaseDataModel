@@ -9,7 +9,7 @@ use Wikibase\DataModel\Term\TermFallback;
 /**
  * @covers Wikibase\DataModel\Term\Term
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class TermTest extends \PHPUnit_Framework_TestCase {
@@ -29,11 +29,11 @@ class TermTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function invalidLanguageCodeProvider() {
-		return array(
-			array( null ),
-			array( 21 ),
-			array( '' ),
-		);
+		return [
+			[ null ],
+			[ 21 ],
+			[ '' ],
+		];
 	}
 
 	/**
@@ -45,12 +45,12 @@ class TermTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function nonStringProvider() {
-		return array(
-			array( null ),
-			array( array() ),
-			array( 42 ),
-			array( true ),
-		);
+		return [
+			[ null ],
+			[ [] ],
+			[ 42 ],
+			[ true ],
+		];
 	}
 
 	public function testEquality() {

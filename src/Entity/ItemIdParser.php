@@ -11,7 +11,7 @@ use InvalidArgumentException;
  *
  * @since 4.4
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Thiemo Mättig
  */
 class ItemIdParser implements EntityIdParser {
@@ -26,7 +26,7 @@ class ItemIdParser implements EntityIdParser {
 		try {
 			return new ItemId( $idSerialization );
 		} catch ( InvalidArgumentException $ex ) {
-			throw new EntityIdParsingException( $ex->getMessage() );
+			throw new EntityIdParsingException( $ex->getMessage(), 0, $ex );
 		}
 	}
 

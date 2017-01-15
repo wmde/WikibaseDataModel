@@ -2,9 +2,10 @@
 
 namespace Wikibase\DataModel\Tests\HashArray;
 
+use Hashable;
 use Wikibase\DataModel\Fixtures\HashArrayElement;
-use Wikibase\DataModel\Fixtures\MutableHashable;
 use Wikibase\DataModel\HashArray;
+use Wikibase\DataModel\Snak\PropertyNoValueSnak;
 
 /**
  * @covers Wikibase\DataModel\HashArray
@@ -13,16 +14,16 @@ use Wikibase\DataModel\HashArray;
  * @group WikibaseDataModel
  * @group HashArray
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class HashArrayWithoutDuplicatesTest extends HashArrayTest {
 
 	public function constructorProvider() {
-		$argLists = array();
+		$argLists = [];
 
-		$argLists[] = array( HashArrayElement::getInstances() );
-		$argLists[] = array( array_merge( HashArrayElement::getInstances(), HashArrayElement::getInstances() ) );
+		$argLists[] = [ HashArrayElement::getInstances() ];
+		$argLists[] = [ array_merge( HashArrayElement::getInstances(), HashArrayElement::getInstances() ) ];
 
 		return $argLists;
 	}
@@ -34,7 +35,7 @@ class HashArrayWithoutDuplicatesTest extends HashArrayTest {
 	public function elementInstancesProvider() {
 		return $this->arrayWrap( array_merge(
 			$this->arrayWrap( HashArrayElement::getInstances() ),
-			array( HashArrayElement::getInstances() )
+			[ HashArrayElement::getInstances() ]
 		) );
 	}
 
@@ -81,15 +82,51 @@ class HashArrayWithoutDuplicatesTest extends HashArrayTest {
 	 * @dataProvider instanceProvider
 	 * @param HashArray $array
 	 */
-	public function testRemoveDuplicates( HashArray $array ) {
-		$count = count( $array );
-		$array->removeDuplicates();
+	public function testHasElement( HashArray $array ) {
+		/**
+		 * @var Hashable $hashable
+		 */
+		foreach ( iterator_to_array( $array ) as $hashable ) {
+			$this->assertTrue( $array->hasElement( $hashable ) );
+			$this->assertTrue( $array->hasElementHash( $hashable->getHash() ) );
+			$array->removeElement( $hashable );
+			$this->assertFalse( $array->hasElement( $hashable ) );
+			$this->assertFalse( $array->hasElementHash( $hashable->getHash() ) );
+		}
 
-		$this->assertCount(
-			$count,
-			$array,
-			'Count should be the same after removeDuplicates since there can be none'
-		);
+		$this->assertTrue( true );
+	}
+
+	/**
+	 * @dataProvider instanceProvider
+	 * @param HashArray $array
+	 */
+	public function testRemoveElement( HashArray $array ) {
+		$elementCount = $array->count();
+
+		/**
+		 * @var Hashable $element
+		 */
+		foreach ( iterator_to_array( $array ) as $element ) {
+			$this->assertTrue( $array->hasElement( $element ) );
+
+			if ( $elementCount % 2 === 0 ) {
+				$array->removeElement( $element );
+			}
+			else {
+				$array->removeByElementHash( $element->getHash() );
+			}
+
+			$this->assertFalse( $array->hasElement( $element ) );
+			$this->assertEquals( --$elementCount, $array->count() );
+		}
+
+		$element = new PropertyNoValueSnak( 42 );
+
+		$array->removeElement( $element );
+		$array->removeByElementHash( $element->getHash() );
+
+		$this->assertTrue( true );
 	}
 
 	/**
@@ -112,26 +149,6 @@ class HashArrayWithoutDuplicatesTest extends HashArrayTest {
 		} else {
 			$this->assertNotSame( $hash, $array->getHash() );
 		}
-	}
-
-	/**
-	 * @dataProvider instanceProvider
-	 * @param HashArray $array
-	 */
-	public function testIndicesAreUpToDate( HashArray $array ) {
-		$this->assertInternalType( 'boolean', $array->indicesAreUpToDate() );
-
-		$mutable = new MutableHashable();
-
-		$array->addElement( $mutable );
-
-		$mutable->text = '~[,,_,,]:3';
-
-		$this->assertFalse( $array->indicesAreUpToDate() );
-
-		$array->rebuildIndices();
-
-		$this->assertTrue( $array->indicesAreUpToDate() );
 	}
 
 }

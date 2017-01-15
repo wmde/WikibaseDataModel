@@ -2,28 +2,35 @@
 
 namespace Wikibase\DataModel;
 
-use Hashable;
+use ArrayIterator;
+use Comparable;
+use Countable;
 use InvalidArgumentException;
+use IteratorAggregate;
+use Serializable;
 use Traversable;
+use Wikibase\DataModel\Internal\MapValueHasher;
 use Wikibase\DataModel\Snak\Snak;
 
 /**
  * List of Reference objects.
  *
- * Note that this implementation is based on SplObjectStorage and
- * is not enforcing the type of objects set via it's native methods.
- * Therefore one can add non-Reference-implementing objects when
- * not sticking to the methods of the References interface.
- *
  * @since 0.1
  * Does not implement References anymore since 2.0
+ * Does not extend SplObjectStorage since 5.0
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author H. Snater < mediawiki@snater.com >
  * @author Thiemo Mättig
+ * @author Bene* < benestar.wikimedia@gmail.com >
  */
-class ReferenceList extends HashableObjectStorage {
+class ReferenceList implements Comparable, Countable, IteratorAggregate, Serializable {
+
+	/**
+	 * @var Reference[] Ordered list or references, indexed by SPL object hash.
+	 */
+	private $references = [];
 
 	/**
 	 * @param Reference[]|Traversable|Reference $references
@@ -31,7 +38,7 @@ class ReferenceList extends HashableObjectStorage {
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct( $references = array() /*...*/ ) {
+	public function __construct( $references = [] /*...*/ ) {
 		if ( $references instanceof Reference ) {
 			$references = func_get_args();
 		}
@@ -51,36 +58,29 @@ class ReferenceList extends HashableObjectStorage {
 
 	/**
 	 * Adds the provided reference to the list.
+	 * Empty references are ignored.
 	 *
 	 * @since 0.1
 	 *
 	 * @param Reference $reference
-	 * @param int|null $index
+	 * @param int|null $index New position of the added reference, or null to append.
 	 *
 	 * @throws InvalidArgumentException
 	 */
 	public function addReference( Reference $reference, $index = null ) {
-		if ( !is_int( $index ) && $index !== null ) {
-			throw new InvalidArgumentException( '$index must be an integer or null' );
+		if ( $index !== null && ( !is_int( $index ) || $index < 0 ) ) {
+			throw new InvalidArgumentException( '$index must be a non-negative integer or null' );
 		}
 
-		if ( $index === null || $index >= count( $this ) ) {
+		if ( $reference->isEmpty() ) {
+			return;
+		}
+
+		if ( $index === null || $index >= count( $this->references ) ) {
 			// Append object to the end of the reference list.
-			$this->attach( $reference );
+			$this->references[spl_object_hash( $reference )] = $reference;
 		} else {
 			$this->insertReferenceAtIndex( $reference, $index );
-		}
-	}
-
-	/**
-	 * @see SplObjectStorage::attach
-	 *
-	 * @param Reference $reference
-	 * @param mixed $data Unused in the ReferenceList class.
-	 */
-	public function attach( $reference, $data = null ) {
-		if ( !$reference->isEmpty() ) {
-			parent::attach( $reference, $data );
 		}
 	}
 
@@ -92,7 +92,7 @@ class ReferenceList extends HashableObjectStorage {
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function addNewReference( $snaks = array() /*...*/ ) {
+	public function addNewReference( $snaks = [] /*...*/ ) {
 		if ( $snaks instanceof Snak ) {
 			$snaks = func_get_args();
 		}
@@ -105,26 +105,15 @@ class ReferenceList extends HashableObjectStorage {
 	 * @param int $index
 	 */
 	private function insertReferenceAtIndex( Reference $reference, $index ) {
-		$referencesToShift = array();
-		$i = 0;
-
-		// Determine the references that need to be shifted and detach them:
-		foreach ( $this as $object ) {
-			if ( $i++ >= $index ) {
-				$referencesToShift[] = $object;
-			}
+		if ( !is_int( $index ) ) {
+			throw new InvalidArgumentException( '$index must be an integer' );
 		}
 
-		foreach ( $referencesToShift as $object ) {
-			$this->detach( $object );
-		}
-
-		// Attach the new reference and reattach the previously detached references:
-		$this->attach( $reference );
-
-		foreach ( $referencesToShift as $object ) {
-			$this->attach( $object );
-		}
+		$this->references = array_merge(
+			array_slice( $this->references, 0, $index ),
+			[ spl_object_hash( $reference ) => $reference ],
+			array_slice( $this->references, $index )
+		);
 	}
 
 	/**
@@ -134,29 +123,29 @@ class ReferenceList extends HashableObjectStorage {
 	 *
 	 * @param Reference $reference
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function hasReference( Reference $reference ) {
-		return $this->contains( $reference )
-			|| $this->hasReferenceHash( $reference->getHash() );
+		return $this->hasReferenceHash( $reference->getHash() );
 	}
 
 	/**
-	 * Returns the index of a reference or false if the reference could not be found.
+	 * Returns the index of the Reference object or false if the Reference could not be found.
 	 *
 	 * @since 0.5
 	 *
 	 * @param Reference $reference
 	 *
-	 * @return int|boolean
+	 * @return int|bool
 	 */
 	public function indexOf( Reference $reference ) {
 		$index = 0;
 
-		foreach ( $this as $object ) {
-			if ( $object === $reference ) {
+		foreach ( $this->references as $ref ) {
+			if ( $ref === $reference ) {
 				return $index;
 			}
+
 			$index++;
 		}
 
@@ -181,14 +170,15 @@ class ReferenceList extends HashableObjectStorage {
 	 *
 	 * @param string $referenceHash
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function hasReferenceHash( $referenceHash ) {
 		return $this->getReference( $referenceHash ) !== null;
 	}
 
 	/**
-	 * Removes the reference with the provided hash if it exists in the list.
+	 * Looks for the first Reference object in this list with the provided hash.
+	 * Removes all occurences of that object.
 	 *
 	 * @since 0.3
 	 *
@@ -197,13 +187,20 @@ class ReferenceList extends HashableObjectStorage {
 	public function removeReferenceHash( $referenceHash ) {
 		$reference = $this->getReference( $referenceHash );
 
-		if ( $reference !== null ) {
-			$this->detach( $reference );
+		if ( $reference === null ) {
+			return;
+		}
+
+		foreach ( $this->references as $splObjectHash => $ref ) {
+			if ( $ref === $reference ) {
+				unset( $this->references[$splObjectHash] );
+			}
 		}
 	}
 
 	/**
-	 * Returns the reference with the provided hash, or null if there is no such reference in the list.
+	 * Returns the first Reference object with the provided hash, or
+	 * null if there is no such reference in the list.
 	 *
 	 * @since 0.3
 	 *
@@ -212,12 +209,9 @@ class ReferenceList extends HashableObjectStorage {
 	 * @return Reference|null
 	 */
 	public function getReference( $referenceHash ) {
-		/**
-		 * @var Hashable $hashable
-		 */
-		foreach ( $this as $hashable ) {
-			if ( $hashable->getHash() === $referenceHash ) {
-				return $hashable;
+		foreach ( $this->references as $reference ) {
+			if ( $reference->getHash() === $referenceHash ) {
+				return $reference;
 			}
 		}
 
@@ -232,7 +226,7 @@ class ReferenceList extends HashableObjectStorage {
 	 * @return string
 	 */
 	public function serialize() {
-		return serialize( iterator_to_array( $this ) );
+		return serialize( array_values( $this->references ) );
 	}
 
 	/**
@@ -240,10 +234,10 @@ class ReferenceList extends HashableObjectStorage {
 	 *
 	 * @since 2.1
 	 *
-	 * @param string $data
+	 * @param string $serialized
 	 */
-	public function unserialize( $data ) {
-		$this->__construct( unserialize( $data ) );
+	public function unserialize( $serialized ) {
+		$this->__construct( unserialize( $serialized ) );
 	}
 
 	/**
@@ -252,7 +246,59 @@ class ReferenceList extends HashableObjectStorage {
 	 * @return bool
 	 */
 	public function isEmpty() {
-		return $this->count() === 0;
+		return empty( $this->references );
+	}
+
+	/**
+	 * The hash is purely valuer based. Order of the elements in the array is not held into account.
+	 *
+	 * @since 0.3
+	 *
+	 * @return string
+	 */
+	public function getValueHash() {
+		$hasher = new MapValueHasher();
+		return $hasher->hash( $this->references );
+	}
+
+	/**
+	 * @see Comparable::equals
+	 *
+	 * The comparison is done purely value based, ignoring the order of the elements in the array.
+	 *
+	 * @since 0.3
+	 *
+	 * @param mixed $target
+	 *
+	 * @return bool
+	 */
+	public function equals( $target ) {
+		if ( $this === $target ) {
+			return true;
+		}
+
+		return $target instanceof self
+		       && $this->getValueHash() === $target->getValueHash();
+	}
+
+	/**
+	 * @see Countable::count
+	 *
+	 * @return int
+	 */
+	public function count() {
+		return count( $this->references );
+	}
+
+	/**
+	 * @see IteratorAggregate::getIterator
+	 *
+	 * @since 5.0
+	 *
+	 * @return Traversable
+	 */
+	public function getIterator() {
+		return new ArrayIterator( array_values( $this->references ) );
 	}
 
 }

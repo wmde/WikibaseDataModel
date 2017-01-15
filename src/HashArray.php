@@ -22,14 +22,9 @@ use Wikibase\DataModel\Internal\MapValueHasher;
  * made to them via their mutator methods will not cause an update of
  * their associated hash in this array.
  *
- * When acceptDuplicates is set to true, multiple elements with the same
- * hash can reside in the HashArray. Lookup by such a non-unique hash will
- * return only the first element and deletion will also delete only
- * the first such element.
- *
  * @since 0.1
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 abstract class HashArray extends ArrayObject implements Hashable, Comparable {
@@ -39,18 +34,9 @@ abstract class HashArray extends ArrayObject implements Hashable, Comparable {
 	 *
 	 * @since 0.1
 	 *
-	 * @var array [ element hash (string) => array [ element offset (string|int) ] | element offset (string|int) ]
+	 * @var array [ element hash (string) => element offset (string|int) ]
 	 */
-	protected $offsetHashes = array();
-
-	/**
-	 * If duplicate values (based on hash) should be accepted or not.
-	 *
-	 * @since 0.3
-	 *
-	 * @var bool
-	 */
-	protected $acceptDuplicates = false;
+	protected $offsetHashes = [];
 
 	/**
 	 * @var integer
@@ -76,7 +62,7 @@ abstract class HashArray extends ArrayObject implements Hashable, Comparable {
 	 * @throws InvalidArgumentException
 	 */
 	public function __construct( $input = null, $flags = 0, $iteratorClass = 'ArrayIterator' ) {
-		parent::__construct( array(), $flags, $iteratorClass );
+		parent::__construct( [], $flags, $iteratorClass );
 
 		if ( $input !== null ) {
 			if ( !is_array( $input ) && !( $input instanceof Traversable ) ) {
@@ -125,20 +111,11 @@ abstract class HashArray extends ArrayObject implements Hashable, Comparable {
 
 		$hasHash = $this->hasElementHash( $hash );
 
-		if ( !$this->acceptDuplicates && $hasHash ) {
+		if ( $hasHash ) {
 			return false;
 		}
 		else {
-			if ( $hasHash ) {
-				if ( !is_array( $this->offsetHashes[$hash] ) ) {
-					$this->offsetHashes[$hash] = array( $this->offsetHashes[$hash] );
-				}
-
-				$this->offsetHashes[$hash][] = $index;
-			}
-			else {
-				$this->offsetHashes[$hash] = $index;
-			}
+			$this->offsetHashes[$hash] = $index;
 
 			return true;
 		}
@@ -191,11 +168,6 @@ abstract class HashArray extends ArrayObject implements Hashable, Comparable {
 	public function removeByElementHash( $elementHash ) {
 		if ( $this->hasElementHash( $elementHash ) ) {
 			$offset = $this->offsetHashes[$elementHash];
-
-			if ( is_array( $offset ) ) {
-				$offset = reset( $offset );
-			}
-
 			$this->offsetUnset( $offset );
 		}
 	}
@@ -210,7 +182,7 @@ abstract class HashArray extends ArrayObject implements Hashable, Comparable {
 	 * @return bool Indicates if the element was added or not.
 	 */
 	public function addElement( Hashable $element ) {
-		$append = $this->acceptDuplicates || !$this->hasElementHash( $element->getHash() );
+		$append = !$this->hasElementHash( $element->getHash() );
 
 		if ( $append ) {
 			$this->append( $element );
@@ -231,11 +203,6 @@ abstract class HashArray extends ArrayObject implements Hashable, Comparable {
 	public function getByElementHash( $elementHash ) {
 		if ( $this->hasElementHash( $elementHash ) ) {
 			$offset = $this->offsetHashes[$elementHash];
-
-			if ( is_array( $offset ) ) {
-				$offset = reset( $offset );
-			}
-
 			return $this->offsetGet( $offset );
 		}
 		else {
@@ -259,19 +226,7 @@ abstract class HashArray extends ArrayObject implements Hashable, Comparable {
 
 			$hash = $element->getHash();
 
-			if ( array_key_exists( $hash, $this->offsetHashes )
-				&& is_array( $this->offsetHashes[$hash] )
-				&& count( $this->offsetHashes[$hash] ) > 1 ) {
-				$this->offsetHashes[$hash] = array_filter(
-					$this->offsetHashes[$hash],
-					function( $value ) use ( $index ) {
-						return $value !== $index;
-					}
-				);
-			}
-			else {
-				unset( $this->offsetHashes[$hash] );
-			}
+			unset( $this->offsetHashes[$hash] );
 
 			parent::offsetUnset( $index );
 		}
@@ -309,72 +264,6 @@ abstract class HashArray extends ArrayObject implements Hashable, Comparable {
 
 		return $target instanceof self
 			&& $this->getHash() === $target->getHash();
-	}
-
-	/**
-	 * Removes duplicates bases on hash value.
-	 *
-	 * @since 0.3
-	 */
-	public function removeDuplicates() {
-		$knownHashes = array();
-
-		/**
-		 * @var Hashable $hashable
-		 */
-		foreach ( iterator_to_array( $this ) as $hashable ) {
-			$hash = $hashable->getHash();
-
-			if ( in_array( $hash, $knownHashes ) ) {
-				$this->removeByElementHash( $hash );
-			}
-			else {
-				$knownHashes[] = $hash;
-			}
-		}
-	}
-
-	/**
-	 * Returns if the hash indices are up to date.
-	 * For an HashArray with immutable objects this should always be the case.
-	 * For one with mutable objects it's the responsibility of the mutating code
-	 * to keep the indices up to date (see class documentation) and thus possible
-	 * this has not been done since the last update, thus causing a state where
-	 * one or more indices are out of date.
-	 *
-	 * @since 0.4
-	 *
-	 * @return bool
-	 */
-	public function indicesAreUpToDate() {
-		foreach ( $this->offsetHashes as $hash => $offsets ) {
-			$offsets = (array)$offsets;
-
-			foreach ( $offsets as $offset ) {
-				/** @var Hashable[] $this */
-				if ( $this[$offset]->getHash() !== $hash ) {
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Removes and adds all elements, ensuring the indices are up to date.
-	 *
-	 * @since 0.4
-	 */
-	public function rebuildIndices() {
-		$hashables = iterator_to_array( $this );
-
-		$this->offsetHashes = array();
-
-		foreach ( $hashables as $offset => $hashable ) {
-			$this->offsetUnset( $offset );
-			$this->offsetSet( $offset, $hashable );
-		}
 	}
 
 	/**
@@ -445,19 +334,19 @@ abstract class HashArray extends ArrayObject implements Hashable, Comparable {
 	 * @return string
 	 */
 	public function serialize() {
-		return serialize( array(
+		return serialize( [
 			'data' => $this->getArrayCopy(),
 			'index' => $this->indexOffset,
-		) );
+		] );
 	}
 
 	/**
 	 * @see Serializable::unserialize
 	 *
-	 * @param string $serialization
+	 * @param string $serialized
 	 */
-	public function unserialize( $serialization ) {
-		$serializationData = unserialize( $serialization );
+	public function unserialize( $serialized ) {
+		$serializationData = unserialize( $serialized );
 
 		foreach ( $serializationData['data'] as $offset => $value ) {
 			// Just set the element, bypassing checks and offset resolving,

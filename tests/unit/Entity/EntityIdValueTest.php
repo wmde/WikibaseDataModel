@@ -2,6 +2,7 @@
 
 namespace Wikibase\DataModel\Tests\Entity;
 
+use PHPUnit_Framework_TestCase;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
@@ -11,12 +12,12 @@ use Wikibase\DataModel\Entity\PropertyId;
  *
  * @group Wikibase
  * @group WikibaseDataModel
- * @group EntityIdTest
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
+ * @author Thiemo Mättig
  */
-class EntityIdValueTest extends \PHPUnit_Framework_TestCase {
+class EntityIdValueTest extends PHPUnit_Framework_TestCase {
 
 	public function testCanConstruct() {
 		$entityId = new ItemId( 'Q123' );
@@ -34,21 +35,20 @@ class EntityIdValueTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function instanceProvider() {
-		$ids = array(
+		$ids = [
 			new ItemId( 'Q1' ),
 			new ItemId( 'Q42' ),
 			new ItemId( 'Q31337' ),
-			// Check for 32-bit integer overflow on 32-bit PHP systems.
-			new ItemId( 'Q2147483648' ),
+			new ItemId( 'Q2147483647' ),
 			new PropertyId( 'P1' ),
 			new PropertyId( 'P42' ),
 			new PropertyId( 'P31337' ),
-		);
+		];
 
-		$argLists = array();
+		$argLists = [];
 
 		foreach ( $ids as $id ) {
-			$argLists[] = array( new EntityIdValue( $id ) );
+			$argLists[] = [ new EntityIdValue( $id ) ];
 		}
 
 		return $argLists;
@@ -102,29 +102,38 @@ class EntityIdValueTest extends \PHPUnit_Framework_TestCase {
 	public function testGetArrayValueCompatibility() {
 		$id = new EntityIdValue( new ItemId( 'Q31337' ) );
 
-		$this->assertEquals(
+		$this->assertSame(
 			// This is the serialization format from when the EntityIdValue was still together with EntityId.
-			array(
+			[
 				'entity-type' => 'item',
-				'numeric-id' => 31337,
-			),
+				'numeric-id' => (float)31337,
+				'id' => 'Q31337',
+			],
 			$id->getArrayValue()
 		);
 	}
 
-	public function testNewFromArrayCompatibility() {
+	/**
+	 * @dataProvider validArrayProvider
+	 */
+	public function testNewFromArrayCompatibility( array $array ) {
 		$id = new EntityIdValue( new ItemId( 'Q31337' ) );
 
-		$this->assertEquals(
-			$id,
-			EntityIdValue::newFromArray(
-				// This is the serialization format from when the EntityIdValue was still together with EntityId.
-				array(
-					'entity-type' => 'item',
-					'numeric-id' => 31337,
-				)
-			)
-		);
+		$this->assertEquals( $id, EntityIdValue::newFromArray( $array ) );
+	}
+
+	public function validArrayProvider() {
+		return [
+			'Legacy format' => [ [
+				'entity-type' => 'item',
+				'numeric-id' => 31337,
+			] ],
+			'Maximum compatibility' => [ [
+				'entity-type' => 'item',
+				'numeric-id' => 31337,
+				'id' => 'Q31337',
+			] ],
+		];
 	}
 
 	/**
@@ -137,41 +146,45 @@ class EntityIdValueTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function invalidArrayProvider() {
-		return array(
-			array( null ),
+		return [
+			[ null ],
 
-			array( 'foo' ),
+			[ 'foo' ],
 
-			array( array() ),
+			[ [] ],
 
-			array( array(
+			'newFromArray can not deserialize' => [ [
+				'id' => 'Q42',
+			] ],
+
+			[ [
 				'entity-type' => 'item',
-			) ),
+			] ],
 
-			array( array(
+			[ [
 				'numeric-id' => 42,
-			) ),
+			] ],
 
-			array( array(
+			[ [
 				'entity-type' => 'foo',
 				'numeric-id' => 42,
-			) ),
+			] ],
 
-			array( array(
+			[ [
 				'entity-type' => 42,
 				'numeric-id' => 42,
-			) ),
+			] ],
 
-			array( array(
+			[ [
 				'entity-type' => 'item',
 				'numeric-id' => -1,
-			) ),
+			] ],
 
-			array( array(
+			[ [
 				'entity-type' => 'item',
 				'numeric-id' => 'foo',
-			) ),
-		);
+			] ],
+		];
 	}
 
 }

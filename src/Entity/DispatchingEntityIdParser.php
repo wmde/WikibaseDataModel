@@ -7,7 +7,7 @@ use InvalidArgumentException;
 /**
  * @since 4.2
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class DispatchingEntityIdParser implements EntityIdParser {
@@ -44,7 +44,14 @@ class DispatchingEntityIdParser implements EntityIdParser {
 		}
 
 		foreach ( $this->idBuilders as $idPattern => $idBuilder ) {
-			if ( preg_match( $idPattern, $idSerialization ) ) {
+			try {
+				list( , , $localId ) = EntityId::splitSerialization( $idSerialization );
+			} catch ( InvalidArgumentException $ex ) {
+				// EntityId::splitSerialization performs some sanity checks which
+				// might result in an exception. Should this happen, re-throw the exception message
+				throw new EntityIdParsingException( $ex->getMessage(), 0, $ex );
+			}
+			if ( preg_match( $idPattern, $localId ) ) {
 				return $this->buildId( $idBuilder, $idSerialization );
 			}
 		}
@@ -77,7 +84,7 @@ class DispatchingEntityIdParser implements EntityIdParser {
 			return call_user_func( $idBuilder, $idSerialization );
 		} catch ( InvalidArgumentException $ex ) {
 			// Should not happen, but if it does, re-throw the original message
-			throw new EntityIdParsingException( $ex->getMessage() );
+			throw new EntityIdParsingException( $ex->getMessage(), 0, $ex );
 		}
 	}
 

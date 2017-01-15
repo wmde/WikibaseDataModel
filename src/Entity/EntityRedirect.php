@@ -9,7 +9,7 @@ use InvalidArgumentException;
  *
  * @since 4.2
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Daniel Kinzler
  */
 class EntityRedirect {
@@ -56,7 +56,7 @@ class EntityRedirect {
 	}
 
 	/**
-	 * @param EntityRedirect $that
+	 * @param mixed $that
 	 *
 	 * @return bool
 	 */

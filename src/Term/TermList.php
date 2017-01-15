@@ -13,10 +13,11 @@ use Traversable;
 /**
  * Unordered list of Term objects.
  * If multiple terms with the same language code are provided, only the last one will be retained.
+ * Empty terms are skipped and treated as non-existing.
  *
  * @since 0.7.3
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class TermList implements Countable, IteratorAggregate, Comparable {
@@ -24,19 +25,19 @@ class TermList implements Countable, IteratorAggregate, Comparable {
 	/**
 	 * @var Term[]
 	 */
-	private $terms = array();
+	private $terms = [];
 
 	/**
 	 * @param Term[] $terms
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct( array $terms = array() ) {
+	public function __construct( array $terms = [] ) {
 		foreach ( $terms as $term ) {
 			if ( !( $term instanceof Term ) ) {
 				throw new InvalidArgumentException( 'Every element in $terms must be an instance of Term' );
 			}
 
-			$this->terms[$term->getLanguageCode()] = $term;
+			$this->setTerm( $term );
 		}
 	}
 
@@ -54,7 +55,7 @@ class TermList implements Countable, IteratorAggregate, Comparable {
 	 * @return string[]
 	 */
 	public function toTextArray() {
-		$array = array();
+		$array = [];
 
 		foreach ( $this->terms as $term ) {
 			$array[$term->getLanguageCode()] = $term->getText();
@@ -75,12 +76,9 @@ class TermList implements Countable, IteratorAggregate, Comparable {
 	 * @param string $languageCode
 	 *
 	 * @return Term
-	 * @throws InvalidArgumentException
 	 * @throws OutOfBoundsException
 	 */
 	public function getByLanguage( $languageCode ) {
-		$this->assertIsLanguageCode( $languageCode );
-
 		if ( !array_key_exists( $languageCode, $this->terms ) ) {
 			throw new OutOfBoundsException( 'Term with languageCode "' . $languageCode . '" not found' );
 		}
@@ -93,30 +91,40 @@ class TermList implements Countable, IteratorAggregate, Comparable {
 	 *
 	 * @param string[] $languageCodes
 	 *
-	 * @return TermList
+	 * @return self
 	 */
 	public function getWithLanguages( array $languageCodes ) {
 		return new self( array_intersect_key( $this->terms, array_flip( $languageCodes ) ) );
 	}
 
+	/**
+	 * @param string $languageCode
+	 */
 	public function removeByLanguage( $languageCode ) {
-		$this->assertIsLanguageCode( $languageCode );
 		unset( $this->terms[$languageCode] );
 	}
 
+	/**
+	 * @param string $languageCode
+	 *
+	 * @return bool
+	 */
 	public function hasTermForLanguage( $languageCode ) {
-		$this->assertIsLanguageCode( $languageCode );
 		return array_key_exists( $languageCode, $this->terms );
 	}
 
-	private function assertIsLanguageCode( $languageCode ) {
-		if ( !is_string( $languageCode ) || $languageCode === '' ) {
-			throw new InvalidArgumentException( '$languageCode must be a non-empty string' );
-		}
-	}
-
+	/**
+	 * Replaces non-empty or removes empty terms.
+	 *
+	 * @param Term $term
+	 */
 	public function setTerm( Term $term ) {
-		$this->terms[$term->getLanguageCode()] = $term;
+		if ( $term->getText() === '' ) {
+			unset( $this->terms[$term->getLanguageCode()] );
+		}
+		else {
+			$this->terms[$term->getLanguageCode()] = $term;
+		}
 	}
 
 	/**

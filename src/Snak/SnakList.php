@@ -13,7 +13,7 @@ use Wikibase\DataModel\Internal\MapValueHasher;
  *
  * @since 0.1
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author Addshore
  */
@@ -51,8 +51,6 @@ class SnakList extends HashArray {
 	}
 
 	/**
-	 * @see Snaks::hasSnakHash
-	 *
 	 * @since 0.1
 	 *
 	 * @param string $snakHash
@@ -64,8 +62,6 @@ class SnakList extends HashArray {
 	}
 
 	/**
-	 * @see Snaks::removeSnakHash
-	 *
 	 * @since 0.1
 	 *
 	 * @param string $snakHash
@@ -75,8 +71,6 @@ class SnakList extends HashArray {
 	}
 
 	/**
-	 * @see Snaks::addSnak
-	 *
 	 * @since 0.1
 	 *
 	 * @param Snak $snak
@@ -88,8 +82,6 @@ class SnakList extends HashArray {
 	}
 
 	/**
-	 * @see Snaks::hasSnak
-	 *
 	 * @since 0.1
 	 *
 	 * @param Snak $snak
@@ -101,8 +93,6 @@ class SnakList extends HashArray {
 	}
 
 	/**
-	 * @see Snaks::removeSnak
-	 *
 	 * @since 0.1
 	 *
 	 * @param Snak $snak
@@ -112,8 +102,6 @@ class SnakList extends HashArray {
 	}
 
 	/**
-	 * @see Snaks::getSnak
-	 *
 	 * @since 0.1
 	 *
 	 * @param string $snakHash
@@ -143,7 +131,7 @@ class SnakList extends HashArray {
 	 *
 	 * @since 0.5
 	 */
-	public function orderByProperty( $order = array() ) {
+	public function orderByProperty( array $order = [] ) {
 		$snaksByProperty = $this->getSnaksByProperty();
 		$orderedProperties = array_unique( array_merge( $order, array_keys( $snaksByProperty ) ) );
 
@@ -172,13 +160,13 @@ class SnakList extends HashArray {
 	 * @return array[]
 	 */
 	private function getSnaksByProperty() {
-		$snaksByProperty = array();
+		$snaksByProperty = [];
 
 		foreach ( $this as $snak ) {
 			/** @var Snak $snak */
 			$propertyId = $snak->getPropertyId()->getSerialization();
 			if ( !isset( $snaksByProperty[$propertyId] ) ) {
-				$snaksByProperty[$propertyId] = array();
+				$snaksByProperty[$propertyId] = [];
 			}
 			$snaksByProperty[$propertyId][] = $snak;
 		}

@@ -12,9 +12,8 @@ use Wikibase\DataModel\Entity\ItemId;
  *
  * @group Wikibase
  * @group WikibaseDataModel
- * @group ClaimGuidTest
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Addshore
  */
 class StatementGuidTest extends \PHPUnit_Framework_TestCase {
@@ -33,23 +32,23 @@ class StatementGuidTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function provideConstructionData() {
-		$argLists = array();
+		$argLists = [];
 
-		$argLists[] = array(
+		$argLists[] = [
 			new ItemId( 'q42' ),
 			'D8404CDA-25E4-4334-AF13-A3290BCD9C0N' ,
 			'Q42$D8404CDA-25E4-4334-AF13-A3290BCD9C0N'
-		);
-		$argLists[] = array(
+		];
+		$argLists[] = [
 			new ItemId( 'Q1234567' ),
 			'D4FDE516-F20C-4154-ADCE-7C5B609DFDFF',
 			'Q1234567$D4FDE516-F20C-4154-ADCE-7C5B609DFDFF'
-		);
-		$argLists[] = array(
+		];
+		$argLists[] = [
 			new ItemId( 'Q1' ),
 			'foo',
 			'Q1$foo'
-		);
+		];
 
 		return $argLists;
 	}
@@ -63,23 +62,23 @@ class StatementGuidTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function provideBadConstruction() {
-		$argLists = array();
+		$argLists = [];
 
-		$argLists[] = array( 'foobar', 'foobar' );
-		$argLists[] = array( 'q123', 'foo' );
-		$argLists[] = array( array(), 'foo' );
-		$argLists[] = array( new Exception(), 'foo' );
-		$argLists[] = array( 'bar', 12345 );
+		$argLists[] = [ 'foobar', 'foobar' ];
+		$argLists[] = [ 'q123', 'foo' ];
+		$argLists[] = [ [], 'foo' ];
+		$argLists[] = [ new Exception(), 'foo' ];
+		$argLists[] = [ 'bar', 12345 ];
 
 		return $argLists;
 	}
 
 	public function provideStatementGuids() {
 		$constructionDatas = $this->provideConstructionData();
-		$argLists = array();
+		$argLists = [];
 
 		foreach ( $constructionDatas as $constructionData ) {
-			$argLists[] = array( new StatementGuid( $constructionData[0], $constructionData[1] ) );
+			$argLists[] = [ new StatementGuid( $constructionData[0], $constructionData[1] ) ];
 		}
 
 		return $argLists;

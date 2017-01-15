@@ -3,11 +3,15 @@
 namespace Wikibase\DataModel\Entity;
 
 use InvalidArgumentException;
-use Wikibase\DataModel\Claim\Claims;
-use Wikibase\DataModel\Statement\Statement;
 use Wikibase\DataModel\Statement\StatementList;
 use Wikibase\DataModel\Statement\StatementListHolder;
+use Wikibase\DataModel\Term\AliasesProvider;
+use Wikibase\DataModel\Term\AliasGroupList;
+use Wikibase\DataModel\Term\DescriptionsProvider;
 use Wikibase\DataModel\Term\Fingerprint;
+use Wikibase\DataModel\Term\FingerprintProvider;
+use Wikibase\DataModel\Term\LabelsProvider;
+use Wikibase\DataModel\Term\TermList;
 
 /**
  * Represents a single Wikibase property.
@@ -15,10 +19,12 @@ use Wikibase\DataModel\Term\Fingerprint;
  *
  * @since 0.1
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
+ * @author Bene* < benestar.wikimedia@gmail.com >
  */
-class Property extends Entity implements StatementListHolder {
+class Property implements EntityDocument, FingerprintProvider, StatementListHolder,
+	LabelsProvider, DescriptionsProvider, AliasesProvider {
 
 	const ENTITY_TYPE = 'property';
 
@@ -113,6 +119,39 @@ class Property extends Entity implements StatementListHolder {
 	}
 
 	/**
+	 * @see LabelsProvider::getLabels
+	 *
+	 * @since 6.0
+	 *
+	 * @return TermList
+	 */
+	public function getLabels() {
+		return $this->fingerprint->getLabels();
+	}
+
+	/**
+	 * @see DescriptionsProvider::getDescriptions
+	 *
+	 * @since 6.0
+	 *
+	 * @return TermList
+	 */
+	public function getDescriptions() {
+		return $this->fingerprint->getDescriptions();
+	}
+
+	/**
+	 * @see AliasesProvider::getAliasGroups
+	 *
+	 * @since 6.0
+	 *
+	 * @return AliasGroupList
+	 */
+	public function getAliasGroups() {
+		return $this->fingerprint->getAliasGroups();
+	}
+
+	/**
 	 * @param string $languageCode
 	 * @param string $value
 	 *
@@ -185,19 +224,14 @@ class Property extends Entity implements StatementListHolder {
 	 * @param string $dataTypeId The data type of the property. Not to be confused with the data
 	 *  value type.
 	 *
-	 * @return Property
+	 * @return self
 	 */
 	public static function newFromType( $dataTypeId ) {
 		return new self( null, null, $dataTypeId );
 	}
 
 	/**
-	 * @see Comparable::equals
-	 *
-	 * Two properties are considered equal if they are of the same
-	 * type and have the same value. The value does not include
-	 * the id, so entities with the same value but different id
-	 * are considered equal.
+	 * @see EntityDocument::equals
 	 *
 	 * @since 0.1
 	 *
@@ -230,16 +264,6 @@ class Property extends Entity implements StatementListHolder {
 	}
 
 	/**
-	 * Removes all content from the Property.
-	 * The id and the type are not part of the content.
-	 *
-	 * @since 0.1
-	 */
-	public function clear() {
-		$this->fingerprint = new Fingerprint();
-	}
-
-	/**
 	 * @since 1.1
 	 *
 	 * @return StatementList
@@ -258,21 +282,24 @@ class Property extends Entity implements StatementListHolder {
 	}
 
 	/**
-	 * @deprecated since 1.0, use getStatements()->toArray() instead.
+	 * @see EntityDocument::copy
 	 *
-	 * @return Statement[]
+	 * @since 0.1
+	 *
+	 * @return self
 	 */
-	public function getClaims() {
-		return $this->statements->toArray();
+	public function copy() {
+		return clone $this;
 	}
 
 	/**
-	 * @deprecated since 1.0, use setStatements instead
+	 * @see http://php.net/manual/en/language.oop5.cloning.php
 	 *
-	 * @param Claims $claims
+	 * @since 5.1
 	 */
-	public function setClaims( Claims $claims ) {
-		$this->statements = new StatementList( iterator_to_array( $claims ) );
+	public function __clone() {
+		$this->fingerprint = clone $this->fingerprint;
+		$this->statements = clone $this->statements;
 	}
 
 }

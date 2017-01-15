@@ -24,7 +24,7 @@ use Wikibase\DataModel\Entity\PropertyId;
  *
  * @since 3.1
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Addshore
  */
 class DerivedPropertyValueSnak extends PropertyValueSnak {
@@ -32,7 +32,7 @@ class DerivedPropertyValueSnak extends PropertyValueSnak {
 	/**
 	 * @var DataValue[]
 	 */
-	private $derivedDataValues = array();
+	private $derivedDataValues = [];
 
 	/**
 	 * @param PropertyId|EntityId|int $propertyId

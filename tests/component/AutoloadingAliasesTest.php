@@ -3,7 +3,7 @@
 namespace Wikibase\DataModel\Tests;
 
 /**
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class AutoloadingAliasesTest extends \PHPUnit_Framework_TestCase {
@@ -11,7 +11,9 @@ class AutoloadingAliasesTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider oldNameProvider
 	 */
-	public function testAliasExists( $className ) {
+	public function testAliasExists( /* $className */ ) {
+		$this->markTestSkipped( 'No class aliases at the moment' );
+
 		$this->assertTrue(
 			class_exists( $className ) || interface_exists( $className ),
 			'Class name "' . $className . '" should still exist as alias'
@@ -19,17 +21,9 @@ class AutoloadingAliasesTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function oldNameProvider() {
-		return array_map(
-			function( $className ) {
-				return array( $className );
-			},
-			array(
-				// Full qualified aliases go here.
-				'Wikibase\DataModel\Claim\Claim',
-				'Wikibase\DataModel\Claim\ClaimGuid',
-				'Wikibase\DataModel\StatementListProvider'
-			)
-		);
+		return [
+			// Full qualified aliases go here.
+		];
 	}
 
 }

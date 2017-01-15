@@ -18,7 +18,7 @@ use Wikibase\DataModel\Snak\SnakList;
  *
  * @since 0.1
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author Bene* < benestar.wikimedia@gmail.com >
  */
@@ -182,7 +182,7 @@ class Statement implements Hashable, Comparable, PropertyIdProvider {
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function addNewReference( $snaks = array() /*...*/ ) {
+	public function addNewReference( $snaks = [] /*...*/ ) {
 		if ( $snaks instanceof Snak ) {
 			$snaks = func_get_args();
 		}
@@ -200,7 +200,7 @@ class Statement implements Hashable, Comparable, PropertyIdProvider {
 	 * @throws InvalidArgumentException
 	 */
 	public function setRank( $rank ) {
-		$ranks = array( self::RANK_DEPRECATED, self::RANK_NORMAL, self::RANK_PREFERRED );
+		$ranks = [ self::RANK_DEPRECATED, self::RANK_NORMAL, self::RANK_PREFERRED ];
 
 		if ( !in_array( $rank, $ranks, true ) ) {
 			throw new InvalidArgumentException( 'Invalid rank specified for statement: ' . var_export( $rank, true ) );
@@ -228,11 +228,11 @@ class Statement implements Hashable, Comparable, PropertyIdProvider {
 	public function getHash() {
 		return sha1( implode(
 			'|',
-			array(
+			[
 				sha1( $this->mainSnak->getHash() . $this->qualifiers->getHash() ),
 				$this->rank,
 				$this->references->getValueHash(),
-			)
+			]
 		) );
 	}
 
@@ -260,7 +260,7 @@ class Statement implements Hashable, Comparable, PropertyIdProvider {
 	 * @return Snak[]
 	 */
 	public function getAllSnaks() {
-		$snaks = array( $this->mainSnak );
+		$snaks = [ $this->mainSnak ];
 
 		foreach ( $this->qualifiers as $qualifier ) {
 			$snaks[] = $qualifier;
@@ -296,6 +296,16 @@ class Statement implements Hashable, Comparable, PropertyIdProvider {
 			&& $this->mainSnak->equals( $target->mainSnak )
 			&& $this->qualifiers->equals( $target->qualifiers )
 			&& $this->references->equals( $target->references );
+	}
+
+	/**
+	 * @see http://php.net/manual/en/language.oop5.cloning.php
+	 *
+	 * @since 5.1
+	 */
+	public function __clone() {
+		$this->qualifiers = clone $this->qualifiers;
+		$this->references = clone $this->references;
 	}
 
 }

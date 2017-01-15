@@ -15,7 +15,7 @@ use Traversable;
  *
  * @since 0.7.4
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  */
 class ItemIdSet implements IteratorAggregate, Countable, Comparable {
@@ -23,14 +23,14 @@ class ItemIdSet implements IteratorAggregate, Countable, Comparable {
 	/**
 	 * @var ItemId[]
 	 */
-	private $ids = array();
+	private $ids = [];
 
 	/**
 	 * @param ItemId[] $ids
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct( array $ids = array() ) {
+	public function __construct( array $ids = [] ) {
 		foreach ( $ids as $id ) {
 			if ( !( $id instanceof ItemId ) ) {
 				throw new InvalidArgumentException( 'Every element in $ids must be an instance of ItemId' );

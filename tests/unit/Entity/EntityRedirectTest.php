@@ -12,7 +12,7 @@ use Wikibase\DataModel\Entity\PropertyId;
  * @group Wikibase
  * @group WikibaseDataModel
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0+
  * @author Daniel Kinzler
  */
 class EntityRedirectTest extends \PHPUnit_Framework_TestCase {
@@ -46,20 +46,20 @@ class EntityRedirectTest extends \PHPUnit_Framework_TestCase {
 		$p345 = new PropertyId( 'P345' );
 		$p123_345 = new EntityRedirect( $p123, $p345 );
 
-		return array(
-			'same' => array( $q123_345, $q123_345, true ),
-			'equal' => array( $q123_345, new EntityRedirect( $q123, $q345 ), true ),
+		return [
+			'same' => [ $q123_345, $q123_345, true ],
+			'equal' => [ $q123_345, new EntityRedirect( $q123, $q345 ), true ],
 
-			'different base' => array( $q123_345, new EntityRedirect( $q567, $q345 ), false ),
-			'different target' => array( $q123_345, new EntityRedirect( $q123, $q567 ), false ),
+			'different base' => [ $q123_345, new EntityRedirect( $q567, $q345 ), false ],
+			'different target' => [ $q123_345, new EntityRedirect( $q123, $q567 ), false ],
 
-			'different entity type' => array( $q123_345, $p123_345, false ),
-			'different number' => array( $q123_345, new EntityRedirect( $q345, $q123 ), false ),
+			'different entity type' => [ $q123_345, $p123_345, false ],
+			'different number' => [ $q123_345, new EntityRedirect( $q345, $q123 ), false ],
 
-			'null' => array( $q123_345, null, false ),
-			'string' => array( $q123_345, 'foo', false ),
-			'id' => array( $q123_345, $q123, false ),
-		);
+			'null' => [ $q123_345, null, false ],
+			'string' => [ $q123_345, 'foo', false ],
+			'id' => [ $q123_345, $q123, false ],
+		];
 	}
 
 	/**

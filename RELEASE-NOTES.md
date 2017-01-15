@@ -1,5 +1,116 @@
 # Wikibase DataModel release notes
 
+## Version 7.0.0 (dev)
+
+* Removed `FingerprintHolder`
+* Removed class aliases deprecated since 3.0:
+	* `Wikibase\DataModel\Claim\Claim`
+	* `Wikibase\DataModel\Claim\ClaimGuid`
+	* `Wikibase\DataModel\StatementListProvider`
+* Removed `HashArray::rebuildIndices`
+* Removed `HashArray::indicesAreUpToDate`
+* Removed `HashArray::removeDuplicates`
+* Removed `$acceptDuplicates` feature from `HashArray`
+
+## Version 6.3.1 (2016-11-30)
+
+* `ItemId::getNumericId` and `PropertyId::getNumericId` no longer throw exceptions for foreign ids
+
+## Version 6.3.0 (2016-11-03)
+
+* Added `RepositoryNameAssert` class
+
+## Version 6.2.0 (2016-10-14)
+
+* Raised minimum PHP version to 5.5
+* Added basic support for foreign EntityIds
+	* Added `isForeign`, `getRepository` and `getLocalPart` to `EntityId`
+	* The constructor of `EntityId` was made public
+	* Added static `EntityId::splitSerialization` and `EntityId::joinSerialization`
+	* `getNumericId` throws an exception for foreign EntityIds
+	* Added documentation for foreign EntityIds
+
+## Version 6.1.0 (2016-07-15)
+
+* Added optional index parameter to `Statement::addStatement`.
+* Added `Int32EntityId` interface.
+    * `ItemId` and `PropertyId` now implement `Int32EntityId`.
+    * `ItemId` and `PropertyId` construction now fails for numbers larger than 2147483647.
+* Added an `id` element containing the full ID string to the `EntityIdValue::getArrayValue`
+  serialization.
+* Fixed `ByPropertyIdArray` iterating the properties of non-traversable objects.
+
+## Version 6.0.1 (2016-04-25)
+
+* Fixed `ItemId` and `PropertyId` not rejecting strings with a newline at the end.
+
+## Version 6.0.0 (2016-03-10)
+
+This release removes the long deprecated Entity base class in favor of much more narrow interfaces.
+
+#### Breaking changes
+
+* Removed `Entity` class (deprecated since 1.0)
+* `Item` and `Property` no longer extend `Entity`
+    * Removed `getLabel`, `getDescription`, `getAliases`, `getAllAliases`,
+      `setLabels`, `setDescriptions`, `addAliases`, `setAllAliases`,
+      `removeLabel`, `removeDescription` and `removeAliases` methods
+* `Item::getLabels` and `Property::getLabels` now return a `TermList`
+* `Item::getDescriptions` and `Property::getDescriptions` now return a `TermList`
+* Removed `clear` methods from `Item` and `Property`
+* `StatementListProvider`, `LabelsProvider`, `DescriptionsProvider`, `AliasesProvider` and
+  `FingerprintProvider` now give the guarantee to return objects by reference
+* `TermList` and `AliasGroupList` no longer throw an `InvalidArgumentException` for invalid language codes.
+    * `getByLanguage` throws an `OutOfBoundsException` instead.
+    * `removeByLanguage` does nothing for invalid values.
+    * `hasTermForLanguage` and `hasGroupForLanguage` return false instead.
+
+#### Additions
+
+* `Item` and `Property` now implement `LabelsProvider`, `DescriptionsProvider` and `AliasesProvider`
+* Added `Item::getAliasGroups` and `Property::getAliasGroups`
+
+## Version 5.1.0 (2016-03-08)
+
+This release significantly reduces the memory footprint when entities are cloned.
+
+* `Item::copy` and `Property::copy` do not clone immutable objects any more
+* Deprecated `FingerprintHolder` and `StatementListHolder`
+
+## Version 5.0.2 (2016-02-23)
+
+* Fixed regression in `ReferenceList::addReference` and the constructor possibly adding too many objects
+
+## Version 5.0.1 (2016-02-18)
+
+* Fixed regression in `ReferenceList::removeReferenceHash` possibly removing too many objects
+* `ReferenceList::unserialize` no longer calls the constructor
+
+## Version 5.0.0 (2016-02-15)
+
+This release removes the last remaining mentions of claims. Claims are still a concept in the mental
+data model, but not modelled in code any more.
+
+* Removed `Claims` class (deprecated since 1.0)
+* Removed `getClaims` and `setClaims` methods from `Entity`, `Item` and `Property` (deprecated since 1.0)
+* Removed `HashableObjectStorage` class (deprecated since 4.4)
+* `ReferenceList` no longer derives from `SplObjectStorage`
+    * Removed `addAll`, `attach`, `contains`, `detach`, `getHash`, `getInfo`, `removeAll`,
+      `removeAllExcept` and `setInfo` methods
+* `ReferenceList` no longer implements `ArrayAccess`
+    * Removed `offsetExists`, `offsetGet`, `offsetSet` and `offsetUnset` methods
+* `ReferenceList` no longer implements `Iterator`
+    * Removed `current`, `key`, `next`, `rewind` and `valid` methods
+* `ReferenceList` now implements `IteratorAggregate`
+    * Added `getIterator` method
+* Removed `ReferenceList::removeDuplicates`
+* `ReferenceList::addReference` now throws an `InvalidArgumentException` for negative indices
+* Added `EntityDocument::equals`, and `EntityDocument` now implements `Comparable`
+* Added `EntityDocument::copy`
+* Fixed `Property::clear` not clearing statements
+* `TermList` now skips and removes empty terms
+* Deprecated `ByPropertyIdArray`
+
 ## Version 4.4.0 (2016-01-20)
 
 * Added `ItemIdParser`
