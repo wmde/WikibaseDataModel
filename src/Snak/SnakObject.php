@@ -126,8 +126,6 @@ abstract class SnakObject implements Snak {
 			return PropertyId::newFromNumber( $unserialized );
 		} elseif ( is_string( $unserialized ) ) {
 			return new PropertyId( $unserialized );
-		} elseif ( $unserialized instanceof PropertyId ) {
-			return $unserialized;
 		} else {
 			throw new InvalidArgumentException( 'unexpected property ID serialization' );
 		}
