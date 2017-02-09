@@ -102,7 +102,7 @@ abstract class SnakObject implements Snak {
 	 * @return string
 	 */
 	public function serialize() {
-		return serialize( $this->propertyId->getSerialization() );
+		return $this->propertyId->getSerialization();
 	}
 
 	/**
@@ -113,19 +113,31 @@ abstract class SnakObject implements Snak {
 	 * @param string $serialized
 	 */
 	public function unserialize( $serialized ) {
-		$this->propertyId = self::newPropertyId( unserialize( $serialized ) );
+		$this->propertyId = self::newPropertyId( $serialized );
 	}
 
 	/**
-	 * @param mixed $unserialized
+	 * @param string $serialized
 	 *
 	 * @return PropertyId
 	 */
-	protected static function newPropertyId( $unserialized ) {
+	protected static function newPropertyId( $serialized ) {
+		if ( is_int( $serialized ) ) {
+			// numeric id, already unserialized
+			return PropertyId::newFromNumber( $serialized );
+		}
+
+		try {
+			// full ID, as a string, not serialized
+			return new PropertyId( $serialized );
+		} catch ( InvalidArgumentException $ex ) {
+			// noop
+		}
+
+		$unserialized = unserialize( $serialized );
 		if ( is_int( $unserialized ) ) {
+			// numeric id, not previously unserialized
 			return PropertyId::newFromNumber( $unserialized );
-		} elseif ( is_string( $unserialized ) ) {
-			return new PropertyId( $unserialized );
 		} else {
 			throw new InvalidArgumentException( 'unexpected property ID serialization' );
 		}

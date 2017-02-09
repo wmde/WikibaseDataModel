@@ -76,7 +76,7 @@ class PropertySomeValueSnakTest extends PHPUnit_Framework_TestCase {
 		$snak = new PropertySomeValueSnak( new PropertyId( 'P1' ) );
 		$hash = $snak->getHash();
 
-		$expected = sha1( 'C:45:"Wikibase\DataModel\Snak\PropertySomeValueSnak":9:{s:2:"P1";}' );
+		$expected = sha1( 'C:45:"Wikibase\DataModel\Snak\PropertySomeValueSnak":2:{P1}' );
 		$this->assertSame( $expected, $hash );
 	}
 
@@ -116,11 +116,11 @@ class PropertySomeValueSnakTest extends PHPUnit_Framework_TestCase {
 
 		return [
 			'string' => [
-				's:2:"P2";',
+				'P2',
 				new PropertySomeValueSnak( $p2 ),
 			],
 			'foreign' => [
-				's:6:"foo:P2";',
+				'foo:P2',
 				new PropertySomeValueSnak( $p2foo ),
 			],
 		];
@@ -144,8 +144,8 @@ class PropertySomeValueSnakTest extends PHPUnit_Framework_TestCase {
 
 		return [
 			'legacy' => [ new PropertySomeValueSnak( $p2 ), 'i:2;' ],
-			'current' => [ new PropertySomeValueSnak( $p2 ), 's:2:"P2";' ],
-			'foreign' => [ new PropertySomeValueSnak( $p2foo ), 's:6:"foo:P2";' ],
+			'current' => [ new PropertySomeValueSnak( $p2 ), 'P2' ],
+			'foreign' => [ new PropertySomeValueSnak( $p2foo ), 'foo:P2' ],
 		];
 	}
 

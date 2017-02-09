@@ -76,7 +76,7 @@ class PropertyNoValueSnakTest extends PHPUnit_Framework_TestCase {
 		$snak = new PropertyNoValueSnak( new PropertyId( 'P1' ) );
 		$hash = $snak->getHash();
 
-		$expected = sha1( 'C:43:"Wikibase\DataModel\Snak\PropertyNoValueSnak":9:{s:2:"P1";}' );
+		$expected = sha1( 'C:43:"Wikibase\DataModel\Snak\PropertyNoValueSnak":2:{P1}' );
 		$this->assertSame( $expected, $hash );
 	}
 
@@ -116,11 +116,11 @@ class PropertyNoValueSnakTest extends PHPUnit_Framework_TestCase {
 
 		return [
 			'string' => [
-				's:2:"P2";',
+				'P2',
 				new PropertyNoValueSnak( $p2 ),
 			],
 			'foreign' => [
-				's:6:"foo:P2";',
+				'foo:P2',
 				new PropertyNoValueSnak( $p2foo ),
 			],
 		];
@@ -144,8 +144,8 @@ class PropertyNoValueSnakTest extends PHPUnit_Framework_TestCase {
 
 		return [
 			'legacy' => [ new PropertyNoValueSnak( $p2 ), 'i:2;' ],
-			'current' => [ new PropertyNoValueSnak( $p2 ), 's:2:"P2";' ],
-			'foreign' => [ new PropertyNoValueSnak( $p2foo ), 's:6:"foo:P2";' ],
+			'current' => [ new PropertyNoValueSnak( $p2 ), 'P2' ],
+			'foreign' => [ new PropertyNoValueSnak( $p2foo ), 'foo:P2' ],
 		];
 	}
 
