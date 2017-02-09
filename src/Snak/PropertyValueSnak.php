@@ -48,7 +48,7 @@ class PropertyValueSnak extends SnakObject {
 	/**
 	 * @see Serializable::serialize
 	 *
-	 * @since 0.1
+	 * @since 7.0
 	 *
 	 * @return string
 	 */
@@ -64,8 +64,14 @@ class PropertyValueSnak extends SnakObject {
 	 * @param string $serialized
 	 */
 	public function unserialize( $serialized ) {
-		list( $propertyId, $dataValue ) = unserialize( $serialized );
-		$this->__construct( self::newPropertyId( $propertyId ), $dataValue );
+		list( $propertyId, $this->dataValue ) = unserialize( $serialized );
+
+		if ( is_string( $propertyId ) ) {
+			$this->propertyId = new PropertyId( $propertyId );
+		} else {
+			// Backwards compatibility with the previous serialization format
+			$this->propertyId = PropertyId::newFromNumber( $propertyId );
+		}
 	}
 
 	/**
