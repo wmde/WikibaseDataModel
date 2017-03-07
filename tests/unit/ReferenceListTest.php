@@ -75,7 +75,6 @@ class ReferenceListTest extends PHPUnit_Framework_TestCase {
 			[ 'string' ],
 			[ $id1 ],
 			[ new PropertyNoValueSnak( $id1 ) ],
-			[ new Reference() ],
 			[ new SnakList( [ new PropertyNoValueSnak( $id1 ) ] ) ],
 			[ [ new PropertyNoValueSnak( $id1 ) ] ],
 			[ [ new ReferenceList() ] ],

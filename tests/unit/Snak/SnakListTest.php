@@ -84,13 +84,12 @@ class SnakListTest extends HashArrayTest {
 		$id1 = new PropertyId( 'P1' );
 
 		return [
+			[ null ],
 			[ false ],
 			[ 1 ],
 			[ 0.1 ],
 			[ 'string' ],
 			[ $id1 ],
-			[ new PropertyNoValueSnak( $id1 ) ],
-			[ new PropertyValueSnak( $id1, new StringValue( 'a' ) ) ],
 			[ [ null ] ],
 			[ [ $id1 ] ],
 			[ [ new SnakList() ] ],

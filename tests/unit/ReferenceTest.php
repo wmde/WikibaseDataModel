@@ -262,8 +262,7 @@ class ReferenceTest extends \PHPUnit_Framework_TestCase {
 			[ 0.1 ],
 			[ 'string' ],
 			[ $id1 ],
-			[ new PropertyNoValueSnak( $id1 ) ],
-			[ new PropertyValueSnak( $id1, new StringValue( 'a' ) ) ],
+			[ [ new Reference() ] ],
 			[ [ new SnakList() ] ],
 			[ new Reference() ],
 		];

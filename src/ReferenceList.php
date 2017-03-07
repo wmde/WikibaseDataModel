@@ -33,11 +33,16 @@ class ReferenceList implements Comparable, Countable, IteratorAggregate, Seriali
 	private $references = [];
 
 	/**
-	 * @param Reference[]|Traversable $references
+	 * @param Reference[]|Traversable|Reference $references
+	 * @param Reference [$reference2,...]
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct( $references = [] ) {
+	public function __construct( $references = [] /*...*/ ) {
+		if ( $references instanceof Reference ) {
+			$references = func_get_args();
+		}
+
 		if ( !is_array( $references ) && !( $references instanceof Traversable ) ) {
 			throw new InvalidArgumentException( '$references must be an array or an instance of Traversable' );
 		}
