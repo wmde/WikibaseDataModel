@@ -116,21 +116,6 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 		return $argLists;
 	}
 
-	/**
-	 * @dataProvider simpleSiteLinksProvider
-	 */
-	public function testGetSiteLinks() {
-		$siteLinks = func_get_args();
-		$item = new Item();
-
-		foreach ( $siteLinks as $siteLink ) {
-			$item->getSiteLinkList()->addSiteLink( $siteLink );
-		}
-
-		$this->assertInternalType( 'array', $item->getSiteLinks() );
-		$this->assertEquals( $siteLinks, $item->getSiteLinks() );
-	}
-
 	public function simpleSiteLinksProvider() {
 		$argLists = [];
 
