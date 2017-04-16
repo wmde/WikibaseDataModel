@@ -322,6 +322,94 @@ class AliasGroupListTest extends PHPUnit_Framework_TestCase {
 		$list->setAliasesForLanguage( 'en', [ 'foo', null ] );
 	}
 
+	public function testGivenAliasGroupArgs_addAliasesForLanguageAddsAliasesToEmptyGroupList() {
+		$list = new AliasGroupList();
+
+		$list->addAliasesForLanguage( 'en', array( 'foo', 'bar' ) );
+
+		$this->assertEquals(
+			new AliasGroup( 'en', array( 'foo', 'bar' ) ),
+			$list->getByLanguage( 'en' )
+		);
+	}
+
+	public function testGivenEmptyAliasGroupArgs_addAliasesForLanguageAddsAliasesToNonEmptyGroupList() {
+		$list = new AliasGroupList();
+		$list->setAliasesForLanguage( 'en', array( 'foo', 'bar' ) );
+
+		$list->addAliasesForLanguage( 'en', array( 'baz' ) );
+
+		$this->assertEquals(
+			new AliasGroup( 'en', array( 'foo', 'bar', 'baz' ) ),
+			$list->getByLanguage( 'en' )
+		);
+	}
+
+	public function testGivenNonEmptyAliasGroupArgs_addAliasesForLanguageDoesNotAddDulicateAliases() {
+		$list = new AliasGroupList();
+		$list->setAliasesForLanguage( 'en', array( 'foo', 'bar' ) );
+
+		$list->addAliasesForLanguage( 'en', array( 'baz', 'foo', 'bar' ) );
+
+		$this->assertEquals(
+			new AliasGroup( 'en', array( 'foo', 'bar', 'baz' ) ),
+			$list->getByLanguage( 'en' )
+		);
+	}
+
+	public function testGivenInvalidLanguageCode_addAliasesForLanguageThrowsException() {
+		$list = new AliasGroupList();
+
+		$this->setExpectedException( 'InvalidArgumentException' );
+		$list->addAliasesForLanguage( null, array( 'foo', 'bar' ) );
+	}
+
+	public function testGivenInvalidAliases_addAliasesForLanguageThrowsException() {
+		$list = new AliasGroupList();
+
+		$this->setExpectedException( 'InvalidArgumentException' );
+		$list->addAliasesForLanguage( 'en', array( 'foo', null ) );
+	}
+
+	public function testGivenNonEmptyAliasGroupArgs_removeAliasesForLanguageRemovesAliases() {
+		$list = new AliasGroupList();
+		$list->setAliasesForLanguage( 'en', array( 'foo', 'bar', 'baz' ) );
+
+		$list->removeAliasesForLanguage( 'en', array( 'foo', 'bar' ) );
+
+		$this->assertEquals(
+			new AliasGroup( 'en', array( 'baz' ) ),
+			$list->getByLanguage( 'en' )
+		);
+	}
+
+	public function testGivenNonEmptyAliasGroupArgs_removeAliasesForLanguageIgnoresNotExistingAliases() {
+		$list = new AliasGroupList();
+		$list->setAliasesForLanguage( 'en', array( 'foo', 'bar' ) );
+
+		$list->removeAliasesForLanguage( 'en', array( 'bar', 'baz' ) );
+
+		$this->assertEquals(
+			new AliasGroup( 'en', array( 'foo' ) ),
+			$list->getByLanguage( 'en' )
+		);
+	}
+
+	public function testGivenNonEmptyAliasGroupArgs_removeAliasesForLanguageIgnoresNotExistingLanguage() {
+		$list = new AliasGroupList();
+
+		$list->removeAliasesForLanguage( 'en', array( 'foo', 'bar' ) );
+
+		$this->assertFalse( $list->hasGroupForLanguage( 'en' ) );
+	}
+
+	public function testGivenInvalidLanguageCode_removeAliasesForLanguageThrowsException() {
+		$list = new AliasGroupList();
+
+		$this->setExpectedException( 'InvalidArgumentException' );
+		$list->removeAliasesForLanguage( null, array( 'foo', 'bar' ) );
+	}
+
 	public function testToArray() {
 		$array = [
 			'en' => new AliasGroup( 'en', [ 'foo' ] ),

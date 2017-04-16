@@ -188,6 +188,39 @@ class AliasGroupList implements Countable, IteratorAggregate {
 	}
 
 	/**
+	 * @since 3.0
+	 *
+	 * @param string $languageCode
+	 * @param string[] $aliases
+	 */
+	public function addAliasesForLanguage( $languageCode, array $aliases ) {
+		if ( !$this->hasGroupForLanguage( $languageCode ) ) {
+			$this->setAliasesForLanguage( $languageCode, $aliases );
+		}
+		else {
+			$this->setAliasesForLanguage( $languageCode, array_merge(
+				$this->getByLanguage( $languageCode )->getAliases(),
+				$aliases
+			) );
+		}
+	}
+
+	/**
+	 * @since 3.0
+	 *
+	 * @param string $languageCode
+	 * @param string[] $aliases
+	 */
+	public function removeAliasesForLanguage( $languageCode, array $aliases ) {
+		if ( $this->hasGroupForLanguage( $languageCode ) ) {
+			$this->setAliasesForLanguage( $languageCode, array_diff(
+				$this->getByLanguage( $languageCode )->getAliases(),
+				$aliases
+			) );
+		}
+	}
+
+	/**
 	 * Returns an array with language codes as keys the aliases as array values.
 	 *
 	 * @since 2.5
