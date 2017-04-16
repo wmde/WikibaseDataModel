@@ -59,9 +59,11 @@ class Fingerprint implements Comparable, LabelsProvider, DescriptionsProvider, A
 	}
 
 	/**
+	 * Returns a TermList containing all the labels.
+	 *
 	 * @since 0.7.3
 	 *
-	 * @return TermList
+	 * @return TermList|Term[]
 	 */
 	public function getLabels() {
 		return $this->labels;
@@ -113,9 +115,11 @@ class Fingerprint implements Comparable, LabelsProvider, DescriptionsProvider, A
 	}
 
 	/**
+	 * Returns a TermList containing all the descriptions.
+	 *
 	 * @since 0.7.3
 	 *
-	 * @return TermList
+	 * @return TermList|Term[]
 	 */
 	public function getDescriptions() {
 		return $this->descriptions;
@@ -167,9 +171,11 @@ class Fingerprint implements Comparable, LabelsProvider, DescriptionsProvider, A
 	}
 
 	/**
+	 * Returns an AliasGroupList containing all the alias groups.
+	 *
 	 * @since 0.7.4
 	 *
-	 * @return AliasGroupList
+	 * @return AliasGroupList|AliasGroup[]
 	 */
 	public function getAliasGroups() {
 		return $this->aliasGroups;
