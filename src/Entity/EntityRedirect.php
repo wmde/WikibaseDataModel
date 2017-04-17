@@ -37,6 +37,10 @@ class EntityRedirect {
 			);
 		}
 
+		if ( $entityId->equals( $targetId ) ) {
+			throw new InvalidArgumentException( 'An entity can not redirect to itself' );
+		}
+
 		$this->entityId = $entityId;
 		$this->targetId = $targetId;
 	}
