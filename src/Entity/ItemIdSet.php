@@ -7,7 +7,6 @@ use Comparable;
 use Countable;
 use InvalidArgumentException;
 use IteratorAggregate;
-use Traversable;
 
 /**
  * Immutable set of ItemId objects. Unordered and unique.
@@ -52,7 +51,7 @@ class ItemIdSet implements IteratorAggregate, Countable, Comparable {
 	/**
 	 * @see IteratorAggregate::getIterator
 	 *
-	 * @return Traversable|ItemId[]
+	 * @return ArrayIterator|ItemId[]
 	 */
 	public function getIterator() {
 		return new ArrayIterator( $this->ids );
