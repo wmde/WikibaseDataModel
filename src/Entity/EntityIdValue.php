@@ -133,16 +133,12 @@ class EntityIdValue extends DataValueObject {
 	 *
 	 * @since 0.5
 	 *
-	 * @param mixed $data
+	 * @param array $data
 	 *
 	 * @throws IllegalValueException
 	 * @return self
 	 */
-	public static function newFromArray( $data ) {
-		if ( !is_array( $data ) ) {
-			throw new IllegalValueException( '$data must be an array' );
-		}
-
+	public static function newFromArray( array $data ) {
 		if ( array_key_exists( 'entity-type', $data ) && array_key_exists( 'numeric-id', $data ) ) {
 			return self::newIdFromTypeAndNumber( $data['entity-type'], $data['numeric-id'] );
 		} elseif ( array_key_exists( 'id', $data ) ) {
