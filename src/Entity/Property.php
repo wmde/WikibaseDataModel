@@ -81,21 +81,18 @@ class Property implements EntityDocument, FingerprintProvider, StatementListHold
 	}
 
 	/**
-	 * Can be integer since 0.1.
-	 * Can be PropertyId since 0.5.
-	 * Can be null since 1.0.
+	 * Must be PropertyId since 8.0.
 	 *
 	 * @param PropertyId|null $id
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function setId( $id ) {
-		if ( $id === null || $id instanceof PropertyId ) {
-			$this->id = $id;
-		} else {
-			throw new InvalidArgumentException( '$id must be an instance of PropertyId, an integer,'
-				. ' or null' );
+	public function setId( EntityId $id ) {
+		if ( ! $id instanceof PropertyId ) {
+			throw new InvalidArgumentException( '$id must be an instance of PropertyId' );
 		}
+
+		$this->id = $id;
 	}
 
 	/**

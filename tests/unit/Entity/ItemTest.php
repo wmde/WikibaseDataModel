@@ -41,9 +41,6 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 		$item->setId( new ItemId( 'Q1' ) );
 		$this->assertEquals( new ItemId( 'Q1' ), $item->getId() );
 
-		$item->setId( null );
-		$this->assertNull( $item->getId() );
-
 		$item = new Item( new ItemId( 'Q2' ) );
 		$this->assertEquals( new ItemId( 'Q2' ), $item->getId() );
 	}

@@ -44,7 +44,7 @@ interface EntityDocument extends Comparable {
 	 *
 	 * @throws InvalidArgumentException if the id is not of the correct type.
 	 */
-	public function setId( $id );
+	public function setId( EntityId $id );
 
 	/**
 	 * Returns true if the entity has no content. Having an id set does not count as having content.
