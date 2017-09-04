@@ -2,8 +2,12 @@
 
 ## Version 7.1.0 (2017-09-01)
 
-* Changed `EntityIdValue::getArrayValue` to allow it handle foreign entity IDs and entity IDs that do not have a numeric representation
+* Changed `EntityIdValue::getArrayValue` to allow it handle foreign entity IDs and entity IDs that
+  do not have a numeric representation.
+* Fixed exception handling in `EntityIdValue` not always forwarding the full stack trace.
+* Deprecated `EntityIdValue::newFromArray`
 * Deprecated `StatementGuid::getSerialization`
+* Improved documentation of `EntityDocument::isEmpty`
 * Removed MediaWiki integration files
 
 ## Version 7.0.0 (2017-03-15)
