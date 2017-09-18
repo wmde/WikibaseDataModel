@@ -158,7 +158,7 @@ abstract class EntityId implements Comparable, Serializable {
 	 * @return string
 	 */
 	public function __toString() {
-		return $this->serialization;
+		return $this->getSerialization();
 	}
 
 	/**
@@ -176,7 +176,7 @@ abstract class EntityId implements Comparable, Serializable {
 		}
 
 		return $target instanceof self
-			&& $target->serialization === $this->serialization;
+			&& $target->getSerialization() === $this->getSerialization();
 	}
 
 }
