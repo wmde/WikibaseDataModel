@@ -44,8 +44,8 @@ abstract class HierarchicalEntityId extends EntityId {
 	/**
 	 * Splits an ID serialization into the relative part, and the base ID.
 	 *
-	 * @param $serialization
-	 * @return array A two element array of strings, [ $basePart, $relativePart ]
+	 * @param string $serialization
+	 * @return string[] A two element array of strings, [ $basePart, $relativePart ]
 	 */
 	protected static function splitHierarchicalSerialization( $serialization ) {
 		if ( !preg_match( '/^(.+)[-#]([^-#]+)/', $serialization, $m ) ) {

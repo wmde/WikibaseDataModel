@@ -2,7 +2,7 @@
 
 namespace Wikibase\DataModel\Entity;
 
-use InvalidArgumentException;
+use OutOfBoundsException;
 
 /**
  * Represents a container of EntityDocuments. This interface is typically implemented by
@@ -18,7 +18,7 @@ interface EntityContainer {
 	 *
 	 * @param EntityId $id
 	 *
-	 * @throw OutOfBoundsException If the given entity is now known.
+	 * @throws OutOfBoundsException If the given entity is not known.
 	 * @return EntityDocument
 	 */
 	public function getEntity( EntityId $id );
