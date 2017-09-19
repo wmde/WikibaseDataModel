@@ -179,4 +179,24 @@ abstract class EntityId implements Comparable, Serializable {
 			&& $target->getSerialization() === $this->getSerialization();
 	}
 
+	/**
+	 * @see Serializable::serialize
+	 *
+	 * @since 7.0 serialization format changed in an incompatible way
+	 *
+	 * @return string
+	 */
+	public function serialize() {
+		return $this->serialization;
+	}
+
+	/**
+	 * @see Serializable::unserialize
+	 *
+	 * @param string $serialized
+	 */
+	public function unserialize( $serialized ) {
+		$this->serialization = $serialized;
+	}
+
 }

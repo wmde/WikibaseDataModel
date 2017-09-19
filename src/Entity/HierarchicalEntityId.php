@@ -47,7 +47,7 @@ abstract class HierarchicalEntityId extends EntityId {
 	 * @param $serialization
 	 * @return array A two element array of strings, [ $basePart, $relativePart ]
 	 */
-	public static function splitHierarchicalSerialization( $serialization ) {
+	protected static function splitHierarchicalSerialization( $serialization ) {
 		if ( !preg_match( '/^(.+)[-#]([^-#]+)/', $serialization, $m ) ) {
 			throw new InvalidArgumentException(
 				'Serialization is not a valid heirarchical ID: ' . $serialization

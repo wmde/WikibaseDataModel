@@ -35,6 +35,8 @@ interface EntityContainer {
 	 * Whether an entity with the given custom ID can be added to this container.
 	 * Containers that do not allow custom IDs will always return false from this method.
 	 *
+	 * FIXME: do we really want/need this?
+	 *
 	 * @param EntityId $id
 	 *
 	 * @return bool
