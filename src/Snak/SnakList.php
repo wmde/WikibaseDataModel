@@ -180,6 +180,21 @@ class SnakList extends ArrayObject implements Comparable, Hashable {
 	 * @param Snak[] $snaks to remove and re add
 	 */
 	private function moveSnaksToBottom( array $snaks ) {
+		// Skip Snaks that are already at the bottom:
+		// Find the last element in the array by looking at the last element
+		// in the offsetHashes array (this works as they are always added side-by-side).
+		$offsets = $this->offsetHashes;
+
+		$snakCount = count( $snaks );
+		for ( $i = 0; $i < $snakCount; $i++ ) {
+			$lastOffset = array_pop( $offsets );
+			if ( $this[$lastOffset] === $snaks[$i] ) {
+				unset( $snaks[$i] );
+			} else {
+				break;
+			}
+		}
+
 		foreach ( $snaks as $snak ) {
 			$this->removeSnak( $snak );
 			$this->addSnak( $snak );
