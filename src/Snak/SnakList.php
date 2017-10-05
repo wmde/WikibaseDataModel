@@ -2,16 +2,18 @@
 
 namespace Wikibase\DataModel\Snak;
 
-use ArrayObject;
 use Comparable;
+use Countable;
 use Hashable;
 use InvalidArgumentException;
+use Iterator;
+use Serializable;
 use Traversable;
 use Wikibase\DataModel\Internal\MapValueHasher;
 
 /**
  * List of Snak objects.
- * Indexes the snaks by hash and ensures no more the one snak with the same hash are in the list.
+ * Indexes the snaks by hash and ensures no more than one snak with the same hash is in the list.
  *
  * @since 0.1
  *
@@ -19,19 +21,12 @@ use Wikibase\DataModel\Internal\MapValueHasher;
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
  * @author Addshore
  */
-class SnakList extends ArrayObject implements Comparable, Hashable {
+class SnakList implements Comparable, Countable, Hashable, Iterator, Serializable {
 
 	/**
-	 * Maps snak hashes to their offsets.
-	 *
-	 * @var array [ snak hash (string) => snak offset (string|int) ]
+	 * @var Snak[]
 	 */
-	private $offsetHashes = [];
-
-	/**
-	 * @var int
-	 */
-	private $indexOffset = 0;
+	private $snaks = [];
 
 	/**
 	 * @param Snak[]|Traversable $snaks
@@ -43,8 +38,12 @@ class SnakList extends ArrayObject implements Comparable, Hashable {
 			throw new InvalidArgumentException( '$snaks must be an array or an instance of Traversable' );
 		}
 
-		foreach ( $snaks as $index => $snak ) {
-			$this->setElement( $index, $snak );
+		foreach ( $snaks as $value ) {
+			if ( !( $value instanceof Snak ) ) {
+				throw new InvalidArgumentException( '$value must be a Snak' );
+			}
+
+			$this->addSnak( $value );
 		}
 	}
 
@@ -56,7 +55,7 @@ class SnakList extends ArrayObject implements Comparable, Hashable {
 	 * @return boolean
 	 */
 	public function hasSnakHash( $snakHash ) {
-		return array_key_exists( $snakHash, $this->offsetHashes );
+		return isset( $this->snaks[$snakHash] );
 	}
 
 	/**
@@ -65,10 +64,7 @@ class SnakList extends ArrayObject implements Comparable, Hashable {
 	 * @param string $snakHash
 	 */
 	public function removeSnakHash( $snakHash ) {
-		if ( $this->hasSnakHash( $snakHash ) ) {
-			$offset = $this->offsetHashes[$snakHash];
-			$this->offsetUnset( $offset );
-		}
+		unset( $this->snaks[$snakHash] );
 	}
 
 	/**
@@ -79,11 +75,13 @@ class SnakList extends ArrayObject implements Comparable, Hashable {
 	 * @return boolean Indicates if the snak was added or not.
 	 */
 	public function addSnak( Snak $snak ) {
-		if ( $this->hasSnak( $snak ) ) {
+		$hash = $snak->getHash();
+
+		if ( $this->hasSnakHash( $hash ) ) {
 			return false;
 		}
 
-		$this->append( $snak );
+		$this->snaks[$hash] = $snak;
 		return true;
 	}
 
@@ -115,12 +113,7 @@ class SnakList extends ArrayObject implements Comparable, Hashable {
 	 * @return Snak|bool
 	 */
 	public function getSnak( $snakHash ) {
-		if ( !$this->hasSnakHash( $snakHash ) ) {
-			return false;
-		}
-
-		$offset = $this->offsetHashes[$snakHash];
-		return $this->offsetGet( $offset );
+		return isset( $this->snaks[$snakHash] ) ? $this->snaks[$snakHash] : false;
 	}
 
 	/**
@@ -144,6 +137,13 @@ class SnakList extends ArrayObject implements Comparable, Hashable {
 	}
 
 	/**
+	 * @return int
+	 */
+	public function count() {
+		return count( $this->snaks );
+	}
+
+	/**
 	 * @see Hashable::getHash
 	 *
 	 * The hash is purely value based. Order of the elements in the array is not held into account.
@@ -154,7 +154,7 @@ class SnakList extends ArrayObject implements Comparable, Hashable {
 	 */
 	public function getHash() {
 		$hasher = new MapValueHasher();
-		return $hasher->hash( $this );
+		return $hasher->hash( $this->snaks );
 	}
 
 	/**
@@ -169,104 +169,14 @@ class SnakList extends ArrayObject implements Comparable, Hashable {
 	public function orderByProperty( array $order = [] ) {
 		$byProperty = array_fill_keys( $order, [] );
 
-		/** @var Snak $snak */
-		foreach ( $this as $snak ) {
-			$byProperty[$snak->getPropertyId()->getSerialization()][] = $snak;
+		foreach ( $this->snaks as $snak ) {
+			$byProperty[$snak->getPropertyId()->getSerialization()][$snak->getHash()] = $snak;
 		}
 
-		$ordered = [];
+		$this->snaks = [];
 		foreach ( $byProperty as $snaks ) {
-			$ordered = array_merge( $ordered, $snaks );
+			$this->snaks = array_merge( $this->snaks, $snaks );
 		}
-
-		$this->exchangeArray( $ordered );
-
-		$index = 0;
-		foreach ( $ordered as $snak ) {
-			$this->offsetHashes[$snak->getHash()] = $index++;
-		}
-	}
-
-	/**
-	 * Finds a new offset for when appending an element.
-	 * The base class does this, so it would be better to integrate,
-	 * but there does not appear to be any way to do this...
-	 *
-	 * @return int
-	 */
-	private function getNewOffset() {
-		while ( $this->offsetExists( $this->indexOffset ) ) {
-			$this->indexOffset++;
-		}
-
-		return $this->indexOffset;
-	}
-
-	/**
-	 * @see ArrayObject::offsetUnset
-	 *
-	 * @since 0.1
-	 *
-	 * @param int|string $index
-	 */
-	public function offsetUnset( $index ) {
-		if ( $this->offsetExists( $index ) ) {
-			/**
-			 * @var Hashable $element
-			 */
-			$element = $this->offsetGet( $index );
-			$hash = $element->getHash();
-			unset( $this->offsetHashes[$hash] );
-
-			parent::offsetUnset( $index );
-		}
-	}
-
-	/**
-	 * @see ArrayObject::append
-	 *
-	 * @param Snak $value
-	 */
-	public function append( $value ) {
-		$this->setElement( null, $value );
-	}
-
-	/**
-	 * @see ArrayObject::offsetSet()
-	 *
-	 * @param int|string $index
-	 * @param Snak $value
-	 */
-	public function offsetSet( $index, $value ) {
-		$this->setElement( $index, $value );
-	}
-
-	/**
-	 * Method that actually sets the element and holds
-	 * all common code needed for set operations, including
-	 * type checking and offset resolving.
-	 *
-	 * @param int|string $index
-	 * @param Snak $value
-	 *
-	 * @throws InvalidArgumentException
-	 */
-	private function setElement( $index, $value ) {
-		if ( !( $value instanceof Snak ) ) {
-			throw new InvalidArgumentException( '$value must be a Snak' );
-		}
-
-		if ( $this->hasSnak( $value ) ) {
-			return;
-		}
-
-		if ( $index === null ) {
-			$index = $this->getNewOffset();
-		}
-
-		$hash = $value->getHash();
-		$this->offsetHashes[$hash] = $index;
-		parent::offsetSet( $index, $value );
 	}
 
 	/**
@@ -276,8 +186,8 @@ class SnakList extends ArrayObject implements Comparable, Hashable {
 	 */
 	public function serialize() {
 		return serialize( [
-			'data' => $this->getArrayCopy(),
-			'index' => $this->indexOffset,
+			'data' => array_values( $this->snaks ),
+			'index' => count( $this->snaks ) - 1,
 		] );
 	}
 
@@ -288,14 +198,10 @@ class SnakList extends ArrayObject implements Comparable, Hashable {
 	 */
 	public function unserialize( $serialized ) {
 		$serializationData = unserialize( $serialized );
-
-		foreach ( $serializationData['data'] as $offset => $value ) {
-			// Just set the element, bypassing checks and offset resolving,
-			// as these elements have already gone through this.
-			parent::offsetSet( $offset, $value );
+		$this->snaks = [];
+		foreach ( $serializationData['data'] as $snak ) {
+			$this->addSnak( $snak );
 		}
-
-		$this->indexOffset = $serializationData['index'];
 	}
 
 	/**
@@ -304,7 +210,27 @@ class SnakList extends ArrayObject implements Comparable, Hashable {
 	 * @return bool
 	 */
 	public function isEmpty() {
-		return !$this->getIterator()->valid();
+		return $this->snaks === [];
+	}
+
+	public function current() {
+		return current( $this->snaks );
+	}
+
+	public function next() {
+		return next( $this->snaks );
+	}
+
+	public function key() {
+		return key( $this->snaks );
+	}
+
+	public function valid() {
+		return current( $this->snaks ) !== false;
+	}
+
+	public function rewind() {
+		return reset( $this->snaks );
 	}
 
 }
