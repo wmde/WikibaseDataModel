@@ -175,6 +175,7 @@ class SnakListTest extends HashArrayTest {
 		$id1 = new PropertyId( 'P1' );
 		$id2 = new PropertyId( 'P2' );
 		$id3 = new PropertyId( 'P3' );
+		$id4 = new PropertyId( 'P4' );
 
 		/**
 		 * List of test data containing snaks to initialize SnakList objects. The first list of
@@ -248,6 +249,27 @@ class SnakListTest extends HashArrayTest {
 				],
 				[ 'P1' ]
 			],
+			'Multiple IDs in order' => [
+				[
+					new PropertyValueSnak( $id1, new StringValue( 'a' ) ),
+					new PropertyValueSnak( $id2, new StringValue( 'b' ) ),
+					new PropertyValueSnak( $id1, new StringValue( 'c' ) ),
+					new PropertyValueSnak( $id3, new StringValue( 'd' ) ),
+					new PropertyValueSnak( $id4, new StringValue( 'e' ) ),
+					new PropertyValueSnak( $id2, new StringValue( 'f' ) ),
+					new PropertyValueSnak( $id4, new StringValue( 'g' ) ),
+				],
+				[
+					new PropertyValueSnak( $id2, new StringValue( 'b' ) ),
+					new PropertyValueSnak( $id2, new StringValue( 'f' ) ),
+					new PropertyValueSnak( $id3, new StringValue( 'd' ) ),
+					new PropertyValueSnak( $id1, new StringValue( 'a' ) ),
+					new PropertyValueSnak( $id1, new StringValue( 'c' ) ),
+					new PropertyValueSnak( $id4, new StringValue( 'e' ) ),
+					new PropertyValueSnak( $id4, new StringValue( 'g' ) ),
+				],
+				[ 'P2', 'P3', 'P1' ]
+			],
 		];
 
 		$arguments = [];
@@ -281,6 +303,16 @@ class SnakListTest extends HashArrayTest {
 			$this->assertSame( $initialSnakList->getHash(), $snakList->getHash() );
 		} else {
 			$this->assertNotSame( $initialSnakList->getHash(), $snakList->getHash() );
+		}
+
+		/** @var Snak $snak */
+		foreach ( $snakList as $snak ) {
+			$hash = $snak->getHash();
+			$this->assertSame(
+				$hash,
+				$snakList->getSnak( $hash )->getHash(),
+				'Reordering must not mess up the lists internal state'
+			);
 		}
 	}
 
