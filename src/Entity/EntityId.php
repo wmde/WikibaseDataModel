@@ -16,6 +16,16 @@ abstract class EntityId implements Comparable, Serializable {
 
 	protected $serialization;
 
+	/**
+	 * @var string
+	 */
+	protected $repositoryName;
+
+	/**
+	 * @var string
+	 */
+	protected $localPart;
+
 	const PATTERN = '/^:?(\w+:)*[^:]+\z/';
 
 	/**
@@ -26,6 +36,8 @@ abstract class EntityId implements Comparable, Serializable {
 	public function __construct( $serialization ) {
 		self::assertValidSerialization( $serialization );
 		$this->serialization = self::normalizeIdSerialization( $serialization );
+
+		list ( $this->repositoryName, $this->localPart ) = $this->getRepositoryNameAndLocalPart( $serialization );
 	}
 
 	private static function assertValidSerialization( $serialization ) {
@@ -68,7 +80,11 @@ abstract class EntityId implements Comparable, Serializable {
 	public static function splitSerialization( $serialization ) {
 		self::assertValidSerialization( $serialization );
 
-		$parts = explode( ':', self::normalizeIdSerialization( $serialization ) );
+		return self::getSerializationParts( self::normalizeIdSerialization( $serialization ) );
+	}
+
+	private static function getSerializationParts( $serialization ) {
+		$parts = explode( ':', $serialization );
 		$localPart = array_pop( $parts );
 		$repoName = array_shift( $parts );
 		$prefixRemainder = implode( ':', $parts );
@@ -112,9 +128,7 @@ abstract class EntityId implements Comparable, Serializable {
 	 * @return string
 	 */
 	public function getRepositoryName() {
-		$parts = self::splitSerialization( $this->serialization );
-
-		return $parts[0];
+		return $this->repositoryName;
 	}
 
 	/**
@@ -125,9 +139,7 @@ abstract class EntityId implements Comparable, Serializable {
 	 * @return string
 	 */
 	public function getLocalPart() {
-		$parts = self::splitSerialization( $this->serialization );
-
-		return self::joinSerialization( [ '', $parts[1], $parts[2] ] );
+		return $this->localPart;
 	}
 
 	/**
@@ -177,6 +189,12 @@ abstract class EntityId implements Comparable, Serializable {
 
 		return $target instanceof self
 			&& $target->serialization === $this->serialization;
+	}
+
+	protected function getRepositoryNameAndLocalPart( $serialization ) {
+		list( $repoName, $prefixRemainder, $localId ) = self::getSerializationParts( $serialization );
+		$localPart = self::joinSerialization( [ '', $prefixRemainder, $localId ] );
+		return [ $repoName, $localPart ];
 	}
 
 }

@@ -112,8 +112,22 @@ class ItemIdTest extends PHPUnit_Framework_TestCase {
 			// All these cases are kind of an injection vector and allow constructing invalid ids.
 			[ '["string","Q2"]', 'Q2' ],
 			[ '["","string"]', 'string' ],
-			[ '["",""]', '' ],
 			[ '["",2]', 2 ],
+		];
+	}
+
+	/**
+	 * @dataProvider invalidSerializationProvider
+	 */
+	public function testGivenInvalidSerialization_unserializeThrowsException( $serialization ) {
+		$id = new ItemId( 'Q1' );
+		$this->setExpectedException( InvalidArgumentException::class );
+		$id->unserialize( $serialization );
+	}
+
+	public function invalidSerializationProvider() {
+		return [
+			[ '["",""]', '' ],
 			[ '["",null]', null ],
 			[ '', '' ],
 		];

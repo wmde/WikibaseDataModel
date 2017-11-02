@@ -112,8 +112,22 @@ class PropertyIdTest extends PHPUnit_Framework_TestCase {
 			// All these cases are kind of an injection vector and allow constructing invalid ids.
 			[ '["string","P2"]', 'P2' ],
 			[ '["","string"]', 'string' ],
-			[ '["",""]', '' ],
 			[ '["",2]', 2 ],
+		];
+	}
+
+	/**
+	 * @dataProvider invalidSerializationProvider
+	 */
+	public function testGivenInvalidSerialization_unserializeThrowsException( $serialization ) {
+		$id = new PropertyId( 'P1' );
+		$this->setExpectedException( InvalidArgumentException::class );
+		$id->unserialize( $serialization );
+	}
+
+	public function invalidSerializationProvider() {
+		return [
+			[ '["",""]', '' ],
 			[ '["",null]', null ],
 			[ '', '' ],
 		];
