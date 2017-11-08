@@ -212,8 +212,8 @@ abstract class EntityId implements Comparable, Serializable {
 	 * @return string[] Array of form [ string $repositoryName, string $localPart ]
 	 */
 	protected static function extractRepositoryNameAndLocalPart( $serialization ) {
-		list( $repoName, $prefixRemainder, $localId ) = self::extractSerializationParts( $serialization );
-		$localPart = self::joinSerialization( [ '', $prefixRemainder, $localId ] );
+		$parts = explode( ':', $serialization, 2 );
+		return count( $parts ) > 1 ? [ $parts[0], $parts[1] ] : [ '', $parts[0] ];
 		return [ $repoName, $localPart ];
 	}
 
