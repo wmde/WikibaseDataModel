@@ -17,11 +17,15 @@ abstract class EntityId implements Comparable, Serializable {
 	protected $serialization;
 
 	/**
+	 * @since 7.3
+	 *
 	 * @var string
 	 */
 	protected $repositoryName;
 
 	/**
+	 * @since 7.3
+	 *
 	 * @var string
 	 */
 	protected $localPart;
@@ -32,6 +36,8 @@ abstract class EntityId implements Comparable, Serializable {
 	 * @since 6.2
 	 *
 	 * @param string $serialization
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	public function __construct( $serialization ) {
 		self::assertValidSerialization( $serialization );
@@ -75,6 +81,8 @@ abstract class EntityId implements Comparable, Serializable {
 	 * @since 6.2
 	 *
 	 * @param string $serialization
+	 *
+	 * @throws InvalidArgumentException
 	 * @return string[] Array containing the serialization split into 3 parts.
 	 */
 	public static function splitSerialization( $serialization ) {
@@ -92,8 +100,9 @@ abstract class EntityId implements Comparable, Serializable {
 	 * Note: this method does not perform any validation of the given input. Calling code should take
 	 * care of this!
 	 *
-	 * @param $serialization
-	 * @return array
+	 * @param string $serialization
+	 *
+	 * @return string[]
 	 */
 	private static function extractSerializationParts( $serialization ) {
 		$parts = explode( ':', $serialization );
@@ -114,9 +123,9 @@ abstract class EntityId implements Comparable, Serializable {
 	 * @since 6.2
 	 *
 	 * @param string[] $parts
-	 * @return string
 	 *
 	 * @throws InvalidArgumentException
+	 * @return string
 	 */
 	public static function joinSerialization( array $parts ) {
 		if ( end( $parts ) === '' ) {
@@ -168,6 +177,7 @@ abstract class EntityId implements Comparable, Serializable {
 
 	/**
 	 * @param string $id
+	 *
 	 * @return string
 	 */
 	private static function normalizeIdSerialization( $id ) {
@@ -208,13 +218,15 @@ abstract class EntityId implements Comparable, Serializable {
 	 * Note: this does not perform any validation of the given input. Calling code should take
 	 * care of this!
 	 *
+	 * @since 7.3
+	 *
 	 * @param string $serialization
+	 *
 	 * @return string[] Array of form [ string $repositoryName, string $localPart ]
 	 */
 	protected static function extractRepositoryNameAndLocalPart( $serialization ) {
 		$parts = explode( ':', $serialization, 2 );
-		return count( $parts ) > 1 ? [ $parts[0], $parts[1] ] : [ '', $parts[0] ];
-		return [ $repoName, $localPart ];
+		return isset( $parts[1] ) ? $parts : [ '', $parts[0] ];
 	}
 
 }
