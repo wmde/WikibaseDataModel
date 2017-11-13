@@ -1,6 +1,6 @@
 # Wikibase DataModel release notes
 
-## Version 7.3.0 (dev)
+## Version 7.3.0 (2017-11-13)
 
 * Performance optimizations on `EntityId`:
 	* Added protected `$repositoryName` and `$localPart` properties
