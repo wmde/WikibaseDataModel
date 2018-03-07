@@ -6,6 +6,7 @@ use ArrayIterator;
 use Comparable;
 use Countable;
 use InvalidArgumentException;
+use Iterator;
 use IteratorAggregate;
 use OutOfBoundsException;
 use Traversable;
@@ -66,7 +67,7 @@ class TermList implements Countable, IteratorAggregate, Comparable {
 
 	/**
 	 * @see IteratorAggregate::getIterator
-	 * @return Traversable|Term[]
+	 * @return Traversable|Iterator|Term[]
 	 */
 	public function getIterator() {
 		return new ArrayIterator( $this->terms );
