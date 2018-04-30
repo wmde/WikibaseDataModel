@@ -24,7 +24,7 @@ use Wikibase\DataModel\Term\TermList;
  * @author Bene* < benestar.wikimedia@gmail.com >
  */
 class Property implements EntityDocument, FingerprintProvider, StatementListHolder,
-	LabelsProvider, DescriptionsProvider, AliasesProvider {
+	LabelsProvider, DescriptionsProvider, AliasesProvider, Clearable {
 
 	const ENTITY_TYPE = 'property';
 
@@ -297,4 +297,11 @@ class Property implements EntityDocument, FingerprintProvider, StatementListHold
 		$this->statements = clone $this->statements;
 	}
 
+	/**
+	 * @since 7.4
+	 */
+	public function clear() {
+		$this->fingerprint = new Fingerprint();
+		$this->statements = new StatementList();
+	}
 }
