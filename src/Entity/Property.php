@@ -304,4 +304,5 @@ class Property implements EntityDocument, FingerprintProvider, StatementListHold
 		$this->fingerprint = new Fingerprint();
 		$this->statements = new StatementList();
 	}
+
 }

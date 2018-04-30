@@ -627,8 +627,16 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 
 		$property->clear();
 
-		$this->assertEquals( $clone->getId(), $property->getId(), 'cleared Property should keep its id' );
-		$this->assertEquals( $clone->getDataTypeId(), $property->getDataTypeId(), 'cleared Property should keep its data type' );
+		$this->assertEquals(
+			$clone->getId(),
+			$property->getId(),
+			'cleared Property should keep its id'
+		);
+		$this->assertEquals(
+			$clone->getDataTypeId(),
+			$property->getDataTypeId(),
+			'cleared Property should keep its data type'
+		);
 		$this->assertTrue( $property->isEmpty(), 'cleared Property should be empty' );
 	}
 
@@ -639,14 +647,14 @@ class PropertyTest extends PHPUnit_Framework_TestCase {
 			],
 			'with fingerprint' => [
 				new Property(
-					new PropertyId('P321'),
+					new PropertyId( 'P321' ),
 					new Fingerprint( new TermList( [ new Term( 'en', 'foo' ) ] ) ),
 					'time'
 				),
 			],
 			'with statement' => [
 				new Property(
-					new PropertyId('P234'),
+					new PropertyId( 'P234' ),
 					null,
 					'wikibase-entityid',
 					$this->newNonEmptyStatementList()
