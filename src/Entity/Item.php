@@ -27,7 +27,7 @@ use Wikibase\DataModel\Term\TermList;
  * @author Bene* < benestar.wikimedia@gmail.com >
  */
 class Item implements EntityDocument, FingerprintProvider, StatementListHolder,
-	LabelsProvider, DescriptionsProvider, AliasesProvider, Clearable {
+	LabelsProvider, DescriptionsProvider, AliasesProvider, ClearableEntity {
 
 	const ENTITY_TYPE = 'item';
 
