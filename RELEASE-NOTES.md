@@ -1,5 +1,9 @@
 # Wikibase DataModel release notes
 
+## Version 7.4.0 (2018-05-02)
+
+* Added `clear` to `EntityDocument`
+
 ## Version 7.3.0 (2017-11-13)
 
 * Performance optimizations on `EntityId`:
