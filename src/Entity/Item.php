@@ -371,13 +371,4 @@ class Item implements EntityDocument, FingerprintProvider, StatementListHolder,
 		$this->statements = clone $this->statements;
 	}
 
-	/**
-	 * @since 7.4
-	 */
-	public function clear() {
-		$this->fingerprint = new Fingerprint();
-		$this->siteLinks = new SiteLinkList();
-		$this->statements = new StatementList();
-	}
-
 }

@@ -302,12 +302,4 @@ class Property implements EntityDocument, FingerprintProvider, StatementListHold
 		$this->statements = clone $this->statements;
 	}
 
-	/**
-	 * @since 7.4
-	 */
-	public function clear() {
-		$this->fingerprint = new Fingerprint();
-		$this->statements = new StatementList();
-	}
-
 }

@@ -88,11 +88,4 @@ interface EntityDocument extends Comparable {
 	 */
 	public function copy();
 
-	/**
-	 * Clears all fields of the entity that can be emptied. The entity's id stays the same.
-	 *
-	 * @since 7.4
-	 */
-	public function clear();
-
 }
