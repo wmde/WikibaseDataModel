@@ -756,7 +756,14 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function clearableProvider() {
-		return array_merge( $this->instanceProvider(), [
+		return [
+			'empty' => [ new Item( new ItemId( 'Q23' ) ), ],
+			'with fingerprint' => [
+				new Item(
+					new ItemId( 'Q42' ),
+					new Fingerprint( new TermList( [ new Term( 'en', 'foo' ) ] ) )
+				),
+			],
 			'with sitelink' => [
 				new Item(
 					new ItemId( 'Q123' ),
@@ -772,7 +779,7 @@ class ItemTest extends PHPUnit_Framework_TestCase {
 					new StatementList( [ $this->newStatement() ] )
 				)
 			]
-		] );
+		];
 	}
 
 }
