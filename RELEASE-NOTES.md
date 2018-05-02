@@ -2,7 +2,7 @@
 
 ## Version 7.4.1 (2018-05-02)
 
-* Removed `clear` from `EntityDocument`. This was a compatability break of the interface.
+* Removed `clear` from `EntityDocument`. This was a compatibility break of the interface.
 
 ## Version 7.4.0 (2018-05-02)
 
