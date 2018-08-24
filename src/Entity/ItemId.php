@@ -90,16 +90,17 @@ class ItemId extends EntityId implements Int32EntityId {
 	 * serialization. Not doing so in new code requires special justification.
 	 *
 	 * @param int|float|string $numericId
+	 * @param string $prefix
 	 *
 	 * @return self
 	 * @throws InvalidArgumentException
 	 */
-	public static function newFromNumber( $numericId ) {
+	public static function newFromNumber( $numericId, $prefix = 'Q' ) {
 		if ( !is_numeric( $numericId ) ) {
 			throw new InvalidArgumentException( '$numericId must be numeric' );
 		}
 
-		return new self( 'Q' . $numericId );
+		return new self( $prefix . $numericId );
 	}
 
 	/**
@@ -109,16 +110,17 @@ class ItemId extends EntityId implements Int32EntityId {
 	 *
 	 * @param string $repositoryName
 	 * @param int|float|string $numericId
+	 * @param string $itemPrefix
 	 *
 	 * @return self
 	 * @throws InvalidArgumentException
 	 */
-	public static function newFromRepositoryAndNumber( $repositoryName, $numericId ) {
+	public static function newFromRepositoryAndNumber( $repositoryName, $numericId, $itemPrefix = 'Q' ) {
 		if ( !is_numeric( $numericId ) ) {
 			throw new InvalidArgumentException( '$numericId must be numeric' );
 		}
 
-		return new self( self::joinSerialization( [ $repositoryName, '', 'Q' . $numericId ] ) );
+		return new self( self::joinSerialization( [ $repositoryName, '', $itemPrefix . $numericId ] ) );
 	}
 
 }
