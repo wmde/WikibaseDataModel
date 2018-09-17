@@ -76,7 +76,8 @@ abstract class EntityId implements Comparable, Serializable {
 	 * Returns an array with 3 elements: the foreign repository name as the first element, the local ID as the last
 	 * element and everything that is in between as the second element.
 	 *
-	 * EntityId::joinSerialization can be used to restore the original serialization from the parts returned.
+	 * self::joinSerialization can be used to restore the original serialization from the parts
+	 * returned.
 	 *
 	 * @since 6.2
 	 *
@@ -118,7 +119,7 @@ abstract class EntityId implements Comparable, Serializable {
 	}
 
 	/**
-	 * Builds an ID serialization from the parts returned by EntityId::splitSerialization.
+	 * Builds an ID serialization from the parts returned by self::splitSerialization.
 	 *
 	 * @since 6.2
 	 *
@@ -141,8 +142,8 @@ abstract class EntityId implements Comparable, Serializable {
 	}
 
 	/**
-	 * Returns '' for local IDs and the foreign repository name for foreign IDs. For chained IDs (e.g. foo:bar:Q42) it
-	 * will return only the first part.
+	 * Returns an empty string for unprefixed, or a repository name for prefixed IDs. For chained
+	 * prefixes (e.g. foo:bar:Q42) it will return only the first prefix.
 	 *
 	 * @since 6.2
 	 *
@@ -164,14 +165,18 @@ abstract class EntityId implements Comparable, Serializable {
 	}
 
 	/**
-	 * Returns true iff EntityId::getRepoName returns a non-empty string.
+	 * Returns true if the ID does have a prefix and is therefore guaranteed to be unresolved. This
+	 * is the same as checking if getRepositoryName() returns a non-empty string. Note that the
+	 * inverse is not necessarily true! An unprefixed ID may still need to be resolved, e.g. when
+	 * the local repository does not support a specific entity type, but a known remote repository
+	 * does.
 	 *
-	 * @since 6.2
+	 * @since 7.0
 	 *
 	 * @return bool
 	 */
-	public function isForeign() {
-		// not actually using EntityId::getRepoName for performance reasons
+	public function isUnresolved() {
+		// Not actually using getRepositoryName() for performance reasons
 		return strpos( $this->serialization, ':' ) > 0;
 	}
 

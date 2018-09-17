@@ -85,12 +85,12 @@ class EntityIdTest extends \PHPUnit_Framework_TestCase {
 		$this->assertInternalType( 'string', $id->__toString() );
 	}
 
-	public function testIsForeign() {
-		$this->assertFalse( ( new ItemId( 'Q42' ) )->isForeign() );
-		$this->assertFalse( ( new ItemId( ':Q42' ) )->isForeign() );
-		$this->assertTrue( ( new ItemId( 'foo:Q42' ) )->isForeign() );
-		$this->assertFalse( ( new PropertyId( ':P42' ) )->isForeign() );
-		$this->assertTrue( ( new PropertyId( 'foo:P42' ) )->isForeign() );
+	public function testIsUnresolved() {
+		$this->assertFalse( ( new ItemId( 'Q42' ) )->isUnresolved() );
+		$this->assertFalse( ( new ItemId( ':Q42' ) )->isUnresolved() );
+		$this->assertTrue( ( new ItemId( 'foo:Q42' ) )->isUnresolved() );
+		$this->assertFalse( ( new PropertyId( ':P42' ) )->isUnresolved() );
+		$this->assertTrue( ( new PropertyId( 'foo:P42' ) )->isUnresolved() );
 	}
 
 	/**
