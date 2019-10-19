@@ -12,6 +12,7 @@ use Wikibase\DataModel\Snak\PropertySomeValueSnak;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
 use Wikibase\DataModel\Snak\Snak;
 use Wikibase\DataModel\Snak\SnakList;
+use Wikibase\DataModel\Statement\StatementRank;
 use Wikibase\DataModel\Statement\Statement;
 
 /**
@@ -154,7 +155,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 		$instances[] = $baseInstance;
 
 		$instance = clone $baseInstance;
-		$instance->setRank( Statement::RANK_PREFERRED );
+		$instance->setRank( StatementRank::PREFERRED );
 
 		$instances[] = $instance;
 
@@ -232,19 +233,15 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 	 * @dataProvider instanceProvider
 	 */
 	public function testGetRank( Statement $statement ) {
-		$rank = $statement->getRank();
-		$this->assertInternalType( 'integer', $rank );
-
-		$ranks = [ Statement::RANK_DEPRECATED, Statement::RANK_NORMAL, Statement::RANK_PREFERRED ];
-		$this->assertTrue( in_array( $rank, $ranks ), true );
+		$this->assertTrue( StatementRank::isValid( $statement->getRank() ) );
 	}
 
 	/**
 	 * @dataProvider instanceProvider
 	 */
 	public function testSetRank( Statement $statement ) {
-		$statement->setRank( Statement::RANK_DEPRECATED );
-		$this->assertEquals( Statement::RANK_DEPRECATED, $statement->getRank() );
+		$statement->setRank( StatementRank::DEPRECATED );
+		$this->assertEquals( StatementRank::DEPRECATED, $statement->getRank() );
 	}
 
 	/**
@@ -387,7 +384,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 		$statementWithoutReferences->setReferences( new ReferenceList() );
 
 		$statementWithPreferredRank = $this->newStatement();
-		$statementWithPreferredRank->setRank( Statement::RANK_PREFERRED );
+		$statementWithPreferredRank->setRank( StatementRank::PREFERRED );
 
 		$statementMainSnakNotEqual = $this->newStatement();
 		$statementMainSnakNotEqual->setMainSnak( new PropertyNoValueSnak( 9000 ) );
@@ -411,7 +408,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 			] )
 		);
 
-		$statement->setRank( Statement::RANK_NORMAL );
+		$statement->setRank( StatementRank::NORMAL );
 
 		return $statement;
 	}
