@@ -81,9 +81,12 @@ class SnakListTest extends \PHPUnit\Framework\TestCase {
 		];
 	}
 
-	public function testGivenAssociativeArray_constructorPreservesArrayKeys() {
+	public function testGivenAssociativeArray_constructorDoesNotPreserveArrayKeys() {
 		$snakList = new SnakList( [ 'key' => new PropertyNoValueSnak( 1 ) ] );
-		$this->assertSame( [ 'key' ], array_keys( iterator_to_array( $snakList ) ) );
+		$this->assertSame(
+			[ 'c77761897897f63f151c4a1deb8bd3ad23ac51c6' ],
+			array_keys( iterator_to_array( $snakList ) )
+		);
 	}
 
 	/**
