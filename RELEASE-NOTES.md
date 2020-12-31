@@ -2,6 +2,7 @@
 
 ## Version 9.6.0 (development)
 
+* Re-allowed installation with PHP 8.x
 * `ReferenceList::addNewReference()`, `Statement::addNewReference()` and the `StatementList` constructor
   supported being called with a variadic argument list, with a single array argument,
   or (in the case of `StatementList`) with a single `Traversable` argument.
