@@ -133,7 +133,7 @@ abstract class EntityId implements Serializable {
 
 		return implode(
 			':',
-			array_filter( $parts, function( $part ) {
+			array_filter( $parts, static function( $part ) {
 				return $part !== '';
 			} )
 		);
