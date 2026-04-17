@@ -1,5 +1,7 @@
 <?php
 
+declare( strict_types = 1 );
+
 namespace Wikibase\DataModel\Entity;
 
 /**
@@ -19,12 +21,9 @@ class BasicEntityIdParser implements EntityIdParser {
 	}
 
 	/**
-	 * @param string $idSerialization
-	 *
-	 * @return EntityId
 	 * @throws EntityIdParsingException
 	 */
-	public function parse( $idSerialization ) {
+	public function parse( string $idSerialization ): EntityId {
 		return $this->idParser->parse( $idSerialization );
 	}
 
@@ -41,7 +40,7 @@ class BasicEntityIdParser implements EntityIdParser {
 	 *
 	 * @return callable[]
 	 */
-	public static function getBuilders() {
+	public static function getBuilders(): array {
 		return [
 			ItemId::PATTERN => static function( $serialization ) {
 				return new ItemId( $serialization );

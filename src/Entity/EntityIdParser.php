@@ -1,5 +1,7 @@
 <?php
 
+declare( strict_types = 1 );
+
 namespace Wikibase\DataModel\Entity;
 
 /**
@@ -13,11 +15,8 @@ namespace Wikibase\DataModel\Entity;
 interface EntityIdParser {
 
 	/**
-	 * @param string $idSerialization
-	 *
-	 * @return EntityId
 	 * @throws EntityIdParsingException
 	 */
-	public function parse( $idSerialization );
+	public function parse( string $idSerialization ): EntityId;
 
 }

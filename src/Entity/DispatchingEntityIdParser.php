@@ -1,5 +1,7 @@
 <?php
 
+declare( strict_types = 1 );
+
 namespace Wikibase\DataModel\Entity;
 
 use InvalidArgumentException;
@@ -15,7 +17,7 @@ class DispatchingEntityIdParser implements EntityIdParser {
 	/**
 	 * @var callable[]
 	 */
-	private $idBuilders;
+	private array $idBuilders;
 
 	/**
 	 * Takes an array in which each key is a preg_match pattern.
@@ -31,14 +33,9 @@ class DispatchingEntityIdParser implements EntityIdParser {
 	}
 
 	/**
-	 * @param string $idSerialization
-	 *
 	 * @throws EntityIdParsingException
-	 * @return EntityId
 	 */
-	public function parse( $idSerialization ) {
-		$this->assertIdIsString( $idSerialization );
-
+	public function parse( string $idSerialization ): EntityId {
 		if ( $this->idBuilders === [] ) {
 			throw new EntityIdParsingException( 'No id builders are configured' );
 		}
@@ -55,28 +52,9 @@ class DispatchingEntityIdParser implements EntityIdParser {
 	}
 
 	/**
-	 * @param string $idSerialization
-	 *
 	 * @throws EntityIdParsingException
 	 */
-	private function assertIdIsString( $idSerialization ) {
-		if ( !is_string( $idSerialization ) ) {
-			throw new EntityIdParsingException(
-				'$idSerialization must be a string, got ' . ( is_object( $idSerialization )
-					? get_class( $idSerialization )
-					: getType( $idSerialization ) )
-			);
-		}
-	}
-
-	/**
-	 * @param callable $idBuilder
-	 * @param string $idSerialization
-	 *
-	 * @throws EntityIdParsingException
-	 * @return EntityId
-	 */
-	private function buildId( $idBuilder, $idSerialization ) {
+	private function buildId( callable $idBuilder, string $idSerialization ): EntityId {
 		try {
 			return $idBuilder( $idSerialization );
 		} catch ( InvalidArgumentException $ex ) {

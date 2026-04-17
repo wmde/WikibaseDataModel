@@ -1,5 +1,7 @@
 <?php
 
+declare( strict_types = 1 );
+
 namespace Wikibase\DataModel\Tests\Entity;
 
 use Wikibase\DataModel\Entity\BasicEntityIdParser;
@@ -25,7 +27,7 @@ class DispatchingEntityIdParserTest extends \PHPUnit\Framework\TestCase {
 	/**
 	 * @dataProvider entityIdProvider
 	 */
-	public function testCanParseEntityId( $idString, EntityId $expected ) {
+	public function testCanParseEntityId( string $idString, EntityId $expected ) {
 		$parser = $this->getBasicParser();
 		$actual = $parser->parse( $idString );
 
@@ -44,7 +46,7 @@ class DispatchingEntityIdParserTest extends \PHPUnit\Framework\TestCase {
 	/**
 	 * @dataProvider invalidIdSerializationProvider
 	 */
-	public function testCannotParseInvalidId( $invalidIdSerialization ) {
+	public function testCannotParseInvalidId( string $invalidIdSerialization ) {
 		$parser = $this->getBasicParser();
 
 		$this->expectException( EntityIdParsingException::class );
@@ -54,9 +56,6 @@ class DispatchingEntityIdParserTest extends \PHPUnit\Framework\TestCase {
 	public static function invalidIdSerializationProvider() {
 		return [
 			[ 'FOO' ],
-			[ null ],
-			[ 42 ],
-			[ [] ],
 			[ '' ],
 			[ 'q0' ],
 			[ '1p' ],

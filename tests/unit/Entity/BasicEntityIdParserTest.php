@@ -1,5 +1,7 @@
 <?php
 
+declare( strict_types = 1 );
+
 namespace Wikibase\DataModel\Tests\Entity;
 
 use Wikibase\DataModel\Entity\BasicEntityIdParser;
@@ -39,7 +41,7 @@ class BasicEntityIdParserTest extends \PHPUnit\Framework\TestCase {
 	/**
 	 * @dataProvider invalidIdSerializationProvider
 	 */
-	public function testCannotParseInvalidId( $invalidIdSerialization ) {
+	public function testCannotParseInvalidId( string $invalidIdSerialization ) {
 		$parser = new BasicEntityIdParser();
 
 		$this->expectException( EntityIdParsingException::class );
@@ -49,9 +51,6 @@ class BasicEntityIdParserTest extends \PHPUnit\Framework\TestCase {
 	public static function invalidIdSerializationProvider() {
 		return [
 			[ 'FOO' ],
-			[ null ],
-			[ 42 ],
-			[ [] ],
 			[ '' ],
 			[ 'q0' ],
 			[ '1p' ],

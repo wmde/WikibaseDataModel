@@ -1,5 +1,7 @@
 <?php
 
+declare( strict_types = 1 );
+
 namespace Wikibase\DataModel\Entity;
 
 use InvalidArgumentException;
@@ -17,12 +19,9 @@ use InvalidArgumentException;
 class ItemIdParser implements EntityIdParser {
 
 	/**
-	 * @param string $idSerialization
-	 *
 	 * @throws EntityIdParsingException
-	 * @return ItemId
 	 */
-	public function parse( $idSerialization ) {
+	public function parse( string $idSerialization ): ItemId {
 		try {
 			return new ItemId( $idSerialization );
 		} catch ( InvalidArgumentException $ex ) {
