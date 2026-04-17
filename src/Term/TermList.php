@@ -1,5 +1,7 @@
 <?php
 
+declare( strict_types = 1 );
+
 namespace Wikibase\DataModel\Term;
 
 use ArrayIterator;
@@ -23,19 +25,18 @@ class TermList implements Countable, IteratorAggregate {
 	/**
 	 * @var Term[]
 	 */
-	private $terms = [];
+	private array $terms = [];
 
 	/**
 	 * @param iterable|Term[] $terms Can be a non-array since 8.1
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct( /* iterable */ $terms = [] ) {
+	public function __construct( iterable $terms = [] ) {
 		$this->addAll( $terms );
 	}
 
 	/**
 	 * @see Countable::count
-	 * @return int
 	 */
 	public function count(): int {
 		return count( $this->terms );
@@ -46,7 +47,7 @@ class TermList implements Countable, IteratorAggregate {
 	 *
 	 * @return string[]
 	 */
-	public function toTextArray() {
+	public function toTextArray(): array {
 		$array = [];
 
 		foreach ( $this->terms as $term ) {
@@ -65,12 +66,9 @@ class TermList implements Countable, IteratorAggregate {
 	}
 
 	/**
-	 * @param string $languageCode
-	 *
-	 * @return Term
 	 * @throws OutOfBoundsException
 	 */
-	public function getByLanguage( $languageCode ) {
+	public function getByLanguage( string $languageCode ): Term {
 		if ( !array_key_exists( $languageCode, $this->terms ) ) {
 			throw new OutOfBoundsException( 'Term with languageCode "' . $languageCode . '" not found' );
 		}
@@ -82,33 +80,23 @@ class TermList implements Countable, IteratorAggregate {
 	 * @since 2.5
 	 *
 	 * @param string[] $languageCodes
-	 *
-	 * @return self
 	 */
-	public function getWithLanguages( array $languageCodes ) {
+	public function getWithLanguages( array $languageCodes ): self {
 		return new self( array_intersect_key( $this->terms, array_flip( $languageCodes ) ) );
 	}
 
-	/**
-	 * @param string $languageCode
-	 */
-	public function removeByLanguage( $languageCode ) {
+	public function removeByLanguage( string $languageCode ): void {
 		unset( $this->terms[$languageCode] );
 	}
 
-	/**
-	 * @param string $languageCode
-	 *
-	 * @return bool
-	 */
-	public function hasTermForLanguage( $languageCode ) {
+	public function hasTermForLanguage( string $languageCode ): bool {
 		return array_key_exists( $languageCode, $this->terms );
 	}
 
 	/**
 	 * Replaces non-empty or removes empty terms.
 	 */
-	public function setTerm( Term $term ) {
+	public function setTerm( Term $term ): void {
 		if ( $term->getText() === '' ) {
 			unset( $this->terms[$term->getLanguageCode()] );
 		} else {
@@ -118,22 +106,15 @@ class TermList implements Countable, IteratorAggregate {
 
 	/**
 	 * @since 0.8
-	 *
-	 * @param string $languageCode
-	 * @param string $termText
 	 */
-	public function setTextForLanguage( $languageCode, $termText ) {
+	public function setTextForLanguage( string $languageCode, string $termText ): void {
 		$this->setTerm( new Term( $languageCode, $termText ) );
 	}
 
 	/**
 	 * @since 0.7.4
-	 *
-	 * @param mixed $target
-	 *
-	 * @return bool
 	 */
-	public function equals( $target ) {
+	public function equals( mixed $target ): bool {
 		if ( $this === $target ) {
 			return true;
 		}
@@ -155,21 +136,15 @@ class TermList implements Countable, IteratorAggregate {
 
 	/**
 	 * @since 2.4.0
-	 *
-	 * @return bool
 	 */
-	public function isEmpty() {
+	public function isEmpty(): bool {
 		return $this->terms === [];
 	}
 
 	/**
 	 * @since 0.7.4
-	 *
-	 * @param Term $term
-	 *
-	 * @return bool
 	 */
-	public function hasTerm( Term $term ) {
+	public function hasTerm( Term $term ): bool {
 		return array_key_exists( $term->getLanguageCode(), $this->terms )
 			&& $this->terms[$term->getLanguageCode()]->equals( $term );
 	}
@@ -179,7 +154,7 @@ class TermList implements Countable, IteratorAggregate {
 	 *
 	 * @since 7.0
 	 */
-	public function clear() {
+	public function clear(): void {
 		$this->terms = [];
 	}
 
@@ -189,11 +164,7 @@ class TermList implements Countable, IteratorAggregate {
 	 * @param iterable|Term[] $terms
 	 * @throws InvalidArgumentException
 	 */
-	public function addAll( /* iterable */ $terms ) {
-		if ( !is_array( $terms ) && !( $terms instanceof \Traversable ) ) {
-			throw new InvalidArgumentException( '$terms must be iterable' );
-		}
-
+	public function addAll( iterable $terms ): void {
 		foreach ( $terms as $term ) {
 			if ( !( $term instanceof Term ) ) {
 				throw new InvalidArgumentException( 'Every element in $terms must be an instance of Term' );

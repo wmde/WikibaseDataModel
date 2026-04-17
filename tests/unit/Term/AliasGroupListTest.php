@@ -1,5 +1,7 @@
 <?php
 
+declare( strict_types = 1 );
+
 namespace Wikibase\DataModel\Tests\Term;
 
 use InvalidArgumentException;
@@ -105,13 +107,10 @@ class AliasGroupListTest extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals( $enGroup, $list->getByLanguage( 'en' ) );
 	}
 
-	/**
-	 * @dataProvider invalidLanguageCodeProvider
-	 */
-	public function testGivenInvalidLanguageCode_getByLanguageThrowsException( $languageCode ) {
+	public function testGivenInvalidLanguageCode_getByLanguageThrowsException() {
 		$list = new AliasGroupList();
 		$this->expectException( OutOfBoundsException::class );
-		$list->getByLanguage( $languageCode );
+		$list->getByLanguage( '' );
 	}
 
 	public function testGivenNonSetLanguageCode_getByLanguageThrowsException() {
@@ -161,12 +160,9 @@ class AliasGroupListTest extends \PHPUnit\Framework\TestCase {
 		$this->assertTrue( $list->isEmpty() );
 	}
 
-	/**
-	 * @dataProvider invalidLanguageCodeProvider
-	 */
-	public function testGivenInvalidLanguageCode_removeByLanguageIsNoOp( $languageCode ) {
+	public function testGivenInvalidLanguageCode_removeByLanguageIsNoOp() {
 		$list = new AliasGroupList( [ new AliasGroup( 'en', [ 'foo' ] ) ] );
-		$list->removeByLanguage( $languageCode );
+		$list->removeByLanguage( 'invalidLanguageCodeProvider' );
 		$this->assertFalse( $list->isEmpty() );
 	}
 
@@ -263,20 +259,9 @@ class AliasGroupListTest extends \PHPUnit\Framework\TestCase {
 		$this->assertFalse( $list->hasGroupForLanguage( 'en' ) );
 	}
 
-	/**
-	 * @dataProvider invalidLanguageCodeProvider
-	 */
-	public function testGivenInvalidLanguageCode_hasGroupForLanguageReturnsFalse( $languageCode ) {
+	public function testGivenInvalidLanguageCode_hasGroupForLanguageReturnsFalse() {
 		$list = new AliasGroupList();
-		$this->assertFalse( $list->hasGroupForLanguage( $languageCode ) );
-	}
-
-	public static function invalidLanguageCodeProvider() {
-		return [
-			[ null ],
-			[ 21 ],
-			[ '' ],
-		];
+		$this->assertFalse( $list->hasGroupForLanguage( '' ) );
 	}
 
 	public function testGivenMismatchingGroup_hasGroupForLanguageReturnsFalse() {
@@ -304,7 +289,7 @@ class AliasGroupListTest extends \PHPUnit\Framework\TestCase {
 		$list = new AliasGroupList();
 
 		$this->expectException( InvalidArgumentException::class );
-		$list->setAliasesForLanguage( null, [ 'foo', 'bar' ] );
+		$list->setAliasesForLanguage( '', [ 'foo', 'bar' ] );
 	}
 
 	public function testGivenInvalidAliases_setGroupTextsThrowsException() {

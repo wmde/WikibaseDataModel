@@ -1,5 +1,7 @@
 <?php
 
+declare( strict_types = 1 );
+
 namespace Wikibase\DataModel\Tests\Term;
 
 use InvalidArgumentException;
@@ -117,13 +119,10 @@ class TermListTest extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals( $enTerm, $list->getByLanguage( 'en' ) );
 	}
 
-	/**
-	 * @dataProvider invalidLanguageCodeProvider
-	 */
-	public function testGivenInvalidLanguageCode_getByLanguageThrowsException( $languageCode ) {
+	public function testGivenInvalidLanguageCode_getByLanguageThrowsException() {
 		$list = new TermList();
 		$this->expectException( OutOfBoundsException::class );
-		$list->getByLanguage( $languageCode );
+		$list->getByLanguage( '' );
 	}
 
 	public function testGivenNonSetLanguageCode_getByLanguageThrowsException() {
@@ -149,20 +148,9 @@ class TermListTest extends \PHPUnit\Framework\TestCase {
 		$this->assertFalse( $list->hasTermForLanguage( ' de ' ) );
 	}
 
-	/**
-	 * @dataProvider invalidLanguageCodeProvider
-	 */
-	public function testGivenInvalidLanguageCode_hasTermForLanguageReturnsFalse( $languageCode ) {
+	public function testGivenInvalidLanguageCode_hasTermForLanguageReturnsFalse() {
 		$list = new TermList();
-		$this->assertFalse( $list->hasTermForLanguage( $languageCode ) );
-	}
-
-	public static function invalidLanguageCodeProvider() {
-		return [
-			[ null ],
-			[ 21 ],
-			[ '' ],
-		];
+		$this->assertFalse( $list->hasTermForLanguage( '' ) );
 	}
 
 	public function testGivenNotSetLanguageCode_removeByLanguageDoesNoOp() {
@@ -192,12 +180,9 @@ class TermListTest extends \PHPUnit\Framework\TestCase {
 		);
 	}
 
-	/**
-	 * @dataProvider invalidLanguageCodeProvider
-	 */
-	public function testGivenInvalidLanguageCode_removeByLanguageDoesNoOp( $languageCode ) {
+	public function testGivenInvalidLanguageCode_removeByLanguageDoesNoOp() {
 		$list = new TermList( [ new Term( 'en', 'foo' ) ] );
-		$list->removeByLanguage( $languageCode );
+		$list->removeByLanguage( '' );
 		$this->assertFalse( $list->isEmpty() );
 	}
 
@@ -316,14 +301,7 @@ class TermListTest extends \PHPUnit\Framework\TestCase {
 		$list = new TermList();
 
 		$this->expectException( InvalidArgumentException::class );
-		$list->setTextForLanguage( null, 'kittens' );
-	}
-
-	public function testGivenInvalidTermText_setTermTextThrowsException() {
-		$list = new TermList();
-
-		$this->expectException( InvalidArgumentException::class );
-		$list->setTextForLanguage( 'en', null );
+		$list->setTextForLanguage( '', 'kittens' );
 	}
 
 	public function testGivenEmptyList_getWithLanguagesReturnsEmptyList() {
@@ -477,13 +455,6 @@ class TermListTest extends \PHPUnit\Framework\TestCase {
 
 		$this->expectException( InvalidArgumentException::class );
 		$list->addAll( [ 'no-a-term' ] );
-	}
-
-	public function testWhenProvidingNonIterable_addAllThrowsException() {
-		$list = new TermList( [] );
-
-		$this->expectException( InvalidArgumentException::class );
-		$list->addAll( new Term( 'en', 'foo' ) );
 	}
 
 }

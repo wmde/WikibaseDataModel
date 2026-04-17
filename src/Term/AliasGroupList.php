@@ -1,5 +1,7 @@
 <?php
 
+declare( strict_types = 1 );
+
 namespace Wikibase\DataModel\Term;
 
 use ArrayIterator;
@@ -26,7 +28,7 @@ class AliasGroupList implements Countable, IteratorAggregate {
 	/**
 	 * @var AliasGroup[]
 	 */
-	private $groups = [];
+	private array $groups = [];
 
 	/**
 	 * @param AliasGroup[] $aliasGroups
@@ -44,7 +46,6 @@ class AliasGroupList implements Countable, IteratorAggregate {
 
 	/**
 	 * @see Countable::count
-	 * @return int
 	 */
 	public function count(): int {
 		return count( $this->groups );
@@ -65,17 +66,14 @@ class AliasGroupList implements Countable, IteratorAggregate {
 	 *
 	 * @return AliasGroup[] Array indexed by language code.
 	 */
-	public function toArray() {
+	public function toArray(): array {
 		return $this->groups;
 	}
 
 	/**
-	 * @param string $languageCode
-	 *
-	 * @return AliasGroup
 	 * @throws OutOfBoundsException
 	 */
-	public function getByLanguage( $languageCode ) {
+	public function getByLanguage( string $languageCode ): AliasGroup {
 		if ( !array_key_exists( $languageCode, $this->groups ) ) {
 			throw new OutOfBoundsException( 'AliasGroup with languageCode "' . $languageCode . '" not found' );
 		}
@@ -87,17 +85,12 @@ class AliasGroupList implements Countable, IteratorAggregate {
 	 * @since 2.5
 	 *
 	 * @param string[] $languageCodes
-	 *
-	 * @return self
 	 */
-	public function getWithLanguages( array $languageCodes ) {
+	public function getWithLanguages( array $languageCodes ): self {
 		return new self( array_intersect_key( $this->groups, array_flip( $languageCodes ) ) );
 	}
 
-	/**
-	 * @param string $languageCode
-	 */
-	public function removeByLanguage( $languageCode ) {
+	public function removeByLanguage( string $languageCode ): void {
 		unset( $this->groups[$languageCode] );
 	}
 
@@ -105,7 +98,7 @@ class AliasGroupList implements Countable, IteratorAggregate {
 	 * If the group is empty, it will not be stored.
 	 * In case the language of that group had an associated group, that group will be removed.
 	 */
-	public function setGroup( AliasGroup $group ) {
+	public function setGroup( AliasGroup $group ): void {
 		if ( $group->isEmpty() ) {
 			unset( $this->groups[$group->getLanguageCode()] );
 		} else {
@@ -115,12 +108,8 @@ class AliasGroupList implements Countable, IteratorAggregate {
 
 	/**
 	 * @since 0.7.4
-	 *
-	 * @param mixed $target
-	 *
-	 * @return bool
 	 */
-	public function equals( $target ) {
+	public function equals( mixed $target ): bool {
 		if ( $this === $target ) {
 			return true;
 		}
@@ -142,33 +131,23 @@ class AliasGroupList implements Countable, IteratorAggregate {
 
 	/**
 	 * @since 2.4.0
-	 *
-	 * @return bool
 	 */
-	public function isEmpty() {
+	public function isEmpty(): bool {
 		return $this->groups === [];
 	}
 
 	/**
 	 * @since 0.7.4
-	 *
-	 * @param AliasGroup $group
-	 *
-	 * @return bool
 	 */
-	public function hasAliasGroup( AliasGroup $group ) {
+	public function hasAliasGroup( AliasGroup $group ): bool {
 		return array_key_exists( $group->getLanguageCode(), $this->groups )
 			&& $this->groups[$group->getLanguageCode()]->equals( $group );
 	}
 
 	/**
 	 * @since 0.8
-	 *
-	 * @param string $languageCode
-	 *
-	 * @return bool
 	 */
-	public function hasGroupForLanguage( $languageCode ) {
+	public function hasGroupForLanguage( string $languageCode ): bool {
 		return array_key_exists( $languageCode, $this->groups );
 	}
 
@@ -178,7 +157,7 @@ class AliasGroupList implements Countable, IteratorAggregate {
 	 * @param string $languageCode
 	 * @param string[] $aliases
 	 */
-	public function setAliasesForLanguage( $languageCode, array $aliases ) {
+	public function setAliasesForLanguage( string $languageCode, array $aliases ): void {
 		$this->setGroup( new AliasGroup( $languageCode, $aliases ) );
 	}
 
@@ -189,7 +168,7 @@ class AliasGroupList implements Countable, IteratorAggregate {
 	 *
 	 * @return array[]
 	 */
-	public function toTextArray() {
+	public function toTextArray(): array {
 		$array = [];
 
 		foreach ( $this->groups as $group ) {
@@ -204,7 +183,7 @@ class AliasGroupList implements Countable, IteratorAggregate {
 	 *
 	 * @since 7.0
 	 */
-	public function clear() {
+	public function clear(): void {
 		$this->groups = [];
 	}
 
